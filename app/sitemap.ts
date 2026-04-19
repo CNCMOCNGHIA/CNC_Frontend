@@ -19,7 +19,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/faq',
     '/gioi-thieu',
     '/partners',
-    '/quote',
+    '/gia-cong',
     '/san-pham',
     '/workflow',
   ]

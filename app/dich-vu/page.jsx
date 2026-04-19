@@ -119,7 +119,7 @@ export default function Services() {
                 </div>
 
                 <Link
-                  href="/quote"
+                  href="/gia-cong"
                   className="inline-flex items-center gap-2 bg-[#D4A017] text-[#111111] px-8 py-4 hover:bg-[#D4A017]/90 transition-colors group"
                 >
                   REQUEST QUOTE
@@ -213,7 +213,7 @@ export default function Services() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                href="/quote"
+                href="/gia-cong"
                 className="inline-flex items-center justify-center gap-2 bg-[#111111] text-[#D4A017] px-8 py-4 hover:bg-[#111111]/90 transition-colors"
               >
                 SEND FILES & GET QUOTE

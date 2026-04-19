@@ -256,7 +256,7 @@ export default function Partners() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                href="/quote"
+                href="/gia-cong"
                 className="inline-block bg-[#111111] text-[#D4A017] px-12 py-5 hover:bg-[#111111]/90 transition-colors"
               >
                 REQUEST QUOTE

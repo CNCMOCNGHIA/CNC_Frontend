@@ -179,7 +179,7 @@ export function Layout({ children }) {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/quote" className="font-body text-sm text-white/70 hover:text-[#D4A017] transition-colors">
+                  <Link href="/gia-cong" className="font-body text-sm text-white/70 hover:text-[#D4A017] transition-colors">
                     Get Quote
                   </Link>
                 </li>

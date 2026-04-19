@@ -249,7 +249,7 @@ export default function Products() {
               We specialize in custom projects. Send us your designs and we'll make it happen.
             </p>
             <a
-              href="/quote"
+              href="/gia-cong"
               className="inline-block bg-[#D4A017] text-[#111111] px-12 py-5 hover:bg-[#D4A017]/90 transition-colors"
             >
               REQUEST CUSTOM QUOTE
