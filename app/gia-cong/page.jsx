@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { Upload, FileText, CheckCircle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { theme } from "@/constants/theme";
 
 export default function Quote() {
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
@@ -45,7 +46,7 @@ export default function Quote() {
   ];
 
   return (
-    <div>
+    <div className={`${theme.fonts.body} ${theme.colors.lightText}`}>
       {/* Hero Section */}
       <section className="relative h-[50vh] min-h-[400px]">
         <div
@@ -63,7 +64,7 @@ export default function Quote() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-6xl md:text-8xl text-white mb-4">REQUEST QUOTE</h1>
+            <h1 className={`${theme.fonts.heading} ${theme.text.heroTitle} text-white mb-4`}>REQUEST QUOTE</h1>
             <p className="text-xl text-white/80 max-w-2xl">
               Upload your CAD files and receive a detailed quote within 24 hours
             </p>

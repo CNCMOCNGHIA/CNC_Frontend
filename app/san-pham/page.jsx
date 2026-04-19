@@ -2,6 +2,11 @@
 
 import { motion } from "motion/react";
 import { useState } from "react";
+import { theme } from "@/constants/theme";
+import content from "@/default-content/san-pham.json";
+import { toSlug } from '@/lib/slug';
+import Link from "next/link";
+
 
 export default function Products() {
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -86,13 +91,13 @@ export default function Products() {
     : products.filter(p => p.category === selectedCategory);
 
   return (
-    <div>
+    <div className={`${theme.fonts.body} ${theme.colors.lightText}`}>
       {/* Hero Section */}
       <section className="relative h-[60vh] min-h-[500px]">
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1551907234-fb773fb08a2a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBmdXJuaXR1cmUlMjBkZXNpZ24lMjBtaW5pbWFsfGVufDF8fHx8MTc3MzY0NTMzN3ww&ixlib=rb-4.1.0&q=80&w=1080')`,
+            backgroundImage: `url('${content.hero.backgroundImage}')`,
           }}
         >
           <div className="absolute inset-0 bg-[#111111]/70" />
@@ -104,9 +109,9 @@ export default function Products() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-6xl md:text-8xl text-white mb-4">PRODUCTS & SAMPLES</h1>
+            <h1 className={`${theme.fonts.heading} ${theme.text.heroTitle} text-white mb-4`}>{content.hero.title}</h1>
             <p className="text-xl text-white/80 max-w-2xl">
-              Explore our portfolio of precision-manufactured furniture components
+              {content.hero.description}
             </p>
           </motion.div>
         </div>
@@ -120,11 +125,10 @@ export default function Products() {
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`px-8 py-3 transition-colors ${
-                  selectedCategory === category.id
-                    ? "bg-[#D4A017] text-[#111111]"
-                    : "bg-[#111111] text-white hover:bg-[#D4A017] hover:text-[#111111]"
-                }`}
+                className={`px-8 py-3 transition-colors ${selectedCategory === category.id
+                  ? "bg-[#D4A017] text-[#111111]"
+                  : "bg-[#111111] text-white hover:bg-[#D4A017] hover:text-[#111111]"
+                  }`}
               >
                 {category.label}
               </button>
@@ -137,38 +141,43 @@ export default function Products() {
       <section className="py-20 bg-[#111111]">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProducts.map((product, index) => (
-              <motion.div
-                key={product.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-[#2B2B2B] overflow-hidden group"
-              >
-                <div className="relative h-64 overflow-hidden">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-transparent to-transparent opacity-60" />
-                </div>
-                
-                <div className="p-6">
-                  <h3 className="text-2xl text-white mb-3">{product.name}</h3>
-                  <p className="text-white/70 mb-4">{product.description}</p>
-                  
-                  <div className="space-y-2">
-                    {product.specs.map((spec, specIndex) => (
-                      <div key={specIndex} className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 bg-[#D4A017]" />
-                        <span className="text-sm text-white/60">{spec}</span>
+            {filteredProducts.map((product, index) => {
+              const slug = toSlug(product.name);
+              return (
+                <Link key={product.id} href={`/san-pham/${slug}`}>
+                  <motion.div
+                    key={product.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="bg-[#2B2B2B] overflow-hidden group"
+                  >
+                    <div className="relative h-64 overflow-hidden">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-transparent to-transparent opacity-60" />
+                    </div>
+
+                    <div className="p-6">
+                      <h3 className="text-2xl text-white mb-3">{product.name}</h3>
+                      <p className="text-white/70 mb-4">{product.description}</p>
+
+                      <div className="space-y-2">
+                        {product.specs.map((spec, specIndex) => (
+                          <div key={specIndex} className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-[#D4A017]" />
+                            <span className="text-sm text-white/60">{spec}</span>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+                    </div>
+                  </motion.div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>

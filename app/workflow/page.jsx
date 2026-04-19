@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { Upload, FileSearch, Settings, Package, Truck, CheckCircle } from "lucide-react";
+import { theme } from "@/constants/theme";
 
 export default function Workflow() {
   const steps = [
@@ -83,7 +84,7 @@ export default function Workflow() {
   ];
 
   return (
-    <div>
+    <div className={`${theme.fonts.body} ${theme.colors.lightText}`}>
       {/* Hero Section */}
       <section className="relative h-[60vh] min-h-[500px]">
         <div
@@ -101,7 +102,7 @@ export default function Workflow() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-6xl md:text-8xl text-white mb-4">OUR WORKFLOW</h1>
+            <h1 className={`${theme.fonts.heading} ${theme.text.heroTitle} text-white mb-4`}>OUR WORKFLOW</h1>
             <p className="text-xl text-white/80 max-w-2xl">
               From file submission to delivery - a streamlined process ensuring quality and efficiency
             </p>
@@ -133,7 +134,7 @@ export default function Workflow() {
                     <div className="w-16 h-16 bg-[#D4A017] flex items-center justify-center">
                       <step.icon className="w-8 h-8 text-[#111111]" />
                     </div>
-                    <div className="absolute -top-4 -right-4 text-6xl text-[#D4A017]/20 font-['Bebas_Neue']">
+                    <div className="absolute -top-4 -right-4 text-6xl text-[#D4A017]/20 font-body font-bold">
                       {step.number}
                     </div>
                   </div>

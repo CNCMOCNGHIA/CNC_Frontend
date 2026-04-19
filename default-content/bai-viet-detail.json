@@ -1,0 +1,76 @@
+{
+    "post": {
+      "category": "Manufacturing",
+      "title": "5 Benefits of PUR Edge Banding Over EVA Adhesive",
+      "excerpt": "Discover why PUR (Polyurethane Reactive) adhesive is becoming the industry standard for high-quality furniture manufacturing.",
+      "heroImage": "https://images.unsplash.com/photo-1642381071059-7a8c84c197ca?w=1200&q=80",
+      "date": "March 10, 2026",
+      "author": "Technical Team",
+      "mainImage": "https://images.unsplash.com/photo-1693948568453-a3564f179a84?w=1080&q=80",
+      "sections": [
+        {
+          "title": "1. Giới thiệu",
+          "type": "text",
+          "content": "Discover why PUR (Polyurethane Reactive) adhesive is becoming the industry standard for high-quality furniture manufacturing. PUR tạo ra liên kết hóa học bền vững hơn nhiều so với keo EVA truyền thống, đặc biệt trong các môi trường có độ ẩm cao hoặc nhiệt độ thay đổi."
+        },
+        {
+          "title": "2. Thông số kỹ thuật",
+          "type": "list",
+          "items": [
+            "Kích thước: 2m4 x 1m6 x 0.75m",
+            "Chất liệu: Gỗ sồi tự nhiên + nệm mút D40",
+            "Màu sắc: Tùy chọn theo yêu cầu",
+            "Tình trạng: Đặt làm theo kích thước",
+            "Thời gian thi công: 7–10 ngày"
+          ]
+        },
+        {
+          "title": "3. Mô tả chi tiết",
+          "type": "text-list",
+          "content": "Sofa gỗ sồi chữ L được thiết kế theo phong cách tối giản, mang lại sự sang trọng và tinh tế cho không gian phòng khách. Khung gỗ chắc chắn kết hợp với nệm ngồi êm ái giúp tăng trải nghiệm sử dụng lâu dài.",
+          "subTitle": "Sản phẩm phù hợp với:",
+          "subItems": ["Căn hộ chung cư", "Nhà phố hiện đại", "Homestay, studio"]
+        },
+        {
+          "title": "4. Chính sách",
+          "type": "list",
+          "items": [
+            "Bảo hành: 3 năm",
+            "Miễn phí lắp đặt nội thành",
+            "Hỗ trợ vận chuyển toàn quốc"
+          ]
+        }
+      ]
+    },
+    "recentPostsTitle": "Bài viết gần đây",
+    "recentPosts": [
+      {
+        "id": 1,
+        "title": "Optimizing CAD Files for CNC Production",
+        "date": "March 10, 2026",
+        "image": "https://images.unsplash.com/photo-1689236673934-66f8e9d9279b?w=200&q=80",
+        "slug": "optimizing-cad-files-for-cnc-production"
+      },
+      {
+        "id": 2,
+        "title": "Optimizing CAD Files for CNC Production",
+        "date": "March 10, 2026",
+        "image": "https://images.unsplash.com/photo-1689236673934-66f8e9d9279b?w=200&q=80",
+        "slug": "optimizing-cad-files-for-cnc-production-2"
+      },
+      {
+        "id": 3,
+        "title": "Optimizing CAD Files for CNC Production",
+        "date": "March 10, 2026",
+        "image": "https://images.unsplash.com/photo-1689236673934-66f8e9d9279b?w=200&q=80",
+        "slug": "optimizing-cad-files-for-cnc-production-3"
+      },
+      {
+        "id": 4,
+        "title": "Optimizing CAD Files for CNC Production",
+        "date": "March 10, 2026",
+        "image": "https://images.unsplash.com/photo-1689236673934-66f8e9d9279b?w=200&q=80",
+        "slug": "optimizing-cad-files-for-cnc-production-4"
+      }
+    ]
+  }

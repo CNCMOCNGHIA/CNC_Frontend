@@ -1,0 +1,70 @@
+{
+    "product": {
+      "name": "Ghế Sofa Gỗ Sồi Hiện Đại",
+      "category": "NỘI THẤT",
+      "price": "12.000.000 - 15.000.000 đ",
+      "images": [
+        "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1080&q=80",
+        "https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=1080&q=80",
+        "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=1080&q=80",
+        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1080&q=80",
+        "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=1080&q=80"
+      ],
+      "mainInfo": {
+        "title": "1. Thông tin chính",
+        "productFullName": "Sofa gỗ sồi chữ L bọc nệm cao cấp",
+        "shortDescription": "Gỗ sồi tự nhiên 100%, thiết kế hiện đại, phù hợp căn hộ & nhà phố",
+        "cta": ["Yêu cầu báo giá", "Chat Zalo", "Gửi yêu cầu thiết kế"]
+      },
+      "mainImage": "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1080&q=80",
+      "specs": {
+        "title": "2. Thông số kỹ thuật",
+        "items": [
+          "Kích thước: 2m4 x 1m6 x 0.75m",
+          "Chất liệu: Gỗ sồi tự nhiên + nệm mút D40",
+          "Màu sắc: Tùy chọn theo yêu cầu",
+          "Tình trạng: Đặt làm theo kích thước",
+          "Thời gian thi công: 7–10 ngày"
+        ]
+      },
+      "description": {
+        "title": "3. Mô tả chi tiết",
+        "content": "Sofa gỗ sồi chữ L được thiết kế theo phong cách tối giản, mang lại sự sang trọng và tinh tế cho không gian phòng khách. Khung gỗ chắc chắn kết hợp với nệm ngồi êm ái giúp tăng trải nghiệm sử dụng lâu dài.",
+        "suitableFor": ["Căn hộ chung cư", "Nhà phố hiện đại", "Homestay, studio"]
+      },
+      "policy": {
+        "title": "4. Chính sách",
+        "items": [
+          "Bảo hành: 3 năm",
+          "Miễn phí lắp đặt nội thành",
+          "Hỗ trợ vận chuyển toàn quốc"
+        ]
+      }
+    },
+    "contactLabel": "LIÊN HỆ",
+    "orderLabel": "ĐẶT HÀNG",
+    "relatedTitle": "CÁC SẢN PHẨM TƯƠNG TỰ",
+    "relatedProducts": [
+      {
+        "id": 1,
+        "name": "Wardrobe Internals",
+        "description": "Shelving systems and drawer components for wardrobes",
+        "image": "https://images.unsplash.com/photo-1764115424769-ebdd2683d5a8?w=800&q=80",
+        "specs": ["16mm chipboard", "Shelf pin holes", "Drawer slides routing"]
+      },
+      {
+        "id": 2,
+        "name": "TV Stand Components",
+        "description": "Modern entertainment center parts with integrated storage",
+        "image": "https://images.unsplash.com/photo-1769430838012-8e1270d41f46?w=800&q=80",
+        "specs": ["18mm MDF", "Cable management", "Adjustable shelving"]
+      },
+      {
+        "id": 3,
+        "name": "Custom Curved Panels",
+        "description": "Bent MDF panels for unique furniture designs",
+        "image": "https://images.unsplash.com/photo-1759159091728-e2c87b9d9315?w=800&q=80",
+        "specs": ["MDF bending", "Custom radius", "Edge banded"]
+      }
+    ]
+  }

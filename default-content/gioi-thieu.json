@@ -1,0 +1,97 @@
+{
+  "hero": {
+    "title": "GIỚI THIỆU",
+    "description": "Leading CNC furniture processing factory with 15+ years of expertise in precision manufacturing",
+    "backgroundImage": "https://images.unsplash.com/photo-1769430838012-8e1270d41f46?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpbmR1c3RyaWFsJTIwZnVybml0dXJlJTIwbWFudWZhY3R1cmluZyUyMHdvcmtzaG9wfGVufDF8fHx8MTc3MzY0NTMzNHww&ixlib=rb-4.1.0&q=80&w=1080"
+  },
+  "story": {
+    "title": "OUR STORY",
+    "paragraphs": [
+      "Established in 2010, Moc Nghia CNC Furniture Processing Factory has grown from a small workshop to a leading B2B partner in the furniture manufacturing industry.",
+      "We specialize in precision CNC processing, edge banding, and custom furniture production, serving manufacturers across Vietnam and Southeast Asia.",
+      "Our 5,000 square meter facility houses state-of-the-art CNC machinery and a team of skilled technicians dedicated to delivering exceptional quality and service.",
+      "With ISO 9001 certification and a commitment to continuous improvement, we ensure every project meets the highest standards of precision and craftsmanship."
+    ],
+    "image": "https://images.unsplash.com/photo-1615990860014-99e51245218c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBpbmR1c3RyaWFsJTIwd29ya3Nob3B8ZW58MXx8fHwxNzczNjQ1MzM1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+    "imageAlt": "Factory floor"
+  },
+  "values": {
+    "title": "OUR VALUES",
+    "description": "The principles that guide our business and relationships",
+    "items": [
+      {
+        "icon": "award",
+        "title": "QUALITY",
+        "description": "ISO 9001 certified processes ensuring consistent quality in every project"
+      },
+      {
+        "icon": "users",
+        "title": "PARTNERSHIP",
+        "description": "Building long-term B2B relationships based on trust and reliability"
+      },
+      {
+        "icon": "target",
+        "title": "PRECISION",
+        "description": "Advanced CNC technology for accurate and repeatable results"
+      },
+      {
+        "icon": "factory",
+        "title": "CAPACITY",
+        "description": "5,000 sqm facility capable of handling large-scale production"
+      }
+    ]
+  },
+  "machinery": {
+    "title": "OUR MACHINERY",
+    "description": "Advanced equipment ensuring precision and efficiency",
+    "items": [
+      {
+        "name": "CNC Router Machines",
+        "specs": "5-axis precision cutting, working area 3000x2000mm",
+        "quantity": "8 units",
+        "image": "https://images.unsplash.com/photo-1764115424769-ebdd2683d5a8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxDTkMlMjBtYWNoaW5lJTIwaW5kdXN0cmlhbCUyMGZhY3Rvcnl8ZW58MXx8fHwxNzczNjQ1MzMzfDA&ixlib=rb-4.1.0&q=80&w=1080"
+      },
+      {
+        "name": "PUR Edge Banding Machines",
+        "specs": "Automatic edge banding with pre-milling and corner rounding",
+        "quantity": "4 units",
+        "image": "https://images.unsplash.com/photo-1642381071059-7a8c84c197ca?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlZGdlJTIwYmFuZGluZyUyMG1hY2hpbmV8ZW58MXx8fHwxNzczNjQ1MzM1fDA&ixlib=rb-4.1.0&q=80&w=1080"
+      },
+      {
+        "name": "Panel Saw Systems",
+        "specs": "Vertical and horizontal panel cutting with digital positioning",
+        "quantity": "6 units",
+        "image": "https://images.unsplash.com/photo-1693948568453-a3564f179a84?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxDTkMlMjBjdXR0aW5nJTIwd29vZCUyMHBhbmVsfGVufDF8fHx8MTc3MzY0NTMzNHww&ixlib=rb-4.1.0&q=80&w=1080"
+      },
+      {
+        "name": "Multi-Boring Machines",
+        "specs": "32mm system drilling with handle routing capability",
+        "quantity": "5 units",
+        "image": "https://images.unsplash.com/photo-1759159091728-e2c87b9d9315?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcmVjaXNpb24lMjBtYWNoaW5lcnklMjBpbmR1c3RyaWFsfGVufDF8fHx8MTc3MzY0NTMzNHww&ixlib=rb-4.1.0&q=80&w=1080"
+      }
+    ]
+  },
+  "facility": {
+    "title": "OUR FACILITY",
+    "image": "https://images.unsplash.com/photo-1764185800646-f75f7e16e465?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpbmR1c3RyaWFsJTIwbWFudWZhY3R1cmluZyUyMGZsb29yfGVufDF8fHx8MTc3MzY0NTMzNXww&ixlib=rb-4.1.0&q=80&w=1080",
+    "imageAlt": "Manufacturing floor",
+    "items": [
+      {
+        "title": "5,000 sqm Production Area",
+        "description": "Spacious facility designed for efficient workflow and large-scale production"
+      },
+      {
+        "title": "Climate-Controlled Environment",
+        "description": "Maintaining optimal conditions for wood processing and quality assurance"
+      },
+      {
+        "title": "Advanced Quality Control",
+        "description": "Dedicated QC stations with precision measuring equipment"
+      },
+      {
+        "title": "Safe & Organized",
+        "description": "ISO certified safety protocols and 5S workplace management"
+      }
+    ]
+  }
+}

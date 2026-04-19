@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { theme } from "@/constants/theme";
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState(0);
@@ -116,7 +117,7 @@ export default function FAQ() {
   ];
 
   return (
-    <div>
+    <div className={`${theme.fonts.body} ${theme.colors.lightText}`}>
       {/* Hero Section */}
       <section className="relative h-[50vh] min-h-[400px]">
         <div
@@ -134,7 +135,7 @@ export default function FAQ() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-6xl md:text-8xl text-white mb-4">FAQ</h1>
+            <h1 className={`${theme.fonts.heading} ${theme.text.heroTitle} text-white mb-4`}>FAQ</h1>
             <p className="text-xl text-white/80 max-w-2xl">
               Frequently asked questions about our CNC processing services
             </p>

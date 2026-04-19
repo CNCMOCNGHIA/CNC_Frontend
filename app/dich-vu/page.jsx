@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { CheckCircle, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { theme } from "@/constants/theme";
 
 export default function Services() {
   const services = [
@@ -61,7 +62,7 @@ export default function Services() {
   ];
 
   return (
-    <div>
+    <div className={`${theme.fonts.body} ${theme.colors.lightText}`}>
       {/* Hero Section */}
       <section className="relative h-[60vh] min-h-[500px]">
         <div
@@ -79,7 +80,7 @@ export default function Services() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-6xl md:text-8xl text-white mb-4">OUR SERVICES</h1>
+            <h1 className={`${theme.fonts.heading} ${theme.text.heroTitle} text-white mb-4`}>OUR SERVICES</h1>
             <p className="text-xl text-white/80 max-w-2xl">
               Comprehensive CNC processing solutions for furniture manufacturers
             </p>

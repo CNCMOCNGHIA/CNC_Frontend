@@ -1,0 +1,80 @@
+{
+  "hero": {
+    "title": "MỘC NGHĨA GIA CÔNG NỘI THẤT CNC",
+    "description": "Your trusted B2B partner for professional CNC processing, edge banding, and custom furniture production.",
+    "backgroundImage": "https://images.unsplash.com/photo-1769430838012-8e1270d41f46?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpbmR1c3RyaWFsJTIwZnVybml0dXJlJTIwbWFudWZhY3R1cmluZyUyMHdvcmtzaG9wfGVufDF8fHx8MTc3MzY0NTMzNHww&ixlib=rb-4.1.0&q=80&w=1080",
+    "primaryCta": {
+      "label": "REQUEST QUOTE",
+      "href": "/quote"
+    },
+    "secondaryCta": {
+      "label": "OUR SERVICES",
+      "href": "/services"
+    }
+  },
+  "stats": [
+    {
+      "number": "15+",
+      "label": "Years Experience"
+    },
+    {
+      "number": "500+",
+      "label": "Projects Completed"
+    },
+    {
+      "number": "100+",
+      "label": "B2B Partners"
+    },
+    {
+      "number": "24/7",
+      "label": "Support"
+    }
+  ],
+  "servicesSection": {
+    "title": "OUR SERVICES",
+    "description": "Comprehensive CNC processing solutions for furniture manufacturers",
+    "learnMoreLabel": "LEARN MORE",
+    "learnMoreHref": "/services",
+    "items": [
+      {
+        "title": "CNC CUTTING",
+        "description": "Precision CNC cutting for wood panels and furniture components",
+        "image": "https://images.unsplash.com/photo-1693948568453-a3564f179a84?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxDTkMlMjBjdXR0aW5nJTIwd29vZCUyMHBhbmVsfGVufDF8fHx8MTc3MzY0NTMzNHww&ixlib=rb-4.1.0&q=80&w=1080"
+      },
+      {
+        "title": "PUR EDGE BANDING",
+        "description": "High-quality edge banding with PUR adhesive for durability",
+        "image": "https://images.unsplash.com/photo-1642381071059-7a8c84c197ca?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlZGdlJTIwYmFuZGluZyUyMG1hY2hpbmV8ZW58MXx8fHwxNzczNjQ1MzM1fDA&ixlib=rb-4.1.0&q=80&w=1080"
+      },
+      {
+        "title": "MDF BENDING",
+        "description": "Specialized MDF bending for curved furniture designs",
+        "image": "https://images.unsplash.com/photo-1759159091728-e2c87b9d9315?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcmVjaXNpb24lMjBtYWNoaW5lcnklMjBpbmR1c3RyaWFsfGVufDF8fHx8MTc3MzY0NTMzNHww&ixlib=rb-4.1.0&q=80&w=1080"
+      },
+      {
+        "title": "DRILLING & ROUTING",
+        "description": "Precision drilling and handle routing for cabinet hardware",
+        "image": "https://images.unsplash.com/photo-1764115424769-ebdd2683d5a8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxDTkMlMjBtYWNoaW5lJTIwaW5kdXN0cmlhbCUyMGZhY3Rvcnl8ZW58MXx8fHwxNzczNjQ1MzMzfDA&ixlib=rb-4.1.0&q=80&w=1080"
+      }
+    ]
+  },
+  "whyChooseUs": {
+    "title": "WHY CHOOSE US",
+    "items": [
+      "Advanced CNC machinery and equipment",
+      "ISO certified manufacturing processes",
+      "Experienced technical team",
+      "Fast turnaround times",
+      "Competitive B2B pricing",
+      "Quality assurance guaranteed"
+    ],
+    "image": "https://images.unsplash.com/photo-1615990860014-99e51245218c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBpbmR1c3RyaWFsJTIwd29ya3Nob3B8ZW58MXx8fHwxNzczNjQ1MzM1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+    "imageAlt": "Modern industrial workshop"
+  },
+  "cta": {
+    "title": "READY TO START YOUR PROJECT?",
+    "description": "Upload your CAD files and get a detailed quote within 24 hours",
+    "buttonLabel": "SEND FILES & REQUEST QUOTE",
+    "buttonHref": "/quote"
+  }
+}

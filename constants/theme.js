@@ -1,0 +1,33 @@
+export const theme = {
+  colors: {
+    bgPrimary: "bg-[#7a7a7a]",
+    bgPrimaryHover: "hover:bg-[#111111]/90",
+    overlayDark: "bg-[#111111]/70",
+    bgSecondary: "bg-[#2B2B2B]",
+    bgSecondarySoft: "bg-[#2B2B2B]/80",
+    brand: "bg-[#D4A017]",
+    brandHover: "hover:bg-[#D4A017]/90",
+    brandHoverSolid: "hover:bg-[#D4A017]",
+    brandText: "text-[#D4A017]",
+    brandTextSoft: "text-[#D4A017]/20",
+    darkText: "text-[#111111]",
+    darkTextHover: "hover:text-[#111111]",
+    darkTextSoft: "text-[#111111]/80",
+    lightText: "text-white",
+    lightTextSoft: "text-white/80",
+    lightTextMuted: "text-white/70",
+    lightTextFaint: "text-white/60",
+    borderBrand: "border-[#D4A017]",
+    borderDark: "border-[#111111]",
+  },
+  fonts: {
+    heading: "font-body font-bold tracking-wider",
+    body: "font-body",
+  },
+  text: {
+    heroTitle: "text-5xl md:text-7xl",
+    sectionTitle: "text-5xl md:text-7xl",
+    cardTitle: "text-2xl",
+    bodyLarge: "text-xl",
+  },
+};

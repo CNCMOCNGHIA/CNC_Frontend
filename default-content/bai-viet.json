@@ -1,0 +1,81 @@
+{
+  "hero": {
+    "title": "BÀI VIẾT",
+    "description": "Industry knowledge, technical guides, and manufacturing insights",
+    "backgroundImage": "https://images.unsplash.com/photo-1768054948628-82319724f0b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpbmR1c3RyaWFsJTIwZXF1aXBtZW50JTIwbWFjaGluZXJ5fGVufDF8fHx8MTc3MzU0MTk3Nnww&ixlib=rb-4.1.0&q=80&w=1080"
+  },
+  "categories": [
+    "All",
+    "Manufacturing",
+    "Design Tips",
+    "Materials",
+    "Industry Trends",
+    "Quality",
+    "Sustainability"
+  ],
+  "featuredLabel": "FEATURED",
+  "readMoreLabel": "READ MORE",
+  "newsletter": {
+    "title": "STAY UPDATED",
+    "description": "Subscribe to our newsletter for industry insights and manufacturing tips",
+    "placeholder": "Your email address",
+    "buttonLabel": "SUBSCRIBE",
+    "note": "No spam. Unsubscribe anytime."
+  },
+  "posts": [
+    {
+      "id": 1,
+      "title": "5 Benefits of PUR Edge Banding Over EVA Adhesive",
+      "excerpt": "Discover why PUR (Polyurethane Reactive) adhesive is becoming the industry standard for high-quality furniture manufacturing.",
+      "image": "https://images.unsplash.com/photo-1642381071059-7a8c84c197ca?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlZGdlJTIwYmFuZGluZyUyMG1hY2hpbmV8ZW58MXx8fHwxNzczNjQ1MzM1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "category": "Manufacturing",
+      "date": "March 10, 2026",
+      "author": "Technical Team"
+    },
+    {
+      "id": 2,
+      "title": "Optimizing CAD Files for CNC Production",
+      "excerpt": "Best practices for preparing your design files to minimize waste and reduce manufacturing costs.",
+      "image": "https://images.unsplash.com/photo-1693948568453-a3564f179a84?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxDTkMlMjBjdXR0aW5nJTIwd29vZCUyMHBhbmVsfGVufDF8fHx8MTc3MzY0NTMzNHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "category": "Design Tips",
+      "date": "March 5, 2026",
+      "author": "Design Department"
+    },
+    {
+      "id": 3,
+      "title": "Material Selection Guide for Furniture Manufacturing",
+      "excerpt": "Understanding the differences between MDF, plywood, and chipboard for various furniture applications.",
+      "image": "https://images.unsplash.com/photo-1769430838012-8e1270d41f46?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpbmR1c3RyaWFsJTIwZnVybml0dXJlJTIwbWFudWZhY3R1cmluZyUyMHdvcmtzaG9wfGVufDF8fHx8MTc3MzY0NTMzNHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "category": "Materials",
+      "date": "February 28, 2026",
+      "author": "Production Manager"
+    },
+    {
+      "id": 4,
+      "title": "Industry 4.0: How CNC Technology is Transforming Furniture Manufacturing",
+      "excerpt": "Exploring the latest advancements in CNC automation and what it means for furniture production efficiency.",
+      "image": "https://images.unsplash.com/photo-1764115424769-ebdd2683d5a8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxDTkMlMjBtYWNoaW5lJTIwaW5kdXN0cmlhbCUyMGZhY3Rvcnl8ZW58MXx8fHwxNzczNjQ1MzMzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "category": "Industry Trends",
+      "date": "February 20, 2026",
+      "author": "Technical Team"
+    },
+    {
+      "id": 5,
+      "title": "Quality Control in CNC Furniture Processing",
+      "excerpt": "Our multi-stage quality assurance process ensuring precision and consistency in every project.",
+      "image": "https://images.unsplash.com/photo-1759159091728-e2c87b9d9315?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcmVjaXNpb24lMjBtYWNoaW5lcnklMjBpbmR1c3RyaWFsfGVufDF8fHx8MTc3MzY0NTMzNHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "category": "Quality",
+      "date": "February 15, 2026",
+      "author": "QC Department"
+    },
+    {
+      "id": 6,
+      "title": "Sustainable Practices in CNC Manufacturing",
+      "excerpt": "How we minimize waste and maximize material efficiency through advanced nesting software and recycling programs.",
+      "image": "https://images.unsplash.com/photo-1615990860014-99e51245218c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBpbmR1c3RyaWFsJTIwd29ya3Nob3B8ZW58MXx8fHwxNzczNjQ1MzM1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "category": "Sustainability",
+      "date": "February 10, 2026",
+      "author": "Operations"
+    }
+  ]
+}
