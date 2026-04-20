@@ -77,8 +77,8 @@ export default function Home() {
       <section className={`py-20 ${theme.colors.bgPrimary}`}>
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-5xl md:text-7xl text-white mb-4">{servicesSection.title}</h2>
-            <p className="text-xl text-white/70 max-w-2xl mx-auto">
+            <h2 className="text-5xl md:text-7xl text-black mb-4">{servicesSection.title}</h2>
+            <p className="text-xl text-black/70 max-w-2xl mx-auto">
               {servicesSection.description}
             </p>
           </div>
@@ -168,7 +168,7 @@ export default function Home() {
             </p>
             <Link
               href={cta.buttonHref}
-              className={`inline-flex items-center justify-center gap-2 ${theme.colors.bgPrimary} ${theme.colors.brandText} px-12 py-5 ${theme.colors.bgPrimaryHover} transition-colors group`}
+              className={`inline-flex items-center justify-center gap-2 ${theme.colors.bgSecondary} ${theme.colors.brandText} px-12 py-5 ${theme.colors.bgPrimaryHover} transition-colors group`}
             >
               {cta.buttonLabel}
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

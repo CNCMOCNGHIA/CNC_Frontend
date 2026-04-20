@@ -97,7 +97,7 @@ export default function ProductDetail() {
               <Phone className="w-5 h-5" />
               {contactLabel}
             </a>
-            <button className="flex items-center gap-2 bg-red-600 text-white px-10 py-5 hover:bg-red-700 transition-colors font-semibold whitespace-nowrap">
+            <button className="flex items-center gap-2 bg-red-600 text-white px-10 py-5 cursor-pointer hover:bg-red-700 transition-colors font-semibold whitespace-nowrap">
               <ShoppingCart className="w-5 h-5" />
               {orderLabel}
             </button>
@@ -106,7 +106,7 @@ export default function ProductDetail() {
       </section>
 
       {/* ── Detail Sections ──────────────────────────────────────────── */}
-      <section className="bg-[#111111] py-12 px-4">
+      <section className={`${theme.colors.bgPrimary} py-12 px-4`}>
         <div className="max-w-7xl mx-auto flex flex-col gap-0">
 
           {/* Section 1 – Thông tin chính */}
@@ -116,7 +116,7 @@ export default function ProductDetail() {
             viewport={{ once: true }}
             className="bg-[#2B2B2B] p-8"
           >
-            <h2 className="text-2xl text-white font-bold mb-5">{product.mainInfo.title}</h2>
+            <h2 className="text-4xl text-white font-bold mb-5">{product.mainInfo.title}</h2>
             <ul className="space-y-2 text-white/80 list-disc list-inside text-xl">
               <li>Tên sản phẩm: {product.mainInfo.productFullName}</li>
               <li>Mô tả ngắn: {product.mainInfo.shortDescription}</li>
@@ -136,9 +136,9 @@ export default function ProductDetail() {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="relative w-full h-[400px] overflow-hidden border border-black"
+            className={`relative w-full h-[400px] overflow-hidden justify-items-center ${theme.colors.bgSecondary}`}
           >
-            <img src={product.mainImage} alt={product.name} className="w-full h-full object-cover" />
+            <img src={product.mainImage} alt={product.name} className="w-[800px] h-full object-cover" />
           </motion.div>
 
           {/* Section 2 – Thông số */}
@@ -148,7 +148,7 @@ export default function ProductDetail() {
             viewport={{ once: true }}
             className="bg-[#2B2B2B] p-8"
           >
-            <h2 className="text-2xl md:text-3xl text-white font-bold mb-5">{product.specs.title}</h2>
+            <h2 className="text-4xl md:text-3xl text-white font-bold mb-5">{product.specs.title}</h2>
             <ul className="space-y-2 text-white/80 list-disc list-inside">
               {product.specs.items.map((item) => (
                 <li key={item} className="text-xl leading-9">{item}</li>
@@ -163,7 +163,7 @@ export default function ProductDetail() {
             viewport={{ once: true }}
             className="bg-[#2B2B2B] p-8"
           >
-            <h2 className="text-2xl md:text-3xl text-white font-bold mb-5">{product.description.title}</h2>
+            <h2 className="text-4xl md:text-3xl text-white font-bold mb-5">{product.description.title}</h2>
             <ul className="space-y-3 text-white/80 list-disc list-inside">
               <li className="text-xl leading-9">{product.description.content}</li>
               <li className="text-xl leading-9">
@@ -184,7 +184,7 @@ export default function ProductDetail() {
             viewport={{ once: true }}
             className="bg-[#2B2B2B] p-8"
           >
-            <h2 className="text-2xl md:text-3xl text-white font-bold mb-5">{product.policy.title}</h2>
+            <h2 className="text-4xl md:text-3xl text-white font-bold mb-5">{product.policy.title}</h2>
             <ul className="space-y-2 text-white/80 list-disc list-inside">
               {product.policy.items.map((item) => (
                 <li key={item} className="text-xl leading-9">{item}</li>
@@ -195,7 +195,7 @@ export default function ProductDetail() {
       </section>
 
       {/* ── Related Products ─────────────────────────────────────────── */}
-      <section className="py-20 bg-[#2B2B2B] px-4">
+      <section className={`py-20 ${theme.colors.bgSecondary} px-4`}>
         <div className="max-w-7xl mx-auto">
           <div className="mb-10">
             <div className="w-[200px] h-[5px] bg-[#D9D9D9] mb-5" />

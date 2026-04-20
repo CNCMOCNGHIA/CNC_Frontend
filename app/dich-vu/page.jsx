@@ -80,7 +80,7 @@ export default function Services() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className={`${theme.fonts.heading} ${theme.text.heroTitle} text-white mb-4`}>OUR SERVICES</h1>
+            <h1 className={`${theme.fonts.heading} ${theme.text.heroTitle} text-white mb-4`}>DỊCH VỤ</h1>
             <p className="text-xl text-white/80 max-w-2xl">
               Comprehensive CNC processing solutions for furniture manufacturers
             </p>
@@ -92,7 +92,7 @@ export default function Services() {
       {services.map((service, index) => (
         <section
           key={index}
-          className={index % 2 === 0 ? "py-20 bg-[#111111]" : "py-20 bg-[#2B2B2B]"}
+          className={index % 2 === 0 ? `py-20 ${theme.colors.bgPrimary}` : "py-20 bg-[#2B2B2B]"}
         >
           <div className="max-w-7xl mx-auto px-4">
             <div
@@ -106,14 +106,14 @@ export default function Services() {
                 viewport={{ once: true }}
                 className={index % 2 === 1 ? "lg:order-2" : ""}
               >
-                <h2 className="text-5xl md:text-7xl text-white mb-6">{service.title}</h2>
-                <p className="text-xl text-white/80 mb-8">{service.description}</p>
+                <h2 className={index % 2 === 0 ? `${theme.colors.darkText}` + ` text-5xl md:text-7xl mb-6` : `${theme.colors.lightText}` + ` text-5xl md:text-7xl mb-6`}>{service.title}</h2>
+                <p className={index % 2 === 0 ? `${theme.colors.darkTextSoft}` + ` text-xl mb-8` : `${theme.colors.lightTextSoft}` + ` text-xl mb-8`}>{service.description}</p>
 
                 <div className="space-y-3 mb-8">
                   {service.features.map((feature, featureIndex) => (
                     <div key={featureIndex} className="flex items-start gap-3">
                       <CheckCircle className="w-5 h-5 text-[#D4A017] flex-shrink-0 mt-1" />
-                      <span className="text-white/70">{feature}</span>
+                      <span className={index % 2 === 0 ? `${theme.colors.darkTextSoft}` : `${theme.colors.lightTextSoft}`}>{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -136,7 +136,7 @@ export default function Services() {
                 <img
                   src={service.image}
                   alt={service.title}
-                  className="w-full h-full object-cover"
+                  className={`w-full h-full object-cover ${index % 2 === 0 ? theme.colors.borderDark : ""}`}
                 />
               </motion.div>
             </div>

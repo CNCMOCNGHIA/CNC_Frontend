@@ -1,6 +1,6 @@
 export const theme = {
   colors: {
-    bgPrimary: "bg-[#7a7a7a]",
+    bgPrimary: "bg-[#ffffff]",
     bgPrimaryHover: "hover:bg-[#111111]/90",
     overlayDark: "bg-[#111111]/70",
     bgSecondary: "bg-[#2B2B2B]",
@@ -18,7 +18,7 @@ export const theme = {
     lightTextMuted: "text-white/70",
     lightTextFaint: "text-white/60",
     borderBrand: "border-[#D4A017]",
-    borderDark: "border-[#111111]",
+    borderDark: "border-[#111111] border-solid border-2",
   },
   fonts: {
     heading: "font-body font-bold tracking-wider",

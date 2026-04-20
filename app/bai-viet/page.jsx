@@ -54,7 +54,7 @@ export default function Blog() {
       </section>
 
       {/* Featured Post */}
-      <section className="py-12 bg-[#111111]">
+      <section className={`pt-12 ${theme.colors.bgPrimary}`}>
         <div className="max-w-7xl mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -101,7 +101,7 @@ export default function Blog() {
       </section>
 
       {/* Blog Grid */}
-      <section className="py-20 bg-[#111111]">
+      <section className={`py-12 ${theme.colors.bgPrimary}`}>
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
     
@@ -127,7 +127,7 @@ export default function Blog() {
                       </div>
                     </div>
 
-                    <div className="p-6">
+                    <div className="p-6 min-h-88">
                       <h3 className="text-2xl text-white mb-3 group-hover:text-[#D4A017] transition-colors">
                         {post.title}
                       </h3>

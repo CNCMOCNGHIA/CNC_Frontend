@@ -56,7 +56,7 @@ export default function BlogDetail() {
       </section>
 
       {/* ── Content + Sidebar ────────────────────────────────────────── */}
-      <section className="bg-[#111111] py-12 px-4">
+      <section className={`${theme.colors.bgPrimary} py-8 px-4`}>
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 items-start">
 
           {/* ── Main content ── */}

@@ -64,7 +64,7 @@ export default function Quote() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className={`${theme.fonts.heading} ${theme.text.heroTitle} text-white mb-4`}>REQUEST QUOTE</h1>
+            <h1 className={`${theme.fonts.heading} ${theme.text.heroTitle} text-white mb-4`}>GIA CÔNG</h1>
             <p className="text-xl text-white/80 max-w-2xl">
               Upload your CAD files and receive a detailed quote within 24 hours
             </p>
@@ -73,9 +73,9 @@ export default function Quote() {
       </section>
 
       {/* Form Section */}
-      <section className="py-20 bg-[#111111]">
-        <div className="max-w-4xl mx-auto px-4">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+      <section className={`py-12 ${theme.colors.bgPrimary}`}>
+        <div className="max-w-7xl mx-auto px-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="">
             {/* Contact Information */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -308,7 +308,7 @@ export default function Quote() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-[#D4A017] text-[#111111] px-8 py-5 text-xl hover:bg-[#D4A017]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                className="w-full bg-[#D4A017] text-[#111111] px-8 py-5 text-xl hover:bg-[#D4A017]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-3 mt-4"
               >
                 {isSubmitting ? (
                   <>

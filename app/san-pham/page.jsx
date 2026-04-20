@@ -118,7 +118,7 @@ export default function Products() {
       </section>
 
       {/* Category Filter */}
-      <section className="py-12 bg-[#2B2B2B] sticky top-[120px] z-40">
+      <section className="py-12 bg-[#2B2B2B] top-[120px] z-40">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-wrap gap-4 justify-center">
             {categories.map((category) => (
@@ -138,7 +138,7 @@ export default function Products() {
       </section>
 
       {/* Products Grid */}
-      <section className="py-20 bg-[#111111]">
+      <section className={`py-12 ${theme.colors.bgPrimary}`}>
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredProducts.map((product, index) => {
@@ -161,7 +161,7 @@ export default function Products() {
                       <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-transparent to-transparent opacity-60" />
                     </div>
 
-                    <div className="p-6">
+                    <div className="p-6 min-h-68">
                       <h3 className="text-2xl text-white mb-3">{product.name}</h3>
                       <p className="text-white/70 mb-4">{product.description}</p>
 

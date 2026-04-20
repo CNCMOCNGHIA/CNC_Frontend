@@ -41,7 +41,7 @@ export default function About() {
       </section>
 
       {/* Company Overview */}
-      <section className="py-20 bg-[#111111]">
+      <section className="py-12 bg-[#ffffff]">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -49,8 +49,8 @@ export default function About() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-5xl md:text-7xl text-white mb-6">{content.story.title}</h2>
-              <div className="space-y-4 text-white/80">
+              <h2 className="text-5xl md:text-7xl text-black mb-6">{content.story.title}</h2>
+              <div className="space-y-4 text-black/80">
                 {content.story.paragraphs.map((paragraph, index) => (
                   <p key={index}>{paragraph}</p>
                 ))}
@@ -66,7 +66,7 @@ export default function About() {
               <img
                 src={content.story.image}
                 alt={content.story.imageAlt}
-                className="w-full h-full object-cover"
+                className={`w-full h-full object-cover ${theme.colors.borderDark} `}
               />
             </motion.div>
           </div>
@@ -105,11 +105,11 @@ export default function About() {
       </section>
 
       {/* Machinery & Equipment */}
-      <section className="py-20 bg-[#111111]">
+      <section className={`py-12 ${theme.colors.bgPrimary}`}>
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-5xl md:text-7xl text-white mb-4">{content.machinery.title}</h2>
-            <p className="text-xl text-white/70 max-w-2xl mx-auto">
+            <h2 className={`text-5xl md:text-7xl ${theme.colors.darkText} mb-4`}>{content.machinery.title}</h2>
+            <p className={`text-xl ${theme.colors.darkTextSoft} max-w-2xl mx-auto`}>
               {content.machinery.description}
             </p>
           </div>

@@ -89,7 +89,7 @@ export default function Contact() {
       </section>
 
       {/* Contact Info & Form */}
-      <section className="py-20 bg-[#111111]">
+      <section className={`py-12 ${theme.colors.bgPrimary}`}>
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Contact Information */}
@@ -98,46 +98,48 @@ export default function Contact() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-5xl md:text-7xl text-white mb-8">GET IN TOUCH</h2>
-              <p className="text-xl text-white/70 mb-12">
-                Visit our factory, call us, or send a message. We're here to help with your CNC processing needs.
-              </p>
-
-              <div className="space-y-8">
-                {contactInfo.map((info, index) => (
-                  <div key={index} className="flex gap-6">
-                    <div className="w-12 h-12 bg-[#D4A017] flex items-center justify-center flex-shrink-0">
-                      <info.icon className="w-6 h-6 text-[#111111]" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl text-white mb-2">{info.title}</h3>
-                      {info.details.map((detail, detailIndex) => (
-                        <p key={detailIndex} className="text-white/70">
-                          {detail}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Social/Zalo */}
-              <div className="mt-12 p-8 bg-[#2B2B2B]">
-                <h3 className="text-2xl text-white mb-4">QUICK CONTACT</h3>
-                <p className="text-white/70 mb-4">
-                  For immediate assistance, message us on Zalo
+              <div className={`bg-[#4b4b4b] p-8`}>
+                <h2 className="text-5xl md:text-7xl text-white mb-8">GET IN TOUCH</h2>
+                <p className="text-xl text-white/70 mb-12">
+                  Visit our factory, call us, or send a message. We're here to help with your CNC processing needs.
                 </p>
-                <a
-                  href="https://zalo.me/84123456789"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 bg-[#0068FF] text-white px-6 py-3 hover:bg-[#0068FF]/90 transition-colors"
-                >
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2C6.477 2 2 6.145 2 11.243c0 2.875 1.395 5.45 3.566 7.208l-.437 3.274a.75.75 0 001.094.702l3.676-2.02c1.285.37 2.647.568 4.101.568 5.523 0 10-4.145 10-9.243S17.523 2 12 2zm0 16.486c-1.36 0-2.66-.213-3.867-.611a.75.75 0 00-.547.038l-2.675 1.47.318-2.383a.75.75 0 00-.24-.662C3.47 15.22 2.5 13.325 2.5 11.243 2.5 6.977 6.753 3.5 12 3.5s9.5 3.477 9.5 7.743-4.253 7.743-9.5 7.743z"/>
-                  </svg>
-                  CHAT ON ZALO
-                </a>
+
+                <div className="space-y-8">
+                  {contactInfo.map((info, index) => (
+                    <div key={index} className="flex gap-6">
+                      <div className="w-12 h-12 bg-[#D4A017] flex items-center justify-center flex-shrink-0">
+                        <info.icon className="w-6 h-6 text-[#111111]" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl text-white mb-2">{info.title}</h3>
+                        {info.details.map((detail, detailIndex) => (
+                          <p key={detailIndex} className="text-white/70">
+                            {detail}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Social/Zalo */}
+                <div className="mt-12 p-8 bg-[#2B2B2B]">
+                  <h3 className="text-2xl text-white mb-4">QUICK CONTACT</h3>
+                  <p className="text-white/70 mb-4">
+                    For immediate assistance, message us on Zalo
+                  </p>
+                  <a
+                    href="https://zalo.me/84123456789"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-[#0068FF] text-white px-6 py-3 hover:bg-[#0068FF]/90 transition-colors"
+                  >
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.477 2 2 6.145 2 11.243c0 2.875 1.395 5.45 3.566 7.208l-.437 3.274a.75.75 0 001.094.702l3.676-2.02c1.285.37 2.647.568 4.101.568 5.523 0 10-4.145 10-9.243S17.523 2 12 2zm0 16.486c-1.36 0-2.66-.213-3.867-.611a.75.75 0 00-.547.038l-2.675 1.47.318-2.383a.75.75 0 00-.24-.662C3.47 15.22 2.5 13.325 2.5 11.243 2.5 6.977 6.753 3.5 12 3.5s9.5 3.477 9.5 7.743-4.253 7.743-9.5 7.743z"/>
+                    </svg>
+                    CHAT ON ZALO
+                  </a>
+                </div>
               </div>
             </motion.div>
 
@@ -316,7 +318,7 @@ export default function Contact() {
       </section>
 
       {/* Additional Info */}
-      <section className="py-20 bg-[#111111]">
+      <section className={`py-12 ${theme.colors.brand}`}>
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <motion.div
