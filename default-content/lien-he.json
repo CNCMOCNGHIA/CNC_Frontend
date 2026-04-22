@@ -1,0 +1,136 @@
+{
+    "hero": {
+      "title": "CONTACT US",
+      "subtitle": "Get in touch with our team for inquiries, quotes, or partnership opportunities",
+      "backgroundImage": "https://images.unsplash.com/photo-1764185800646-f75f7e16e465?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpbmR1c3RyaWFsJTIwbWFudWZhY3R1cmluZyUyMGZsb29yfGVufDF8fHx8MTc3MzY0NTMzNXww&ixlib=rb-4.1.0&q=80&w=1080"
+    },
+    "contactInfo": {
+      "heading": "GET IN TOUCH",
+      "description": "Visit our factory, call us, or send a message. We're here to help with your CNC processing needs.",
+      "items": [
+        {
+          "icon": "MapPin",
+          "title": "FACTORY ADDRESS",
+          "details": [
+            "123",
+            "Binh Duong",
+            "Vietnam"
+          ]
+        },
+        {
+          "icon": "Phone",
+          "title": "PHONE",
+          "details": [
+            "+84 123 456 789",
+            "+84 987 654 321"
+          ]
+        },
+        {
+          "icon": "Mail",
+          "title": "EMAIL",
+          "details": [
+            "info@mocnghiacnc.com",
+            "sales@mocnghiacnc.com"
+          ]
+        },
+        {
+          "icon": "Clock",
+          "title": "WORKING HOURS",
+          "details": [
+            "Monday - Friday: 8:00 AM - 6:00 PM",
+            "Saturday: 8:00 AM - 12:00 PM",
+            "Sunday: Closed"
+          ]
+        }
+      ]
+    },
+    "quickContact": {
+      "heading": "QUICK CONTACT",
+      "description": "For immediate assistance, message us on Zalo",
+      "zalo": {
+        "label": "CHAT ON ZALO",
+        "href": "https://zalo.me/84123456789"
+      }
+    },
+    "contactForm": {
+      "heading": "SEND US A MESSAGE",
+      "fields": [
+        {
+          "id": "name",
+          "type": "text",
+          "label": "Full Name",
+          "placeholder": "Your name",
+          "required": true
+        },
+        {
+          "id": "email",
+          "type": "email",
+          "label": "Email",
+          "placeholder": "your@email.com",
+          "required": true
+        },
+        {
+          "id": "phone",
+          "type": "tel",
+          "label": "Phone",
+          "placeholder": "+84 123 456 789",
+          "required": true
+        },
+        {
+          "id": "company",
+          "type": "text",
+          "label": "Company Name",
+          "placeholder": "Your company",
+          "required": false
+        },
+        {
+          "id": "subject",
+          "type": "select",
+          "label": "Subject",
+          "required": true,
+          "options": [
+            { "value": "", "label": "Select a subject" },
+            { "value": "quote", "label": "Request Quote" },
+            { "value": "partnership", "label": "Partnership Inquiry" },
+            { "value": "technical", "label": "Technical Question" },
+            { "value": "visit", "label": "Factory Visit" },
+            { "value": "other", "label": "Other" }
+          ]
+        },
+        {
+          "id": "message",
+          "type": "textarea",
+          "label": "Message",
+          "placeholder": "Tell us about your project or inquiry...",
+          "required": true,
+          "rows": 6
+        }
+      ],
+      "submitButton": {
+        "label": "SEND MESSAGE",
+        "loadingLabel": "SENDING..."
+      },
+      "successMessage": "Message sent successfully! We'll get back to you within 24 hours."
+    },
+    "map": {
+      "heading": "FIND US",
+      "description": "Located in Binh Duong Industrial Zone",
+      "address": "123 Industrial Zone, Binh Duong Province, Vietnam",
+      "googleMapsLabel": "OPEN IN GOOGLE MAPS",
+      "googleMapsHref": "https://maps.google.com"
+    },
+    "infoCards": [
+      {
+        "title": "RESPONSE TIME",
+        "description": "We typically respond to all inquiries within 24 hours during business days"
+      },
+      {
+        "title": "FACTORY VISITS",
+        "description": "Schedule a visit to see our facilities and machinery in action. Contact us to arrange"
+      },
+      {
+        "title": "TECHNICAL SUPPORT",
+        "description": "Our engineering team is available to discuss technical requirements and specifications"
+      }
+    ]
+  }

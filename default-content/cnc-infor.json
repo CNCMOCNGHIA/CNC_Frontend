@@ -1,0 +1,45 @@
+{
+    "brand": {
+      "initials": "MN",
+      "name": "MOC NGHIA CNC",
+      "tagline": "Furniture Processing"
+    },
+    "topBar": {
+      "phone": "+84 123 456 789",
+      "email": "info@mocnghiacnc.com",
+      "workingHours": "Mon - Sat: 8:00 AM - 6:00 PM"
+    },
+    "navLinks": [
+      { "path": "/", "label": "TRANG CHỦ" },
+      { "path": "/gioi-thieu", "label": "GIỚI THIỆU" },
+      { "path": "/dich-vu", "label": "DỊCH VỤ" },
+      { "path": "/gia-cong", "label": "GIA CÔNG" },
+      { "path": "/san-pham", "label": "SẢN PHẨM" },
+      { "path": "/tin-tuc", "label": "TIN TỨC" },
+      { "path": "/lien-he", "label": "LIÊN HỆ" }
+    ],
+    "footer": {
+      "description": "Professional CNC furniture manufacturing and processing services. We specialize in precision cutting, edge banding, and custom furniture production for long-term B2B partnerships.",
+      "quickLinks": {
+        "heading": "QUICK LINKS",
+        "items": [
+          { "href": "/gioi-thieu", "label": "About Us" },
+          { "href": "/services", "label": "Services" },
+          { "href": "/gia-cong", "label": "Get Quote" },
+          { "href": "/contact", "label": "Contact" }
+        ]
+      },
+      "contact": {
+        "heading": "CONTACT",
+        "items": [
+          "Phone: +84 123 456 789",
+          "Email: info@mocnghiacnc.com",
+          "Mon - Sat: 8:00 AM - 6:00 PM"
+        ]
+      },
+      "copyright": "Moc Nghia CNC Furniture Processing Factory. All rights reserved."
+    },
+    "zalo": {
+      "href": "https://zalo.me/84123456789"
+    }
+  }

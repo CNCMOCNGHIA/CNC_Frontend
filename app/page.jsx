@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 import { motion } from "motion/react";
-import content from "@/default-content/home.json";
+import content from "@/default-content/trang-chu.json";
 import { theme } from "@/constants/theme";
 
 export default function Home() {

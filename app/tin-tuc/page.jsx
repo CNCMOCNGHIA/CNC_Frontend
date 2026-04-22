@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 import { Calendar, User, ArrowRight } from "lucide-react";
-import content from "@/default-content/bai-viet.json";
+import content from "@/default-content/tin-tuc.json";
 import { theme } from "@/constants/theme";
 import { toSlug } from '@/lib/slug';
 import Link from "next/link";
@@ -108,7 +108,7 @@ export default function Blog() {
             {blogPosts.slice(1).map((post, index) => {
               const slug = toSlug(post.title);
               return (
-                <Link key={post.id} href={`/bai-viet/${slug}`}>
+                <Link key={post.id} href={`/tin-tuc/${slug}`}>
                   <motion.article
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
