@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { Award, Users, Target, Factory } from "lucide-react";
 import content from "@/default-content/gioi-thieu.json";
 import { theme } from "@/constants/theme";
+import { Breadcrumb } from "@/components/breadcrumb";
 
 export default function About() {
   const iconMap = {
@@ -39,6 +40,8 @@ export default function About() {
           </motion.div>
         </div>
       </section>
+
+      <Breadcrumb items={[{ label: "Giới thiệu" }]} />
 
       {/* Company Overview */}
       <section className="py-12 bg-[#ffffff]">

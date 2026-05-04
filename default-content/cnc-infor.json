@@ -1,20 +1,120 @@
 {
     "brand": {
       "initials": "MN",
-      "name": "MOC NGHIA CNC",
-      "tagline": "Furniture Processing"
+      "name": "MỘC NGHĨA CNC",
+      "tagline": "Wood Processing"
     },
     "topBar": {
       "phone": "+84 123 456 789",
       "email": "info@mocnghiacnc.com",
-      "workingHours": "Mon - Sat: 8:00 AM - 6:00 PM"
+      "workingHours": "Mon - Sat: 8:00 AM - 6:00 PM",
+      "searchPlaceholder": "Bạn muốn tìm gì ...",
+      "hotlines": [
+        { "label": "Hotline mua hàng", "phone": "0999 999 111" },
+        { "label": "Hotline mua hàng", "phone": "0999 999 222" }
+      ]
     },
     "navLinks": [
+      {
+        "path": "/san-pham",
+        "label": "DANH MỤC SẢN PHẨM",
+        "featured": true,
+        "children": [
+          {
+            "label": "Ván MFC",
+            "children": [
+              { "label": "Ván MFC Chống Ẩm" },
+              { "label": "Ván MFC phủ Melamine" },
+              { "label": "Ván MFC vân gỗ" }
+            ]
+          },
+          {
+            "label": "Ván MDF",
+            "children": [
+              { "label": "Ván MDF thường" },
+              { "label": "Ván MDF chống ẩm" },
+              { "label": "Ván MDF phủ Melamine" }
+            ]
+          },
+          {
+            "label": "Gỗ Ghép",
+            "children": [
+              { "label": "Gỗ ghép Cao Su" },
+              { "label": "Gỗ ghép Sồi" },
+              { "label": "Gỗ ghép Thông" }
+            ]
+          },
+          {
+            "label": "Ván Okal",
+            "children": [
+              { "label": "Ván Okal thường" },
+              { "label": "Ván Okal phủ Melamine" }
+            ]
+          },
+          {
+            "label": "Ván Ép",
+            "children": [
+              { "label": "Ván Ép phủ phim" },
+              { "label": "Ván Ép thường" }
+            ]
+          },
+          {
+            "label": "Ván Nhựa PVC",
+            "children": [
+              { "label": "Ván nhựa PVC vân gỗ" },
+              { "label": "Ván nhựa PVC trơn" }
+            ]
+          },
+          {
+            "label": "Ván OSB",
+            "children": [
+              { "label": "Ván OSB tiêu chuẩn" },
+              { "label": "Ván OSB chống ẩm" }
+            ]
+          },
+          {
+            "label": "Ván Phủ Acrylic",
+            "children": [
+              { "label": "Ván MDF phủ Acrylic" },
+              { "label": "Ván HDF phủ Acrylic" }
+            ]
+          },
+          {
+            "label": "Ván Phủ Formica - Giấy Pu",
+            "children": [
+              { "label": "Ván phủ Formica" },
+              { "label": "Ván phủ Giấy Pu" }
+            ]
+          },
+          {
+            "label": "Ván HDF",
+            "children": [
+              { "label": "Ván HDF thường" },
+              { "label": "Ván HDF siêu chống ẩm" }
+            ]
+          },
+          {
+            "label": "Ván Plywood",
+            "children": [
+              { "label": "Ván Plywood thường" },
+              { "label": "Ván Plywood phủ Melamine" }
+            ]
+          }
+        ]
+      },
       { "path": "/", "label": "TRANG CHỦ" },
       { "path": "/gioi-thieu", "label": "GIỚI THIỆU" },
+      {
+        "path": "/san-pham",
+        "label": "BÁN CHẠY",
+        "children": [
+          { "label": "Ván Phủ Acrylic" },
+          { "label": "Ván Phủ Formica - Giấy Pu" },
+          { "label": "Gỗ Ghép" }
+        ]
+      },
       { "path": "/dich-vu", "label": "DỊCH VỤ" },
       { "path": "/gia-cong", "label": "GIA CÔNG" },
-      { "path": "/san-pham", "label": "SẢN PHẨM" },
       { "path": "/tin-tuc", "label": "TIN TỨC" },
       { "path": "/lien-he", "label": "LIÊN HỆ" }
     ],

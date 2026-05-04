@@ -1,0 +1,105 @@
+{
+  "hero": {
+    "title": "GIA CÔNG",
+    "description": "Upload your CAD files and receive a detailed quote within 24 hours",
+    "backgroundImage": "images/gia-cong.jpeg"
+  },
+  "contactSection": {
+    "title": "CONTACT INFORMATION",
+    "fields": {
+      "name": {
+        "label": "Full Name",
+        "placeholder": "Your name",
+        "required": true
+      },
+      "phone": {
+        "label": "Phone Number",
+        "placeholder": "+84 123 456 789",
+        "required": true
+      },
+      "email": {
+        "label": "Email Address",
+        "placeholder": "your@email.com",
+        "required": true
+      }
+    }
+  },
+  "projectSection": {
+    "title": "PROJECT DETAILS",
+    "fields": {
+      "material": {
+        "label": "Material Type",
+        "required": true,
+        "options": [
+          { "value": "", "label": "Select material" },
+          { "value": "mdf", "label": "MDF" },
+          { "value": "plywood", "label": "Plywood" },
+          { "value": "chipboard", "label": "Chipboard / Particle Board" },
+          { "value": "melamine", "label": "Melamine Board" },
+          { "value": "solid-wood", "label": "Solid Wood" },
+          { "value": "acrylic", "label": "Acrylic" },
+          { "value": "other", "label": "Other (specify in notes)" }
+        ]
+      },
+      "quantity": {
+        "label": "Quantity (pieces)",
+        "placeholder": "e.g., 100 pieces",
+        "required": true
+      },
+      "deliveryTime": {
+        "label": "Required Delivery Time",
+        "required": true,
+        "options": [
+          { "value": "", "label": "Select timeframe" },
+          { "value": "urgent", "label": "Urgent (1-2 weeks)" },
+          { "value": "standard", "label": "Standard (3-4 weeks)" },
+          { "value": "flexible", "label": "Flexible (1-2 months)" },
+          { "value": "long-term", "label": "Long-term Partnership" }
+        ]
+      },
+      "notes": {
+        "label": "Additional Notes",
+        "placeholder": "Any specific requirements, edge banding details, finishing instructions, etc.",
+        "required": false
+      }
+    }
+  },
+  "uploadSection": {
+    "title": "UPLOAD FILES",
+    "dragText": "Drag and drop your files here or click to browse",
+    "formatNote": "Supported formats: CAD, PDF, SketchUp, STL, 3DM (Max 50MB per file)",
+    "selectButtonLabel": "SELECT FILES",
+    "uploadedFilesLabel": "Uploaded Files:",
+    "removeLabel": "Remove",
+    "acceptedFormats": [
+      { "ext": "CAD", "desc": "AutoCAD files (.dwg, .dxf)" },
+      { "ext": "PDF", "desc": "PDF drawings" },
+      { "ext": "SKP", "desc": "SketchUp files" },
+      { "ext": "3DM", "desc": "Rhino 3D files" },
+      { "ext": "STL", "desc": "3D model files" }
+    ]
+  },
+  "submitSection": {
+    "buttonLabel": "SUBMIT QUOTE REQUEST",
+    "submittingLabel": "SUBMITTING...",
+    "note": "We'll review your files and contact you within 24 hours with a detailed quote",
+    "successMessage": "Quote request submitted successfully! We'll contact you within 24 hours."
+  },
+  "benefitsSection": {
+    "title": "WHY GET A QUOTE?",
+    "items": [
+      {
+        "title": "Transparent Pricing",
+        "description": "Detailed breakdown of costs with no hidden fees"
+      },
+      {
+        "title": "Fast Response",
+        "description": "Quote delivered within 24 hours of file submission"
+      },
+      {
+        "title": "Technical Support",
+        "description": "Our team reviews your designs and suggests optimizations"
+      }
+    ]
+  }
+}

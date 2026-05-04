@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { Upload, FileSearch, Settings, Package, Truck, CheckCircle } from "lucide-react";
 import { theme } from "@/constants/theme";
+import { Breadcrumb } from "@/components/breadcrumb";
 
 export default function Workflow() {
   const steps = [
@@ -109,6 +110,8 @@ export default function Workflow() {
           </motion.div>
         </div>
       </section>
+
+      <Breadcrumb items={[{ label: "Quy trình" }]} />
 
       {/* Process Timeline */}
       <section className="py-20 bg-[#111111]">

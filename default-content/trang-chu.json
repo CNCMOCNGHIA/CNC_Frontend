@@ -2,15 +2,33 @@
   "hero": {
     "title": "MỘC NGHĨA GIA CÔNG NỘI THẤT CNC",
     "description": "Your trusted B2B partner for professional CNC processing, edge banding, and custom furniture production.",
-    "backgroundImage": "https://images.unsplash.com/photo-1769430838012-8e1270d41f46?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpbmR1c3RyaWFsJTIwZnVybml0dXJlJTIwbWFudWZhY3R1cmluZyUyMHdvcmtzaG9wfGVufDF8fHx8MTc3MzY0NTMzNHww&ixlib=rb-4.1.0&q=80&w=1080",
+    "backgroundImage": "/images/trang-chu.jpeg",
     "primaryCta": {
-      "label": "REQUEST QUOTE",
+      "label": "Gia Công",
       "href": "/gia-cong"
     },
     "secondaryCta": {
-      "label": "OUR SERVICES",
-      "href": "/services"
+      "label": "Dich Vụ",
+      "href": "/dich-vu"
     }
+  },
+  "hotProducts": {
+    "title": "SẢN PHẨM HOT",
+    "description": "Các mẫu sản phẩm được khách hàng lựa chọn nhiều nhất",
+    "items": [
+      {
+        "name": "Phòng ngủ gỗ tự nhiên",
+        "image": "https://images.unsplash.com/photo-1540518614846-7eded433c457?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080&q=80"
+      },
+      {
+        "name": "Tủ kệ trang trí phòng ngủ",
+        "image": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080&q=80"
+      },
+      {
+        "name": "Nội thất phòng ngủ hiện đại",
+        "image": "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080&q=80"
+      }
+    ]
   },
   "stats": [
     {
@@ -31,30 +49,66 @@
     }
   ],
   "servicesSection": {
-    "title": "OUR SERVICES",
+    "title": "DICH VỤ CỦA CHÚNG TÔI",
     "description": "Comprehensive CNC processing solutions for furniture manufacturers",
     "learnMoreLabel": "LEARN MORE",
-    "learnMoreHref": "/services",
+    "learnMoreHref": "/dich-vu",
     "items": [
       {
         "title": "CNC CUTTING",
         "description": "Precision CNC cutting for wood panels and furniture components",
-        "image": "https://images.unsplash.com/photo-1693948568453-a3564f179a84?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxDTkMlMjBjdXR0aW5nJTIwd29vZCUyMHBhbmVsfGVufDF8fHx8MTc3MzY0NTMzNHww&ixlib=rb-4.1.0&q=80&w=1080"
+        "image": "images/dich-vu-1.jpeg"
       },
       {
         "title": "PUR EDGE BANDING",
         "description": "High-quality edge banding with PUR adhesive for durability",
-        "image": "https://images.unsplash.com/photo-1642381071059-7a8c84c197ca?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlZGdlJTIwYmFuZGluZyUyMG1hY2hpbmV8ZW58MXx8fHwxNzczNjQ1MzM1fDA&ixlib=rb-4.1.0&q=80&w=1080"
+        "image": "images/dich-vu-2.jpeg"
       },
       {
         "title": "MDF BENDING",
         "description": "Specialized MDF bending for curved furniture designs",
-        "image": "https://images.unsplash.com/photo-1759159091728-e2c87b9d9315?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcmVjaXNpb24lMjBtYWNoaW5lcnklMjBpbmR1c3RyaWFsfGVufDF8fHx8MTc3MzY0NTMzNHww&ixlib=rb-4.1.0&q=80&w=1080"
+        "image": "images/dich-vu-3.jpeg"
       },
       {
         "title": "DRILLING & ROUTING",
         "description": "Precision drilling and handle routing for cabinet hardware",
-        "image": "https://images.unsplash.com/photo-1764115424769-ebdd2683d5a8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxDTkMlMjBtYWNoaW5lJTIwaW5kdXN0cmlhbCUyMGZhY3Rvcnl8ZW58MXx8fHwxNzczNjQ1MzMzfDA&ixlib=rb-4.1.0&q=80&w=1080"
+        "image": "images/dich-vu-4.jpeg"
+      }
+    ]
+  },
+  "panelSamples": {
+    "title": "CÁC MẪU VÁN GIA CÔNG",
+    "description": "Đa dạng chủng loại ván phục vụ mọi nhu cầu sản xuất",
+    "items": [
+      {
+        "name": "Ván MFC phủ Melamine",
+        "image": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080&q=80"
+      },
+      {
+        "name": "Ván MDF chống ẩm",
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080&q=80"
+      },
+      {
+        "name": "Ván Plywood phủ Melamine",
+        "image": "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080&q=80"
+      }
+    ]
+  },
+  "customerProducts": {
+    "title": "SẢN PHẨM KHÁCH HÀNG GIA CÔNG",
+    "description": "Một số dự án thực tế chúng tôi đã đồng hành cùng khách hàng",
+    "items": [
+      {
+        "name": "Tủ bếp gỗ công nghiệp",
+        "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080&q=80"
+      },
+      {
+        "name": "Tủ bếp chữ L hiện đại",
+        "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080&q=80"
+      },
+      {
+        "name": "Tủ bếp căn hộ chung cư",
+        "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080&q=80"
       }
     ]
   },
@@ -68,7 +122,7 @@
       "Competitive B2B pricing",
       "Quality assurance guaranteed"
     ],
-    "image": "https://images.unsplash.com/photo-1615990860014-99e51245218c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBpbmR1c3RyaWFsJTIwd29ya3Nob3B8ZW58MXx8fHwxNzczNjQ1MzM1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+    "image": "images/ly-do.jpeg",
     "imageAlt": "Modern industrial workshop"
   },
   "cta": {

@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { Calendar, User, ArrowRight } from "lucide-react";
 import content from "@/default-content/tin-tuc.json";
 import { theme } from "@/constants/theme";
+import { Breadcrumb } from "@/components/breadcrumb";
 import { toSlug } from '@/lib/slug';
 import Link from "next/link";
 export default function Blog() {
@@ -36,6 +37,8 @@ export default function Blog() {
           </motion.div>
         </div>
       </section>
+
+      <Breadcrumb items={[{ label: "Tin tức" }]} />
 
       {/* Category Filter */}
       <section className="py-8 bg-[#2B2B2B]">
@@ -150,39 +153,6 @@ export default function Blog() {
               );
             })}
           </div>
-        </div>
-      </section>
-
-      {/* Newsletter Signup */}
-      <section className="py-20 bg-[#2B2B2B]">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-5xl md:text-7xl text-white mb-6">
-              {content.newsletter.title}
-            </h2>
-            <p className="text-xl text-white/70 mb-8">
-              {content.newsletter.description}
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
-              <input
-                type="email"
-                placeholder={content.newsletter.placeholder}
-                className="flex-grow bg-[#111111] border border-white/10 text-white px-6 py-4 focus:border-[#D4A017] focus:outline-none"
-              />
-              <button className="bg-[#D4A017] text-[#111111] px-8 py-4 hover:bg-[#D4A017]/90 transition-colors whitespace-nowrap">
-                {content.newsletter.buttonLabel}
-              </button>
-            </div>
-
-            <p className="text-white/50 text-sm mt-4">
-              {content.newsletter.note}
-            </p>
-          </motion.div>
         </div>
       </section>
     </div>

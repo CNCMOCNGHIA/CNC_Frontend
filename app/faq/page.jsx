@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { theme } from "@/constants/theme";
+import { Breadcrumb } from "@/components/breadcrumb";
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState(0);
@@ -142,6 +143,8 @@ export default function FAQ() {
           </motion.div>
         </div>
       </section>
+
+      <Breadcrumb items={[{ label: "FAQ" }]} />
 
       {/* FAQ Sections */}
       <section className="py-20 bg-[#111111]">

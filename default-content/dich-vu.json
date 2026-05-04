@@ -1,0 +1,104 @@
+{
+  "hero": {
+    "title": "DỊCH VỤ",
+    "description": "Giải pháp gia công CNC toàn diện cho các nhà sản xuất nội thất",
+    "backgroundImage": "images/dich-vu.jpeg"
+  },
+  "services": [
+    {
+      "title": "CẮT CNC",
+      "description": "Dịch vụ cắt và phay CNC độ chính xác cao cho tấm gỗ, MDF, ván ép và các vật liệu nội thất khác. Máy CNC 5 trục của chúng tôi đạt độ chính xác trong dung sai 0,1mm.",
+      "image": "https://images.unsplash.com/photo-1693948568453-a3564f179a84?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxDTkMlMjBjdXR0aW5nJTIwd29vZCUyMHBhbmVsfGVufDF8fHx8MTc3MzY0NTMzNHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "features": [
+        "Máy phay CNC 5 trục",
+        "Vùng làm việc lên đến 3000x2000mm",
+        "Cắt hình dạng phức tạp và khắc chạm",
+        "Tối ưu hóa cắt lồng ghép (nesting)",
+        "Hỗ trợ file CAD/CAM (DXF, DWG, SKP)",
+        "Dung sai chính xác 0,1mm"
+      ]
+    },
+    {
+      "title": "DÁN CẠNH PUR",
+      "description": "Dịch vụ dán cạnh chuyên nghiệp sử dụng keo PUR (Polyurethane Reactive) cho độ bám dính và độ bền vượt trội. Lý tưởng cho sản xuất nội thất cao cấp.",
+      "image": "https://images.unsplash.com/photo-1642381071059-7a8c84c197ca?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlZGdlJTIwYmFuZGluZyUyMG1hY2hpbmV8ZW58MXx8fHwxNzczNjQ1MzM1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "features": [
+        "Công nghệ keo nhiệt chảy PUR",
+        "Độ dày cạnh từ 0,4mm đến 3mm",
+        "Phay thô và bo tròn góc",
+        "Hoàn thiện cạo và đánh bóng",
+        "Liên kết chống nhiệt và chống ẩm",
+        "Phù hợp mọi vật liệu cạnh (PVC, ABS, veneer)"
+      ]
+    },
+    {
+      "title": "UỐN CONG MDF",
+      "description": "Dịch vụ uốn cong MDF và ván ép chuyên biệt cho các bộ phận nội thất có đường cong. Công nghệ ép định hình của chúng tôi tạo ra các đường cong mượt mà, đồng đều mà không nứt bề mặt.",
+      "image": "https://images.unsplash.com/photo-1759159091728-e2c87b9d9315?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcmVjaXNpb24lMjBtYWNoaW5lcnklMjBpbmR1c3RyaWFsfGVufDF8fHx8MTc3MzY0NTMzNHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "features": [
+        "Sản xuất tấm cong theo yêu cầu",
+        "Bán kính uốn từ 50mm",
+        "Chất liệu MDF và ván ép",
+        "Thông số đường cong tùy chỉnh",
+        "Bề mặt hoàn thiện mịn màng",
+        "Phù hợp các thiết kế nội thất hiện đại"
+      ]
+    },
+    {
+      "title": "KHOAN & PHAY TAY NẮM",
+      "description": "Dịch vụ khoan và phay chính xác cho phần cứng tủ, tay nắm và bản lề. Máy khoan đa trục của chúng tôi đảm bảo căn chỉnh hoàn hảo để lắp ráp dễ dàng.",
+      "image": "https://images.unsplash.com/photo-1764115424769-ebdd2683d5a8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxDTkMlMjBtYWNoaW5lJTIwaW5kdXN0cmlhbCUyMGZhY3Rvcnl8ZW58MXx8fHwxNzczNjQ1MzMzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "features": [
+        "Khoan theo hệ thống 32mm",
+        "Phay và tạo hình tay nắm",
+        "Khoan bản lề (lỗ chén và lỗ gắn)",
+        "Máy khoan đa trục",
+        "Mẫu khoan lập trình sẵn",
+        "Năng lực sản xuất tốc độ cao"
+      ]
+    }
+  ],
+  "additionalServices": {
+    "title": "DỊCH VỤ BỔ SUNG",
+    "description": "Giải pháp hoàn chỉnh cho nhu cầu sản xuất nội thất của bạn",
+    "items": [
+      {
+        "title": "Cắt Tấm Ván",
+        "description": "Cắt tấm ván chính xác theo thông số của bạn với mức hao phí tối thiểu"
+      },
+      {
+        "title": "Hoàn Thiện Bề Mặt",
+        "description": "Dịch vụ chà nhám, phủ laminate và xử lý bề mặt"
+      },
+      {
+        "title": "Tạo Hình Cạnh Tùy Chỉnh",
+        "description": "Tạo hình cạnh và phay trang trí cho các thiết kế độc đáo"
+      },
+      {
+        "title": "Dịch Vụ Lắp Ráp",
+        "description": "Lắp ráp một phần hoặc toàn bộ các bộ phận nội thất"
+      },
+      {
+        "title": "Đóng Gói",
+        "description": "Đóng gói chuyên nghiệp để vận chuyển an toàn"
+      },
+      {
+        "title": "Tư Vấn Kỹ Thuật",
+        "description": "Tư vấn kỹ thuật để tối ưu hóa thiết kế và hiệu quả sản xuất"
+      }
+    ]
+  },
+  "cta": {
+    "title": "CẦN GIẢI PHÁP RIÊNG?",
+    "description": "Liên hệ với chúng tôi để thảo luận về yêu cầu cụ thể của bạn",
+    "primaryButton": {
+      "label": "GỬI FILE & NHẬN BÁO GIÁ",
+      "href": "/gia-cong"
+    },
+    "secondaryButton": {
+      "label": "LIÊN HỆ CHÚNG TÔI",
+      "href": "/lien-he"
+    }
+  },
+  "requestQuoteLabel": "YÊU CẦU BÁO GIÁ"
+}

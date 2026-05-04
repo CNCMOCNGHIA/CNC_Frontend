@@ -2,8 +2,9 @@
 
 import { motion } from "motion/react";
 import { Calendar, User } from "lucide-react";
-import content from "@/default-content/bai-viet-detail.json";
+import content from "@/default-content/tin-tuc-detail.json";
 import { theme } from "@/constants/theme";
+import { Breadcrumb } from "@/components/breadcrumb";
 import Link from "next/link";
 
 export default function BlogDetail() {
@@ -54,6 +55,13 @@ export default function BlogDetail() {
 
         <div className="absolute inset-0 border-b-2 border-white/20 pointer-events-none" />
       </section>
+
+      <Breadcrumb
+        items={[
+          { label: "Tin tức", href: "/tin-tuc" },
+          { label: post.title },
+        ]}
+      />
 
       {/* ── Content + Sidebar ────────────────────────────────────────── */}
       <section className={`${theme.colors.bgPrimary} py-8 px-4`}>

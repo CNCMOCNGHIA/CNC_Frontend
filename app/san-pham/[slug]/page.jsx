@@ -5,6 +5,7 @@ import { Phone, ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import content from "@/default-content/san-pham-detail.json";
 import { theme } from "@/constants/theme";
+import { Breadcrumb } from "@/components/breadcrumb";
 
 export default function ProductDetail() {
   const { product, relatedProducts, contactLabel, orderLabel, relatedTitle } = content;
@@ -63,6 +64,13 @@ export default function ProductDetail() {
           </button>
         </div>
       </section>
+
+      <Breadcrumb
+        items={[
+          { label: "Sản phẩm", href: "/san-pham" },
+          { label: product.name },
+        ]}
+      />
 
       {/* ── Product Header ───────────────────────────────────────────── */}
       <section className="bg-[#2B2B2B] py-10 px-4">

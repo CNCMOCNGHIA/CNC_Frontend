@@ -6,11 +6,15 @@ import { Upload, FileText, CheckCircle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { theme } from "@/constants/theme";
+import { Breadcrumb } from "@/components/breadcrumb";
+import data from "@/default-content/gia-cong.json";
 
 export default function Quote() {
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
   const [files, setFiles] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { hero, contactSection, projectSection, uploadSection, submitSection, benefitsSection } = data;
 
   const handleFileChange = (e) => {
     if (e.target.files) {
@@ -23,59 +27,48 @@ export default function Quote() {
     setFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (formData) => {
     setIsSubmitting(true);
-    
-    // Simulate file upload and form submission
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    console.log("Quote Request:", { ...data, files });
-    toast.success("Quote request submitted successfully! We'll contact you within 24 hours.");
-    
+    console.log("Quote Request:", { ...formData, files });
+    toast.success(submitSection.successMessage);
     reset();
     setFiles([]);
     setIsSubmitting(false);
   };
 
-  const acceptedFormats = [
-    { ext: "CAD", desc: "AutoCAD files (.dwg, .dxf)" },
-    { ext: "PDF", desc: "PDF drawings" },
-    { ext: "SKP", desc: "SketchUp files" },
-    { ext: "3DM", desc: "Rhino 3D files" },
-    { ext: "STL", desc: "3D model files" },
-  ];
-
   return (
     <div className={`${theme.fonts.body} ${theme.colors.lightText}`}>
+
       {/* Hero Section */}
       <section className="relative h-[50vh] min-h-[400px]">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1689236673934-66f8e9d9279b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxDTkMlMjByb3V0ZXIlMjBmdXJuaXR1cmV8ZW58MXx8fHwxNzczNjQ1MzM2fDA&ixlib=rb-4.1.0&q=80&w=1080')`,
-          }}
+          style={{ backgroundImage: `url('${hero.backgroundImage}')` }}
         >
           <div className="absolute inset-0 bg-[#111111]/70" />
         </div>
-
         <div className="relative h-full max-w-7xl mx-auto px-4 flex items-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className={`${theme.fonts.heading} ${theme.text.heroTitle} text-white mb-4`}>GIA CÔNG</h1>
-            <p className="text-xl text-white/80 max-w-2xl">
-              Upload your CAD files and receive a detailed quote within 24 hours
-            </p>
+            <h1 className={`${theme.fonts.heading} ${theme.text.heroTitle} text-white mb-4`}>
+              {hero.title}
+            </h1>
+            <p className="text-xl text-white/80 max-w-2xl">{hero.description}</p>
           </motion.div>
         </div>
       </section>
 
+      <Breadcrumb items={[{ label: "Gia công" }]} />
+
       {/* Form Section */}
       <section className={`py-12 ${theme.colors.bgPrimary}`}>
         <div className="max-w-7xl mx-auto px-4">
-          <form onSubmit={handleSubmit(onSubmit)} className="">
+          <form onSubmit={handleSubmit(onSubmit)}>
+
             {/* Contact Information */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -83,49 +76,48 @@ export default function Quote() {
               viewport={{ once: true }}
               className="bg-[#2B2B2B] p-8"
             >
-              <h2 className="text-3xl text-white mb-6">CONTACT INFORMATION</h2>
-              
+              <h2 className="text-3xl text-white mb-6">{contactSection.title}</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                {/* Name */}
                 <div>
                   <label htmlFor="name" className="block text-white mb-2">
-                    Full Name *
+                    {contactSection.fields.name.label} *
                   </label>
                   <input
                     id="name"
                     type="text"
                     {...register("name", { required: "Name is required" })}
                     className="w-full bg-[#111111] border border-white/10 text-white px-4 py-3 focus:border-[#D4A017] focus:outline-none transition-colors"
-                    placeholder="Your name"
+                    placeholder={contactSection.fields.name.placeholder}
                   />
-                  {errors.name && (
-                    <p className="text-red-500 mt-1">{String(errors.name.message)}</p>
-                  )}
+                  {errors.name && <p className="text-red-500 mt-1">{String(errors.name.message)}</p>}
                 </div>
 
+                {/* Phone */}
                 <div>
                   <label htmlFor="phone" className="block text-white mb-2">
-                    Phone Number *
+                    {contactSection.fields.phone.label} *
                   </label>
                   <input
                     id="phone"
                     type="tel"
                     {...register("phone", { required: "Phone is required" })}
                     className="w-full bg-[#111111] border border-white/10 text-white px-4 py-3 focus:border-[#D4A017] focus:outline-none transition-colors"
-                    placeholder="+84 123 456 789"
+                    placeholder={contactSection.fields.phone.placeholder}
                   />
-                  {errors.phone && (
-                    <p className="text-red-500 mt-1">{String(errors.phone.message)}</p>
-                  )}
+                  {errors.phone && <p className="text-red-500 mt-1">{String(errors.phone.message)}</p>}
                 </div>
 
+                {/* Email */}
                 <div className="md:col-span-2">
                   <label htmlFor="email" className="block text-white mb-2">
-                    Email Address *
+                    {contactSection.fields.email.label} *
                   </label>
                   <input
                     id="email"
                     type="email"
-                    {...register("email", { 
+                    {...register("email", {
                       required: "Email is required",
                       pattern: {
                         value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
@@ -133,12 +125,11 @@ export default function Quote() {
                       }
                     })}
                     className="w-full bg-[#111111] border border-white/10 text-white px-4 py-3 focus:border-[#D4A017] focus:outline-none transition-colors"
-                    placeholder="your@email.com"
+                    placeholder={contactSection.fields.email.placeholder}
                   />
-                  {errors.email && (
-                    <p className="text-red-500 mt-1">{String(errors.email.message)}</p>
-                  )}
+                  {errors.email && <p className="text-red-500 mt-1">{String(errors.email.message)}</p>}
                 </div>
+
               </div>
             </motion.div>
 
@@ -150,80 +141,72 @@ export default function Quote() {
               transition={{ delay: 0.1 }}
               className="bg-[#2B2B2B] p-8"
             >
-              <h2 className="text-3xl text-white mb-6">PROJECT DETAILS</h2>
-              
+              <h2 className="text-3xl text-white mb-6">{projectSection.title}</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                {/* Material */}
                 <div>
                   <label htmlFor="material" className="block text-white mb-2">
-                    Material Type *
+                    {projectSection.fields.material.label} *
                   </label>
                   <select
                     id="material"
                     {...register("material", { required: "Material is required" })}
                     className="w-full bg-[#111111] border border-white/10 text-white px-4 py-3 focus:border-[#D4A017] focus:outline-none transition-colors"
                   >
-                    <option value="">Select material</option>
-                    <option value="mdf">MDF</option>
-                    <option value="plywood">Plywood</option>
-                    <option value="chipboard">Chipboard / Particle Board</option>
-                    <option value="melamine">Melamine Board</option>
-                    <option value="solid-wood">Solid Wood</option>
-                    <option value="acrylic">Acrylic</option>
-                    <option value="other">Other (specify in notes)</option>
+                    {projectSection.fields.material.options.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
                   </select>
-                  {errors.material && (
-                    <p className="text-red-500 mt-1">{String(errors.material.message)}</p>
-                  )}
+                  {errors.material && <p className="text-red-500 mt-1">{String(errors.material.message)}</p>}
                 </div>
 
+                {/* Quantity */}
                 <div>
                   <label htmlFor="quantity" className="block text-white mb-2">
-                    Quantity (pieces) *
+                    {projectSection.fields.quantity.label} *
                   </label>
                   <input
                     id="quantity"
                     type="text"
                     {...register("quantity", { required: "Quantity is required" })}
                     className="w-full bg-[#111111] border border-white/10 text-white px-4 py-3 focus:border-[#D4A017] focus:outline-none transition-colors"
-                    placeholder="e.g., 100 pieces"
+                    placeholder={projectSection.fields.quantity.placeholder}
                   />
-                  {errors.quantity && (
-                    <p className="text-red-500 mt-1">{String(errors.quantity.message)}</p>
-                  )}
+                  {errors.quantity && <p className="text-red-500 mt-1">{String(errors.quantity.message)}</p>}
                 </div>
 
+                {/* Delivery Time */}
                 <div>
                   <label htmlFor="deliveryTime" className="block text-white mb-2">
-                    Required Delivery Time *
+                    {projectSection.fields.deliveryTime.label} *
                   </label>
                   <select
                     id="deliveryTime"
                     {...register("deliveryTime", { required: "Delivery time is required" })}
                     className="w-full bg-[#111111] border border-white/10 text-white px-4 py-3 focus:border-[#D4A017] focus:outline-none transition-colors"
                   >
-                    <option value="">Select timeframe</option>
-                    <option value="urgent">Urgent (1-2 weeks)</option>
-                    <option value="standard">Standard (3-4 weeks)</option>
-                    <option value="flexible">Flexible (1-2 months)</option>
-                    <option value="long-term">Long-term Partnership</option>
+                    {projectSection.fields.deliveryTime.options.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
                   </select>
-                  {errors.deliveryTime && (
-                    <p className="text-red-500 mt-1">{String(errors.deliveryTime.message)}</p>
-                  )}
+                  {errors.deliveryTime && <p className="text-red-500 mt-1">{String(errors.deliveryTime.message)}</p>}
                 </div>
 
+                {/* Notes */}
                 <div className="md:col-span-2">
                   <label htmlFor="notes" className="block text-white mb-2">
-                    Additional Notes
+                    {projectSection.fields.notes.label}
                   </label>
                   <textarea
                     id="notes"
                     {...register("notes")}
                     rows={4}
                     className="w-full bg-[#111111] border border-white/10 text-white px-4 py-3 focus:border-[#D4A017] focus:outline-none transition-colors resize-none"
-                    placeholder="Any specific requirements, edge banding details, finishing instructions, etc."
+                    placeholder={projectSection.fields.notes.placeholder}
                   />
                 </div>
+
               </div>
             </motion.div>
 
@@ -235,16 +218,12 @@ export default function Quote() {
               transition={{ delay: 0.2 }}
               className="bg-[#2B2B2B] p-8"
             >
-              <h2 className="text-3xl text-white mb-6">UPLOAD FILES</h2>
-              
+              <h2 className="text-3xl text-white mb-6">{uploadSection.title}</h2>
+
               <div className="border-2 border-dashed border-white/20 p-8 text-center hover:border-[#D4A017] transition-colors">
                 <Upload className="w-16 h-16 text-[#D4A017] mx-auto mb-4" />
-                <p className="text-white mb-2">
-                  Drag and drop your files here or click to browse
-                </p>
-                <p className="text-white/60 text-sm mb-4">
-                  Supported formats: CAD, PDF, SketchUp, STL, 3DM (Max 50MB per file)
-                </p>
+                <p className="text-white mb-2">{uploadSection.dragText}</p>
+                <p className="text-white/60 text-sm mb-4">{uploadSection.formatNote}</p>
                 <input
                   type="file"
                   onChange={handleFileChange}
@@ -257,18 +236,15 @@ export default function Quote() {
                   htmlFor="file-upload"
                   className="inline-block bg-[#D4A017] text-[#111111] px-8 py-3 cursor-pointer hover:bg-[#D4A017]/90 transition-colors"
                 >
-                  SELECT FILES
+                  {uploadSection.selectButtonLabel}
                 </label>
               </div>
 
               {files.length > 0 && (
                 <div className="mt-6 space-y-2">
-                  <p className="text-white mb-3">Uploaded Files:</p>
+                  <p className="text-white mb-3">{uploadSection.uploadedFilesLabel}</p>
                   {files.map((file, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between bg-[#111111] p-3"
-                    >
+                    <div key={index} className="flex items-center justify-between bg-[#111111] p-3">
                       <div className="flex items-center gap-3">
                         <FileText className="w-5 h-5 text-[#D4A017]" />
                         <span className="text-white">{file.name}</span>
@@ -281,7 +257,7 @@ export default function Quote() {
                         onClick={() => removeFile(index)}
                         className="text-red-500 hover:text-red-400 transition-colors"
                       >
-                        Remove
+                        {uploadSection.removeLabel}
                       </button>
                     </div>
                   ))}
@@ -289,7 +265,7 @@ export default function Quote() {
               )}
 
               <div className="mt-6 grid grid-cols-2 md:grid-cols-5 gap-4">
-                {acceptedFormats.map((format, index) => (
+                {uploadSection.acceptedFormats.map((format, index) => (
                   <div key={index} className="bg-[#111111] p-3 text-center">
                     <div className="text-[#D4A017] mb-1">{format.ext}</div>
                     <div className="text-white/50 text-xs">{format.desc}</div>
@@ -313,19 +289,18 @@ export default function Quote() {
                 {isSubmitting ? (
                   <>
                     <div className="w-5 h-5 border-2 border-[#111111] border-t-transparent rounded-full animate-spin" />
-                    SUBMITTING...
+                    {submitSection.submittingLabel}
                   </>
                 ) : (
                   <>
                     <CheckCircle className="w-6 h-6" />
-                    SUBMIT QUOTE REQUEST
+                    {submitSection.buttonLabel}
                   </>
                 )}
               </button>
-              <p className="text-white/60 text-center mt-4">
-                We'll review your files and contact you within 24 hours with a detailed quote
-              </p>
+              <p className="text-white/60 text-center mt-4">{submitSection.note}</p>
             </motion.div>
+
           </form>
         </div>
       </section>
@@ -334,24 +309,10 @@ export default function Quote() {
       <section className="py-20 bg-[#2B2B2B]">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-5xl md:text-7xl text-white mb-4">WHY GET A QUOTE?</h2>
+            <h2 className="text-5xl md:text-7xl text-white mb-4">{benefitsSection.title}</h2>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                title: "Transparent Pricing",
-                description: "Detailed breakdown of costs with no hidden fees",
-              },
-              {
-                title: "Fast Response",
-                description: "Quote delivered within 24 hours of file submission",
-              },
-              {
-                title: "Technical Support",
-                description: "Our team reviews your designs and suggests optimizations",
-              },
-            ].map((benefit, index) => (
+            {benefitsSection.items.map((benefit, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 30 }}
@@ -367,6 +328,7 @@ export default function Quote() {
           </div>
         </div>
       </section>
+
     </div>
   );
 }

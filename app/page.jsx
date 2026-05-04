@@ -5,9 +5,66 @@ import { ArrowRight, Check } from "lucide-react";
 import { motion } from "motion/react";
 import content from "@/default-content/trang-chu.json";
 import { theme } from "@/constants/theme";
+import { toSlug } from "@/lib/slug";
+
+function ImageGridSection({ section, bgClass }) {
+  return (
+    <section className={`py-20 ${bgClass}`}>
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className={`${theme.fonts.heading} text-4xl md:text-5xl ${theme.colors.brandText} uppercase mb-3`}>
+            {section.title}
+          </h2>
+          {section.description && (
+            <p className="text-lg text-black/70 max-w-2xl mx-auto">{section.description}</p>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {section.items.map((item, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              viewport={{ once: true }}
+              className="group"
+            >
+              <Link
+                href={item.href ?? `/san-pham/${toSlug(item.name)}`}
+                className="block relative h-72 overflow-hidden"
+              >
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-2 group-hover:translate-y-0 transition-transform">
+                  <p className="text-white font-body text-sm tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">
+                    {item.name}
+                  </p>
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export default function Home() {
-  const { hero, stats, servicesSection, whyChooseUs, cta } = content;
+  const {
+    hero,
+    hotProducts,
+    stats,
+    servicesSection,
+    panelSamples,
+    customerProducts,
+    whyChooseUs,
+    cta,
+  } = content;
 
   return (
     <div className={`${theme.fonts.body} ${theme.colors.lightText}`}>
@@ -51,6 +108,9 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
+      {/* Hot Products Section */}
+      <ImageGridSection section={hotProducts} bgClass={theme.colors.bgPrimary} />
 
       {/* Stats Section */}
       <section className={`py-20 ${theme.colors.bgSecondary}`}>
@@ -115,6 +175,12 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Panel Samples Section */}
+      <ImageGridSection section={panelSamples} bgClass={theme.colors.bgPrimary} />
+
+      {/* Customer Products Section */}
+      <ImageGridSection section={customerProducts} bgClass={theme.colors.bgPrimary} />
 
       {/* Why Choose Us */}
       <section className={`py-20 ${theme.colors.bgSecondary}`}>

@@ -3,28 +3,47 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Menu, X, Phone, Mail } from "lucide-react";
+import { Menu, X, Phone, Search, ChevronDown, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { theme } from "@/constants/theme";
+import { toSlug } from "@/lib/slug";
 import content from "@/default-content/cnc-infor.json";
+
+const HEADER_HEIGHT = 144; // px — top row (~88) + nav row (~56)
+
+function getHref(item) {
+  return item.path ?? `/san-pham/${toSlug(item.label)}`;
+}
 
 export function Layout({ children }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
+  const [openSubmenu, setOpenSubmenu] = useState(null);
+  const [mobileExpanded, setMobileExpanded] = useState(() => new Set());
   const pathname = usePathname();
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
     setMobileMenuOpen(false);
+    setMobileExpanded(new Set());
+    setOpenDropdown(null);
+    setOpenSubmenu(null);
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  const BrandLogo = () => (
+  const toggleMobileExpanded = (key) => {
+    setMobileExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
+
+  const isLinkActive = (link) =>
+    pathname === link.path ||
+    (link.children?.some((c) => c.path && c.path === pathname));
+
+  const BrandLogo = ({ dark }) => (
     <div className="flex items-center gap-3">
       <div className="w-12 h-12 bg-[#D4A017] flex items-center justify-center">
         <span className="font-body font-bold text-2xl text-[#111111]">
@@ -32,78 +51,263 @@ export function Layout({ children }) {
         </span>
       </div>
       <div>
-        <div className="font-body font-bold text-2xl leading-none tracking-wider text-white">
+        <div className={`font-body font-bold text-lg leading-none tracking-wider ${dark ? "text-[#111111]" : "text-white"}`}>
           {content.brand.name}
         </div>
-        <div className="font-body text-xs text-[#D4A017] uppercase tracking-widest">
+        <div className="font-body text-[10px] text-[#D4A017] uppercase tracking-widest mt-1">
           {content.brand.tagline}
         </div>
       </div>
     </div>
   );
 
+  const renderSubmenuItem = (item, parentKey) => {
+    const hasChildren = !!item.children?.length;
+    const submenuKey = `${parentKey}/${item.label}`;
+    const isHovered = openSubmenu === submenuKey;
+
+    if (!hasChildren) {
+      return (
+        <Link
+          key={item.label}
+          href={getHref(item)}
+          className="block px-6 py-3 font-body text-sm text-white hover:bg-[#D4A017] hover:text-[#111111] transition-colors uppercase tracking-wider"
+        >
+          {item.label}
+        </Link>
+      );
+    }
+
+    return (
+      <div
+        key={item.label}
+        className="relative"
+        onMouseEnter={() => setOpenSubmenu(submenuKey)}
+        onMouseLeave={() => setOpenSubmenu(null)}
+      >
+        <Link
+          href={getHref(item)}
+          className={`flex items-center justify-between gap-4 px-6 py-3 font-body text-sm transition-colors uppercase tracking-wider ${
+            isHovered
+              ? "bg-[#D4A017] text-[#111111]"
+              : "text-white hover:bg-[#D4A017] hover:text-[#111111]"
+          }`}
+        >
+          <span>{item.label}</span>
+          <ChevronRight className="w-4 h-4" />
+        </Link>
+        <AnimatePresence>
+          {isHovered && (
+            <motion.div
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -8 }}
+              transition={{ duration: 0.15 }}
+              className="absolute top-0 left-full min-w-[260px] bg-[#2B2B2B] border-t-2 border-[#D4A017] shadow-xl py-2 z-50"
+            >
+              {item.children.map((sub) => (
+                <Link
+                  key={sub.label}
+                  href={getHref(sub)}
+                  className="block px-6 py-3 font-body text-sm text-white hover:bg-[#D4A017] hover:text-[#111111] transition-colors uppercase tracking-wider"
+                >
+                  {sub.label}
+                </Link>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  };
+
+  const renderDesktopLink = (link) => {
+    const featured = link.featured;
+    const baseClass = featured
+      ? "h-full flex items-center gap-2 bg-[#D4A017] text-[#111111] hover:bg-[#D4A017]/90 px-6 font-body text-sm tracking-wider"
+      : `h-full flex items-center gap-1 px-4 font-body text-sm tracking-wider transition-colors hover:text-[#D4A017] ${
+          isLinkActive(link) ? "text-[#D4A017]" : "text-white"
+        }`;
+
+    if (!link.children) {
+      return (
+        <Link key={link.label} href={getHref(link)} className={baseClass}>
+          {link.label}
+        </Link>
+      );
+    }
+
+    const isOpen = openDropdown === link.label;
+
+    return (
+      <div
+        key={link.label}
+        className="relative flex items-stretch"
+        onMouseEnter={() => setOpenDropdown(link.label)}
+        onMouseLeave={() => {
+          setOpenDropdown(null);
+          setOpenSubmenu(null);
+        }}
+      >
+        <Link
+          href={getHref(link)}
+          className={`${baseClass} ${
+            !featured && isOpen ? "text-[#D4A017]" : ""
+          }`}
+        >
+          {link.label}
+          <ChevronDown
+            className={`w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
+          />
+        </Link>
+
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.15 }}
+              className="absolute top-full left-1/2 -translate-x-1/2 min-w-[280px] bg-[#2B2B2B] border-t-2 border-[#D4A017] shadow-xl z-50 py-2"
+            >
+              {link.children.map((child) => renderSubmenuItem(child, link.label))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  };
+
+  const renderMobileLink = (link, parentKey = "") => {
+    const key = `${parentKey}/${link.label}`;
+    if (!link.children) {
+      return (
+        <Link
+          key={key}
+          href={getHref(link)}
+          className={`block font-body text-sm tracking-wider transition-colors hover:text-[#D4A017] ${
+            isLinkActive(link) ? "text-[#D4A017]" : "text-white"
+          }`}
+        >
+          {link.label}
+        </Link>
+      );
+    }
+    const expanded = mobileExpanded.has(key);
+    return (
+      <div key={key}>
+        <button
+          type="button"
+          onClick={() => toggleMobileExpanded(key)}
+          className={`w-full flex items-center justify-between font-body text-sm tracking-wider transition-colors ${
+            isLinkActive(link) ? "text-[#D4A017]" : "text-white"
+          }`}
+        >
+          <span>{link.label}</span>
+          <ChevronDown
+            className={`w-4 h-4 transition-transform ${expanded ? "rotate-180" : ""}`}
+          />
+        </button>
+        {expanded && (
+          <div className="mt-2 pl-4 border-l-2 border-[#D4A017]/40 space-y-2">
+            {link.children.map((child) => renderMobileLink(child, key))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className={`min-h-screen ${theme.colors.bgSecondary} text-white`}>
       {/* Header */}
-      <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled ? "backdrop-blur-md shadow-lg" : "bg-transparent"
-        }`}
-      >
-        {/* Top Bar */}
-        <div className="bg-[#D4A017] text-[#111111] py-2 px-4">
-          <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <div className="flex items-center gap-6">
-              <a
-                href={`tel:${content.topBar.phone.replace(/\s/g, "")}`}
-                className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-              >
-                <Phone className="w-4 h-4" />
-                <span className="hidden sm:inline font-body">{content.topBar.phone}</span>
-              </a>
-              <a
-                href={`mailto:${content.topBar.email}`}
-                className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-              >
-                <Mail className="w-4 h-4" />
-                <span className="hidden sm:inline font-body">{content.topBar.email}</span>
-              </a>
-            </div>
-            <div className="font-body">{content.topBar.workingHours}</div>
-          </div>
-        </div>
-
-        {/* Main Navigation */}
-        <nav className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/">
-              <BrandLogo />
+      <header className="fixed top-0 left-0 right-0 z-50 shadow-md">
+        {/* Top Row — Logo + Search + Hotlines */}
+        <div className="bg-[#f4f4f4]">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex items-center gap-6">
+            <Link href="/" className="shrink-0">
+              <BrandLogo dark />
             </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-8">
-              {content.navLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  href={link.path}
-                  className={`font-body text-sm tracking-wider transition-colors hover:text-[#D4A017] ${
-                    pathname === link.path ? "text-[#D4A017]" : "text-white"
-                  }`}
+            {/* Search */}
+            <form
+              action="/san-pham"
+              method="get"
+              className="hidden md:flex flex-1 max-w-2xl"
+            >
+              <div className="relative w-full">
+                <input
+                  type="search"
+                  name="q"
+                  placeholder={content.topBar.searchPlaceholder}
+                  className="w-full bg-white border border-gray-300 rounded-full px-5 py-2.5 pr-12 text-sm text-[#111111] placeholder-gray-400 focus:outline-none focus:border-[#D4A017]"
+                />
+                <button
+                  type="submit"
+                  aria-label="Tìm kiếm"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#D4A017] transition-colors"
                 >
-                  {link.label}
-                </Link>
+                  <Search className="w-5 h-5" />
+                </button>
+              </div>
+            </form>
+
+            {/* Hotlines (desktop) */}
+            <div className="hidden xl:flex items-center gap-6 shrink-0">
+              {content.topBar.hotlines.map((h, i) => (
+                <a
+                  key={i}
+                  href={`tel:${h.phone.replace(/\s/g, "")}`}
+                  className="flex items-center gap-2 text-[#111111] hover:text-[#D4A017] transition-colors"
+                >
+                  <Phone className="w-6 h-6 text-[#D4A017]" />
+                  <div>
+                    <div className="font-body text-xs text-[#666]">{h.label}</div>
+                    <div className="font-body font-bold text-sm">{h.phone}</div>
+                  </div>
+                </a>
               ))}
             </div>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile menu toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden text-white hover:text-[#D4A017] transition-colors"
+              className="lg:hidden ml-auto text-[#111111] hover:text-[#D4A017] transition-colors shrink-0"
+              aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
-        </nav>
+        </div>
+
+        {/* Mobile-only search */}
+        <form
+          action="/san-pham"
+          method="get"
+          className="md:hidden bg-[#f4f4f4] px-4 pb-3"
+        >
+          <div className="relative">
+            <input
+              type="search"
+              name="q"
+              placeholder={content.topBar.searchPlaceholder}
+              className="w-full bg-white border border-gray-300 rounded-full px-5 py-2 pr-10 text-sm text-[#111111] placeholder-gray-400 focus:outline-none focus:border-[#D4A017]"
+            />
+            <button
+              type="submit"
+              aria-label="Tìm kiếm"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+            >
+              <Search className="w-5 h-5" />
+            </button>
+          </div>
+        </form>
+
+        {/* Nav Row — Desktop */}
+        <div className="hidden lg:block bg-[#1f1f1f] border-t border-[#D4A017]/30">
+          <nav className="max-w-7xl mx-auto flex items-stretch h-14">
+            {content.navLinks.map((link) => renderDesktopLink(link))}
+          </nav>
+        </div>
       </header>
 
       {/* Mobile Menu */}
@@ -113,27 +317,18 @@ export function Layout({ children }) {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed top-[120px] left-0 right-0 z-40 bg-[#2B2B2B] lg:hidden"
+            className="fixed left-0 right-0 z-40 bg-[#2B2B2B] lg:hidden overflow-y-auto"
+            style={{ top: HEADER_HEIGHT, maxHeight: `calc(100vh - ${HEADER_HEIGHT}px)` }}
           >
             <div className="px-4 py-6 space-y-4">
-              {content.navLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  href={link.path}
-                  className={`block font-body text-sm tracking-wider transition-colors hover:text-[#D4A017] ${
-                    pathname === link.path ? "text-[#D4A017]" : "text-white"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {content.navLinks.map((link) => renderMobileLink(link))}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="pt-[120px]">{children || null}</main>
+      <main style={{ paddingTop: HEADER_HEIGHT }}>{children || null}</main>
 
       {/* Footer */}
       <footer className="bg-[#2B2B2B] border-t border-[#D4A017]/20">

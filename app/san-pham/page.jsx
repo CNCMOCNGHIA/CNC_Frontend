@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { useState } from "react";
 import { theme } from "@/constants/theme";
+import { Breadcrumb } from "@/components/breadcrumb";
 import content from "@/default-content/san-pham.json";
 import { toSlug } from '@/lib/slug';
 import Link from "next/link";
@@ -116,6 +117,8 @@ export default function Products() {
           </motion.div>
         </div>
       </section>
+
+      <Breadcrumb items={[{ label: "Sản phẩm" }]} />
 
       {/* Category Filter */}
       <section className="py-12 bg-[#2B2B2B] top-[120px] z-40">

@@ -6,6 +6,7 @@ import { MapPin, Phone, Mail, Clock, Send } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { theme } from "@/constants/theme";
+import { Breadcrumb } from "@/components/breadcrumb";
 import content from "@/default-content/lien-he.json";
 
 
@@ -53,6 +54,8 @@ export default function Contact() {
           </motion.div>
         </div>
       </section>
+
+      <Breadcrumb items={[{ label: "Liên hệ" }]} />
 
       {/* Contact Info & Form */}
       <section className={`py-12 ${theme.colors.bgPrimary}`}>
@@ -278,7 +281,7 @@ export default function Contact() {
           >
             <div className="text-center">
               <MapPin className="w-16 h-16 text-[#D4A017] mx-auto mb-4" />
-              <h3 className="text-2xl text-white mb-2">FACTORY LOCATION</h3>
+              <h3 className="text-2xl text-white mb-2">Vị Trí Nhà Máy</h3>
               <p className="text-white/70 mb-4">{content.map.address}</p>
               <a
                 href={content.map.googleMapsHref}

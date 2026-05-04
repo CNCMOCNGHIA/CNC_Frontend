@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { Building2, Award, Handshake } from "lucide-react";
 import Link from "next/link";
 import { theme } from "@/constants/theme";
+import { Breadcrumb } from "@/components/breadcrumb";
 
 export default function Partners() {
   const partners = [
@@ -95,6 +96,8 @@ export default function Partners() {
           </motion.div>
         </div>
       </section>
+
+      <Breadcrumb items={[{ label: "Đối tác" }]} />
 
       {/* Partnership Benefits */}
       <section className="py-20 bg-[#111111]">
