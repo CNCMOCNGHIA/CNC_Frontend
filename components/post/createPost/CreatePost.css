@@ -1,0 +1,257 @@
+/* Container styles */
+.quill {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.ql-container {
+  flex: 1;
+  min-height: 700px;
+  height: auto !important;
+}
+
+.ql-editor {
+  min-height: 700px;
+  height: 100%;
+}
+
+
+.ql-container {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #cccccc;
+  font-size: 16px;
+  overflow: hidden !important;
+}
+
+.ql-container.ql-snow {
+  border: 1px solid #cccccc;
+  border-top: 0;
+}
+
+/* Toolbar styles */
+.ql-toolbar {
+  background-color: #ffffff;
+  border: 1px solid #cccccc !important;
+  border-bottom: none !important;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Editor styles */
+.ql-editor {
+  min-height: 300px;
+  /* Chiều cao tối thiểu */
+  max-height: 900px;
+  /* Chiều cao tối đa */
+  height: auto;
+  /* Để editor tự động điều chỉnh */
+  font-size: 16px;
+  line-height: 1.6;
+  padding: 20px;
+  overflow-y: auto;
+  /* Chỉ có 1 thanh scroll */
+}
+
+.ql-editor::before {
+  color: #999999;
+}
+
+/* Preview container */
+.preview-container {
+  height: calc(90vh - 12rem);
+  background: white;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Preview content */
+.preview-content {
+  flex: 1;
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  padding: 1rem;
+}
+
+/* Prose styles for preview */
+.prose {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #333;
+}
+
+.prose h1 {
+  font-size: 2em;
+  margin-bottom: 1em;
+}
+
+.prose h2 {
+  font-size: 1.5em;
+  margin-bottom: 0.8em;
+}
+
+.prose p {
+  margin-bottom: 1em;
+}
+
+.prose img {
+  max-width: 100%;
+  height: auto;
+  margin: 1em 0;
+  border-radius: 4px;
+}
+
+/* Custom scrollbar styles */
+.ql-editor::-webkit-scrollbar,
+.preview-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ql-editor::-webkit-scrollbar-track,
+.preview-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.ql-editor::-webkit-scrollbar-thumb,
+.preview-content::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.ql-editor::-webkit-scrollbar-thumb:hover,
+.preview-content::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Responsive styles for images in preview */
+.preview-content img {
+  max-width: 100%;
+  height: auto;
+  margin: 1em 0;
+  border-radius: 4px;
+}
+
+/* Style for image thumbnails in upload section */
+.thumbnail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.thumbnail-container {
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 0.375rem;
+  border: 1px solid #cccccc;
+}
+
+.thumbnail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Loading state styles */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 20;
+}
+
+/* Modal styles */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 40;
+}
+
+.modal-content {
+  position: relative;
+  background-color: #2E3B55;
+  border-radius: 0.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  width: 90vw;
+  height: 90vh;
+  border: 1px solid rgba(156, 163, 175, 0.6);
+  z-index: 50;
+}
+
+/* Button styles */
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background-color: #3B82F6;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #2563EB;
+}
+
+.btn-secondary {
+  background-color: #4B5563;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #374151;
+}
+
+/* Form input styles */
+.form-input {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  border: 1px solid #D1D5DB;
+  background-color: white;
+  color: #111827;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3B82F6;
+  ring: 2px;
+  ring-color: #93C5FD;
+}
+
+/* Select styles */
+.form-select {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  border: 1px solid #D1D5DB;
+  background-color: white;
+  color: #111827;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+}
+
+/* Label styles */
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #E5E7EB;
+  margin-bottom: 0.5rem;
+}
