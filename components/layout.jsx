@@ -7,7 +7,8 @@ import { Menu, X, Phone, Search, ChevronDown, ChevronRight } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react";
 import { theme } from "@/constants/theme";
 import { toSlug } from "@/lib/slug";
-import content from "@/default-content/cnc-infor.json";
+import fallbackContent from "@/default-content/cnc-infor.json";
+import CartHeaderButton from "@/components/site/CartHeaderButton";
 
 const HEADER_HEIGHT = 144; // px — top row (~88) + nav row (~56)
 
@@ -15,7 +16,8 @@ function getHref(item) {
   return item.path ?? `/san-pham/${toSlug(item.label)}`;
 }
 
-export function Layout({ children }) {
+export function Layout({ children, content: contentProp }) {
+  const content = contentProp ?? fallbackContent;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [openSubmenu, setOpenSubmenu] = useState(null);
@@ -267,6 +269,9 @@ export function Layout({ children }) {
                 </a>
               ))}
             </div>
+
+            {/* Cart */}
+            <CartHeaderButton />
 
             {/* Mobile menu toggle */}
             <button

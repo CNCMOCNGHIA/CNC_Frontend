@@ -1,4 +1,3 @@
-import { Layout as SiteLayout } from "@/components/layout";
 import { Montserrat } from "next/font/google";
 import { Providers } from "./providers";
 import "./globals.css";
@@ -19,7 +18,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="vi" className={`${montserrat.variable}`}>
       <body className="font-body">
-        <SiteLayout>{children}</SiteLayout>
+        {children}
         <Providers />
       </body>
     </html>

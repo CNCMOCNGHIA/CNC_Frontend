@@ -1,23 +1,23 @@
-import axios from 'axios';
-import Cookies from 'js-cookie';
+import axios from "axios";
+import Cookies from "js-cookie";
 
-const API_URL = import.meta.env.VITE_APP_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const api = axios.create({
-    baseURL: API_URL,
+  baseURL: API_URL,
 });
 
 api.interceptors.request.use(
-    (config) => {
-        const token = Cookies.get('token'); // Lấy token từ cookie
-        if (token) {
-            config.headers['Authorization'] = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
+  (config) => {
+    if (typeof window !== "undefined") {
+      const token = Cookies.get("token");
+      if (token) {
+        config.headers["Authorization"] = `Bearer ${token}`;
+      }
     }
+    return config;
+  },
+  (error) => Promise.reject(error)
 );
 
 export default api;

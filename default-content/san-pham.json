@@ -1,7 +1,35 @@
 {
-    "hero": {
-      "title": "SẢN PHẨM",
-      "description": "Explore our portfolio of precision-manufactured furniture components",
-      "backgroundImage": "images/san-pham.jpeg"
-    }
-} 
+  "hero": {
+    "title": "SẢN PHẨM",
+    "description": "Explore our portfolio of precision-manufactured furniture components",
+    "backgroundImage": "images/san-pham.jpeg"
+  },
+  "capabilities": {
+    "title": "MANUFACTURING CAPABILITIES",
+    "description": "What we can produce for your business",
+    "items": [
+      {
+        "title": "Material Range",
+        "items": ["MDF", "Plywood", "Chipboard", "Melamine", "Solid Wood", "Acrylic"]
+      },
+      {
+        "title": "Edge Banding",
+        "items": ["PVC", "ABS", "Veneer", "Acrylic", "0.4mm - 3mm", "All colors"]
+      },
+      {
+        "title": "Panel Sizes",
+        "items": ["Up to 3000mm", "Up to 2000mm", "Thickness 6-40mm", "Custom sizes"]
+      },
+      {
+        "title": "Finishing",
+        "items": ["Sanding", "Laminating", "Painting prep", "Assembly ready"]
+      }
+    ]
+  },
+  "customQuoteCta": {
+    "title": "DON'T SEE WHAT YOU NEED?",
+    "description": "We specialize in custom projects. Send us your designs and we'll make it happen.",
+    "buttonLabel": "REQUEST CUSTOM QUOTE",
+    "buttonHref": "/gia-cong"
+  }
+}
