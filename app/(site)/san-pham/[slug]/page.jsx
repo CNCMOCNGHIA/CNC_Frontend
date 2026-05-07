@@ -2,14 +2,87 @@
 
 import { motion } from "motion/react";
 import { Phone, ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import content from "@/default-content/san-pham-detail.json";
 import { theme } from "@/constants/theme";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { getProject } from "@/services/project";
+import { formatVND, resolveImageUrl } from "@/lib/format";
+
+const formatPriceRange = (apiProduct) => {
+  const min = Number(apiProduct?.minPrice);
+  const max = Number(apiProduct?.maxPrice);
+  if (Number.isFinite(min) && Number.isFinite(max) && min !== max) {
+    return `${formatVND(min)} - ${formatVND(max)}`;
+  }
+  if (Number.isFinite(min) && min > 0) return formatVND(min);
+  if (Number.isFinite(apiProduct?.price)) return formatVND(apiProduct.price);
+  return null;
+};
+
+const mergeProduct = (template, apiProduct) => {
+  if (!apiProduct) return template;
+  const images = Array.isArray(apiProduct.images) && apiProduct.images.length
+    ? apiProduct.images.map(resolveImageUrl)
+    : (apiProduct.thumbnail ? [resolveImageUrl(apiProduct.thumbnail)] : template.images);
+  const price = formatPriceRange(apiProduct) ?? template.price;
+  return {
+    ...template,
+    name: apiProduct.title ?? template.name,
+    category: apiProduct.categoryName ?? apiProduct.category?.name ?? template.category,
+    price,
+    images,
+    mainImage: images?.[0] ?? template.mainImage,
+    description: {
+      ...template.description,
+      content: apiProduct.description ?? template.description?.content,
+    },
+    mainInfo: {
+      ...template.mainInfo,
+      productFullName: apiProduct.title ?? template.mainInfo?.productFullName,
+      shortDescription: apiProduct.subtitle ?? template.mainInfo?.shortDescription,
+    },
+  };
+};
 
 export default function ProductDetail() {
-  const { product, relatedProducts, contactLabel, orderLabel, relatedTitle } = content;
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+
+  const [apiProduct, setApiProduct] = useState(null);
+  const [loading, setLoading] = useState(Boolean(id));
   const [activeThumb, setActiveThumb] = useState(0);
+
+  useEffect(() => {
+    if (!id) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const result = await getProject(id);
+        if (!cancelled) setApiProduct(result?.data ?? null);
+      } catch (error) {
+        console.error("Error fetching product:", error);
+        if (!cancelled) setApiProduct(null);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  const product = mergeProduct(content.product, apiProduct);
+  const { relatedProducts, contactLabel, orderLabel, relatedTitle } = content;
+
+  if (loading) {
+    return (
+      <div className={`${theme.colors.bgPrimary} min-h-[60vh] flex items-center justify-center`}>
+        <p className="text-white/60">Đang tải sản phẩm...</p>
+      </div>
+    );
+  }
 
   return (
     <div className={`${theme.fonts.body} ${theme.colors.lightText}`}>

@@ -2,13 +2,71 @@
 
 import { motion } from "motion/react";
 import { Calendar, User } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import content from "@/default-content/tin-tuc-detail.json";
 import { theme } from "@/constants/theme";
 import { Breadcrumb } from "@/components/breadcrumb";
 import Link from "next/link";
+import { getPost } from "@/services/post";
+import { formatDateVN, resolveImageUrl } from "@/lib/format";
+
+const mergePost = (template, apiPost) => {
+  if (!apiPost) return template;
+  const heroImage = apiPost.thumbnail
+    ? resolveImageUrl(apiPost.thumbnail)
+    : template.heroImage;
+  const mainImage = Array.isArray(apiPost.images) && apiPost.images.length
+    ? resolveImageUrl(apiPost.images[0])
+    : heroImage ?? template.mainImage;
+  const date = formatDateVN(apiPost.createdAt ?? apiPost.createDate) || template.date;
+  return {
+    ...template,
+    title: apiPost.title ?? template.title,
+    excerpt: apiPost.description ?? template.excerpt,
+    category: apiPost.categoryName ?? apiPost.category?.name ?? template.category,
+    heroImage,
+    mainImage,
+    date,
+  };
+};
 
 export default function BlogDetail() {
-  const { post, recentPosts, recentPostsTitle } = content;
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+
+  const [apiPost, setApiPost] = useState(null);
+  const [loading, setLoading] = useState(Boolean(id));
+
+  useEffect(() => {
+    if (!id) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const result = await getPost(id);
+        if (!cancelled) setApiPost(result?.data ?? null);
+      } catch (error) {
+        console.error("Error fetching post:", error);
+        if (!cancelled) setApiPost(null);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  const post = mergePost(content.post, apiPost);
+  const { recentPosts, recentPostsTitle } = content;
+
+  if (loading) {
+    return (
+      <div className={`${theme.colors.bgPrimary} min-h-[60vh] flex items-center justify-center`}>
+        <p className="text-white/60">Đang tải bài viết...</p>
+      </div>
+    );
+  }
 
   return (
     <div className={`${theme.fonts.body} ${theme.colors.lightText}`}>

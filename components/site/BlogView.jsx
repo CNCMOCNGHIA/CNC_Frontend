@@ -1,15 +1,49 @@
 "use client";
 
 import { motion } from "motion/react";
+import { useEffect, useState } from "react";
 import { Calendar, User, ArrowRight } from "lucide-react";
 import { theme } from "@/constants/theme";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { toSlug } from "@/lib/slug";
+import { formatDateVN, resolveImageUrl } from "@/lib/format";
+import { getPosts } from "@/services/post";
 import Link from "next/link";
+
+const normalizeApiPost = (p) => ({
+  id: p.postId ?? p.id,
+  isApi: true,
+  title: p.title,
+  excerpt: p.description ?? "",
+  image: p.thumbnail ? resolveImageUrl(p.thumbnail) : null,
+  category: p.categoryName ?? p.category?.name ?? null,
+  date: formatDateVN(p.createdAt ?? p.createDate) || "",
+  author: "",
+});
 
 export default function BlogView({ content }) {
   const { hero, categories, featuredLabel, readMoreLabel, posts } = content ?? {};
-  const blogPosts = posts ?? [];
+
+  const [apiPosts, setApiPosts] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const result = await getPosts(1, 50);
+        const items = result?.data?.items ?? [];
+        if (!cancelled) setApiPosts(items.map(normalizeApiPost));
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+        if (!cancelled) setApiPosts([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const blogPosts = apiPosts && apiPosts.length > 0 ? apiPosts : (posts ?? []);
   const featured = blogPosts[0];
 
   return (
@@ -121,8 +155,11 @@ export default function BlogView({ content }) {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {blogPosts.slice(1).map((post, index) => {
                 const slug = toSlug(post.title);
+                const href = post.isApi
+                  ? `/tin-tuc/${slug}?id=${post.id}`
+                  : `/tin-tuc/${slug}`;
                 return (
-                  <Link key={post.id ?? index} href={`/tin-tuc/${slug}`}>
+                  <Link key={post.id ?? index} href={href}>
                     <motion.article
                       initial={{ opacity: 0, y: 30 }}
                       whileInView={{ opacity: 1, y: 0 }}
