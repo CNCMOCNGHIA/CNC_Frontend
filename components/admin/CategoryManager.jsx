@@ -10,6 +10,7 @@ import {
   createCategory,
   deleteCategory,
 } from "@/services/category";
+import { buildCategoryTree } from "@/lib/categoryTree";
 
 const idOf = (node) => node?.id ?? node?.categoryId;
 
@@ -161,7 +162,7 @@ const CreateForm = ({ parent, onCancel, onSubmit, submitting }) => {
   );
 };
 
-const CategoryManager = ({ filterName = "Product", title = "Danh mục sản phẩm" }) => {
+const CategoryManager = ({ type = "Product", title = "Danh mục sản phẩm" }) => {
   const [tree, setTree] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(new Set());
@@ -173,9 +174,10 @@ const CategoryManager = ({ filterName = "Product", title = "Danh mục sản ph�
   const load = async () => {
     try {
       setLoading(true);
-      const result = await getCategories(filterName);
-      const list = Array.isArray(result?.data) ? result.data : [];
-      setTree(list);
+      const result = await getCategories(type);
+      const flat = Array.isArray(result?.data) ? result.data : [];
+      const roots = buildCategoryTree(flat);
+      setTree(roots);
       const ids = new Set();
       const walk = (nodes) => {
         for (const n of nodes || []) {
@@ -183,7 +185,7 @@ const CategoryManager = ({ filterName = "Product", title = "Danh mục sản ph�
           walk(n.children);
         }
       };
-      walk(list);
+      walk(roots);
       setExpanded(ids);
     } catch (err) {
       console.error("Error loading categories:", err);
@@ -195,7 +197,7 @@ const CategoryManager = ({ filterName = "Product", title = "Danh mục sản ph�
 
   useEffect(() => {
     load();
-  }, [filterName]);
+  }, [type]);
 
   const handleToggle = (id) => {
     setExpanded((prev) => {
@@ -225,7 +227,7 @@ const CategoryManager = ({ filterName = "Product", title = "Danh mục sản ph�
     try {
       setSubmitting(true);
       const parentId = creatingFor ? idOf(creatingFor) : null;
-      await createCategory({ parentId, name });
+      await createCategory({ name, type, parentId });
       toast.success("Tạo danh mục thành công");
       cancelCreate();
       await load();

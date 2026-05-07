@@ -142,7 +142,6 @@ export default function HomeEditor() {
               label="Ảnh nền"
               value={hero?.backgroundImage}
               onChange={(v) => setSection("hero", { ...hero, backgroundImage: v })}
-              folder="pages/trang-chu"
             />
             <LinkField
               label="Nút chính (Primary CTA)"
@@ -184,7 +183,6 @@ export default function HomeEditor() {
                     label="Ảnh"
                     value={item.image}
                     onChange={(v) => set({ ...item, image: v })}
-                    folder="pages/trang-chu/hot-products"
                   />
                   <TextField
                     label="Liên kết (tuỳ chọn)"
@@ -266,7 +264,6 @@ export default function HomeEditor() {
                     label="Ảnh"
                     value={item.image}
                     onChange={(v) => set({ ...item, image: v })}
-                    folder="pages/trang-chu/services"
                   />
                 </div>
               )}
@@ -297,7 +294,6 @@ export default function HomeEditor() {
                     label="Ảnh"
                     value={item.image}
                     onChange={(v) => set({ ...item, image: v })}
-                    folder="pages/trang-chu/panel-samples"
                   />
                   <TextField
                     label="Liên kết (tuỳ chọn)"
@@ -333,7 +329,6 @@ export default function HomeEditor() {
                     label="Ảnh"
                     value={item.image}
                     onChange={(v) => set({ ...item, image: v })}
-                    folder="pages/trang-chu/customer-products"
                   />
                   <TextField
                     label="Liên kết (tuỳ chọn)"
@@ -362,7 +357,6 @@ export default function HomeEditor() {
               label="Ảnh minh hoạ"
               value={whyChooseUs?.image}
               onChange={(v) => setSection("whyChooseUs", { ...whyChooseUs, image: v })}
-              folder="pages/trang-chu"
             />
             <TextField
               label="Mô tả ảnh (alt)"

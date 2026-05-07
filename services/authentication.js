@@ -1,12 +1,11 @@
 import api from "./api.js";
 
-// Backend: GET /api/auths?email=&password=
+// Backend: POST /api/auths/login
+// Body: { email, password }
 // Response (Result<string?> envelope): { data: "<jwt>", resultStatus, messages }
 export const login = async (email, password) => {
   try {
-    const response = await api.get("/api/auths", {
-      params: { email, password },
-    });
+    const response = await api.post("/api/auths/login", { email, password });
     return response.data;
   } catch (error) {
     throw new Error(

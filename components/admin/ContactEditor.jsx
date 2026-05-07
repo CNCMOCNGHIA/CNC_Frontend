@@ -159,7 +159,6 @@ export default function ContactEditor() {
               label="Ảnh nền"
               value={hero?.backgroundImage}
               onChange={(v) => setSection("hero", { ...hero, backgroundImage: v })}
-              folder="pages/lien-he"
             />
           </SectionCard>
 

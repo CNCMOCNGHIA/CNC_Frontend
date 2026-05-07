@@ -42,9 +42,9 @@ export const getPosts = async (
   try {
     const response = await api.get("/api/blogs", {
       params: {
-        Page: pageNumber,
-        PageSize: pageSize,
-        ...(search ? { Search: search } : {}),
+        pageNumber,
+        pageSize,
+        ...(search ? { search } : {}),
       },
     });
     return mapPaged(response.data);

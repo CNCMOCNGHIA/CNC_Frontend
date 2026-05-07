@@ -148,7 +148,6 @@ export default function AboutEditor() {
               label="Ảnh nền"
               value={hero?.backgroundImage}
               onChange={(v) => setSection("hero", { ...hero, backgroundImage: v })}
-              folder="pages/gioi-thieu"
             />
           </SectionCard>
 
@@ -172,7 +171,6 @@ export default function AboutEditor() {
               label="Ảnh minh hoạ"
               value={story?.image}
               onChange={(v) => setSection("story", { ...story, image: v })}
-              folder="pages/gioi-thieu"
             />
             <TextField
               label="Mô tả ảnh (alt)"
@@ -262,7 +260,6 @@ export default function AboutEditor() {
                     label="Ảnh"
                     value={item.image}
                     onChange={(v) => set({ ...item, image: v })}
-                    folder="pages/gioi-thieu/machinery"
                   />
                 </div>
               )}
@@ -279,7 +276,6 @@ export default function AboutEditor() {
               label="Ảnh"
               value={facility?.image}
               onChange={(v) => setSection("facility", { ...facility, image: v })}
-              folder="pages/gioi-thieu"
             />
             <TextField
               label="Mô tả ảnh (alt)"

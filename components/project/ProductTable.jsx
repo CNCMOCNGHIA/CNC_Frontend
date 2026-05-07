@@ -15,12 +15,7 @@ import { toast } from "sonner";
 
 import CreateProject from "./createProject/CreateProject";
 import ProjectDetail from "./projectDetail/ProjectDetail";
-import {
-  getProjects,
-  getProject,
-  deleteProject,
-} from "@/services/project";
-import { deleteImages } from "@/services/upload";
+import { getProjects, deleteProject } from "@/services/project";
 import { formatVND, formatDateVN, resolveImageUrl } from "@/lib/format";
 
 const PAGE_SIZE = 5;
@@ -83,11 +78,6 @@ const ProductTable = () => {
     }
     if (!window.confirm("Bạn có chắc muốn xóa sản phẩm này không?")) return;
     try {
-      const result = await getProject(postId);
-      const projectData = result?.data;
-      if (projectData?.images?.length) {
-        await deleteImages(projectData.images);
-      }
       await deleteProject(postId);
       toast.success("Xóa sản phẩm thành công!");
       await loadPage(page.pageNumber, searchTerm);

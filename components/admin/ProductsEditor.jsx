@@ -139,7 +139,6 @@ export default function ProductsEditor() {
               label="Ảnh nền"
               value={hero?.backgroundImage}
               onChange={(v) => setSection("hero", { ...hero, backgroundImage: v })}
-              folder="pages/san-pham"
             />
           </SectionCard>
 

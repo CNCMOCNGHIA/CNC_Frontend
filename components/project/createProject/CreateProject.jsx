@@ -7,7 +7,9 @@ import { toast } from "sonner";
 import "react-quill-new/dist/quill.snow.css";
 import "./CreateProject.css";
 import { uploadImage } from "@/services/upload";
+import { validateImage } from "@/lib/uploadValidate";
 import { getCategories } from "@/services/category";
+import { buildCategoryTree } from "@/lib/categoryTree";
 import { createProject } from "@/services/project";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
@@ -30,8 +32,8 @@ const CreateProject = ({ onClose }) => {
   useEffect(() => {
     (async () => {
       try {
-        const result = await getCategories("Project");
-        setCategories(result.data?.[0]?.children ?? []);
+        const result = await getCategories("Product");
+        setCategories(buildCategoryTree(result?.data));
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
@@ -56,7 +58,7 @@ const CreateProject = ({ onClose }) => {
   const renderCategorySelectors = () => (
     <div className="grid grid-cols-3 gap-4">
       <select
-        className="w-full p-2 border rounded-md"
+        className="w-full p-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
         value={selectedCategories.level2?.categoryId || ""}
         onChange={(e) => {
           const category = categories.find(
@@ -74,7 +76,7 @@ const CreateProject = ({ onClose }) => {
       </select>
 
       <select
-        className="w-full p-2 border rounded-md"
+        className="w-full p-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
         value={selectedCategories.level3?.categoryId || ""}
         onChange={(e) => {
           const category = selectedCategories.level2?.children?.find(
@@ -93,7 +95,7 @@ const CreateProject = ({ onClose }) => {
       </select>
 
       <select
-        className="w-full p-2 border rounded-md"
+        className="w-full p-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
         value={selectedCategories.level4?.categoryId || ""}
         onChange={(e) => {
           const category = selectedCategories.level3?.children?.find(
@@ -126,7 +128,16 @@ const CreateProject = ({ onClose }) => {
   };
 
   const handleImageUpload = (event) => {
-    setImages(Array.from(event.target.files));
+    const files = Array.from(event.target.files);
+    for (const file of files) {
+      const validationError = validateImage(file);
+      if (validationError) {
+        toast.error(`${file.name}: ${validationError}`);
+        event.target.value = "";
+        return;
+      }
+    }
+    setImages(files);
   };
 
   const handleDeleteImage = (indexToDelete) => {
@@ -137,7 +148,7 @@ const CreateProject = ({ onClose }) => {
     try {
       setIsUploading(true);
       const uploadedUrls = await Promise.all(
-        images.map((image) => uploadImage(image, "projects"))
+        images.map((image) => uploadImage(image))
       );
 
       const finalCategoryId =
@@ -189,7 +200,7 @@ const CreateProject = ({ onClose }) => {
             <h3 className="text-black text-sm font-medium mb-2">Tiêu Đề</h3>
             <input
               type="text"
-              className="w-full p-2 border rounded-md"
+              className="w-full p-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
@@ -202,7 +213,7 @@ const CreateProject = ({ onClose }) => {
                 type="number"
                 min="0"
                 step="1000"
-                className="w-full p-2 border rounded-md"
+                className="w-full p-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 placeholder="0"
@@ -214,7 +225,7 @@ const CreateProject = ({ onClose }) => {
                 type="number"
                 min="0"
                 step="1"
-                className="w-full p-2 border rounded-md"
+                className="w-full p-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={stock}
                 onChange={(e) => setStock(e.target.value)}
                 placeholder="0"

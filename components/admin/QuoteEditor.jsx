@@ -160,7 +160,6 @@ export default function QuoteEditor() {
               label="Ảnh nền"
               value={hero?.backgroundImage}
               onChange={(v) => setSection("hero", { ...hero, backgroundImage: v })}
-              folder="pages/gia-cong"
             />
           </SectionCard>
 

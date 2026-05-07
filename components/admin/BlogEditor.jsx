@@ -136,7 +136,6 @@ export default function BlogEditor() {
               label="Ảnh nền"
               value={hero?.backgroundImage}
               onChange={(v) => setField("hero", { ...hero, backgroundImage: v })}
-              folder="pages/tin-tuc"
             />
           </SectionCard>
 

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp, Plus, Trash2, Upload, X } from "lucide-react";
 import { uploadImage } from "@/services/upload";
+import { validateImage } from "@/lib/uploadValidate";
 
 export function SectionCard({ title, description, defaultOpen = true, children }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -85,15 +86,23 @@ export function SelectField({ label, value, onChange, options }) {
   );
 }
 
-export function ImageField({ label, value, onChange, folder = "pages" }) {
+export function ImageField({ label, value, onChange }) {
   const [uploading, setUploading] = useState(false);
 
   const handleFile = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    const validationError = validateImage(file);
+    if (validationError) {
+      alert(validationError);
+      e.target.value = "";
+      return;
+    }
+
     setUploading(true);
     try {
-      const url = await uploadImage(file, folder);
+      const url = await uploadImage(file);
       onChange(url);
     } catch (error) {
       console.error("Upload failed:", error);

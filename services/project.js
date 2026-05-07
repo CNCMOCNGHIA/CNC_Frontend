@@ -41,9 +41,9 @@ export const getProjects = async (pageNumber = 1, pageSize = 5, search) => {
   try {
     const response = await api.get("/api/products", {
       params: {
-        Page: pageNumber,
-        PageSize: pageSize,
-        ...(search ? { Search: search } : {}),
+        pageNumber,
+        pageSize,
+        ...(search ? { search } : {}),
       },
     });
     return mapPaged(response.data);

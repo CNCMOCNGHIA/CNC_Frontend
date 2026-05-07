@@ -139,7 +139,6 @@ export default function ServicesEditor() {
               label="Ảnh nền"
               value={hero?.backgroundImage}
               onChange={(v) => setSection("hero", { ...hero, backgroundImage: v })}
-              folder="pages/dich-vu"
             />
           </SectionCard>
 
@@ -166,7 +165,6 @@ export default function ServicesEditor() {
                     label="Ảnh"
                     value={item.image}
                     onChange={(v) => set({ ...item, image: v })}
-                    folder="pages/dich-vu/services"
                   />
                   <StringListField
                     label="Tính năng"

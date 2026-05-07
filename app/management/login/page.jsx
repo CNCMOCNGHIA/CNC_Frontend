@@ -30,7 +30,11 @@ export default function LoginPage() {
         return;
       }
 
-      Cookies.set("token", result.data, { expires: 1 / 24, secure: true });
+      Cookies.set("token", result.data, {
+        expires: 1,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+      });
       toast.success("Đăng nhập thành công");
       router.push("/management/product");
     } catch (err) {

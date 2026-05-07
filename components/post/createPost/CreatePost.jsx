@@ -7,7 +7,9 @@ import { toast } from "sonner";
 import "react-quill-new/dist/quill.snow.css";
 import "./CreatePost.css";
 import { uploadImage } from "@/services/upload";
+import { validateImage } from "@/lib/uploadValidate";
 import { getCategories } from "@/services/category";
+import { buildCategoryTree } from "@/lib/categoryTree";
 import { createPost } from "@/services/post";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
@@ -24,8 +26,8 @@ const CreatePost = ({ onClose }) => {
   useEffect(() => {
     (async () => {
       try {
-        const result = await getCategories("post");
-        setCategories(result.data?.[0]?.children ?? []);
+        const result = await getCategories("Blog");
+        setCategories(buildCategoryTree(result?.data));
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
@@ -42,12 +44,18 @@ const CreatePost = ({ onClose }) => {
       const file = input.files[0];
       if (!quillRef.current || !file) return;
 
+      const validationError = validateImage(file);
+      if (validationError) {
+        toast.error(validationError);
+        return;
+      }
+
       const quill = quillRef.current.getEditor();
       const range = quill.getSelection(true);
 
       try {
         setIsUploading(true);
-        const url = await uploadImage(file, "posts");
+        const url = await uploadImage(file);
         quill.insertEmbed(range.index, "image", url);
         quill.setSelection(range.index + 1);
       } catch (error) {
@@ -76,7 +84,16 @@ const CreatePost = ({ onClose }) => {
   );
 
   const handleImageUpload = (event) => {
-    setImages(Array.from(event.target.files));
+    const files = Array.from(event.target.files);
+    for (const file of files) {
+      const validationError = validateImage(file);
+      if (validationError) {
+        toast.error(`${file.name}: ${validationError}`);
+        event.target.value = "";
+        return;
+      }
+    }
+    setImages(files);
   };
 
   const handleSave = async () => {

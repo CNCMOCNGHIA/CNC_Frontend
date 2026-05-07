@@ -13,8 +13,7 @@ import { toast } from "sonner";
 
 import CreatePost from "./createPost/CreatePost";
 import PostDetail from "./postDetail/PostDetail";
-import { getPosts, getPost, deletePost } from "@/services/post";
-import { deleteImages } from "@/services/upload";
+import { getPosts, deletePost } from "@/services/post";
 
 const PostTable = () => {
   const [page, setPage] = useState({});
@@ -65,11 +64,6 @@ const PostTable = () => {
   const handleDeletePost = async (postId) => {
     if (!window.confirm("Bạn có chắc muốn xóa bài đăng này không?")) return;
     try {
-      const result = await getPost(postId);
-      const projectData = result.data;
-      if (projectData?.images) {
-        await deleteImages(projectData.images);
-      }
       await deletePost(postId);
       setFilteredPosts((prev) => prev.filter((p) => p.postId !== postId));
       toast.success("Xóa bài đăng thành công!");

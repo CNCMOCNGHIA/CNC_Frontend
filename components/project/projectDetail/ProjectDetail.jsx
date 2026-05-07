@@ -6,8 +6,10 @@ import { toast } from "sonner";
 
 import "react-quill-new/dist/quill.snow.css";
 import "./ProjectDetail.css";
-import { uploadImage, deleteImages } from "@/services/upload";
+import { uploadImage } from "@/services/upload";
+import { validateImage } from "@/lib/uploadValidate";
 import { getCategories } from "@/services/category";
+import { buildCategoryTree } from "@/lib/categoryTree";
 import { getProject, updateProject } from "@/services/project";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
@@ -61,7 +63,6 @@ const ProjectDetail = ({ projectId, onClose }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [deleteOldImages, setDeleteOldImages] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -84,8 +85,8 @@ const ProjectDetail = ({ projectId, onClose }) => {
         setEditorHtml(data.description || "");
         setImages(data.images || []);
 
-        const categoryResult = await getCategories("Project");
-        const categoryList = categoryResult.data?.[0]?.children ?? [];
+        const categoryResult = await getCategories("Product");
+        const categoryList = buildCategoryTree(categoryResult?.data);
         setCategories(categoryList);
 
         if (data.categoryId && categoryList.length) {
@@ -122,7 +123,7 @@ const ProjectDetail = ({ projectId, onClose }) => {
   const renderCategorySelectors = () => (
     <div className="grid grid-cols-3 gap-4">
       <select
-        className="w-full p-2 border rounded-md"
+        className="w-full p-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
         value={selectedCategories.level2?.categoryId || ""}
         onChange={(e) => {
           const category = categories.find(
@@ -140,7 +141,7 @@ const ProjectDetail = ({ projectId, onClose }) => {
       </select>
 
       <select
-        className="w-full p-2 border rounded-md"
+        className="w-full p-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
         value={selectedCategories.level3?.categoryId || ""}
         onChange={(e) => {
           const category = selectedCategories.level2?.children?.find(
@@ -159,7 +160,7 @@ const ProjectDetail = ({ projectId, onClose }) => {
       </select>
 
       <select
-        className="w-full p-2 border rounded-md"
+        className="w-full p-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
         value={selectedCategories.level4?.categoryId || ""}
         onChange={(e) => {
           const category = selectedCategories.level3?.children?.find(
@@ -192,7 +193,16 @@ const ProjectDetail = ({ projectId, onClose }) => {
   };
 
   const handleImageUpload = (event) => {
-    setNewImages(Array.from(event.target.files));
+    const files = Array.from(event.target.files);
+    for (const file of files) {
+      const validationError = validateImage(file);
+      if (validationError) {
+        toast.error(`${file.name}: ${validationError}`);
+        event.target.value = "";
+        return;
+      }
+    }
+    setNewImages(files);
   };
 
   const handleDeleteNewImage = (indexToDelete) => {
@@ -201,7 +211,6 @@ const ProjectDetail = ({ projectId, onClose }) => {
 
   const handleDeleteOldImage = (filename) => {
     setImages((prev) => prev.filter((image) => image !== filename));
-    setDeleteOldImages((prev) => [...prev, filename]);
   };
 
   const handleSave = async () => {
@@ -211,13 +220,9 @@ const ProjectDetail = ({ projectId, onClose }) => {
 
       if (newImages.length > 0) {
         const uploaded = await Promise.all(
-          newImages.map((image) => uploadImage(image, "projects"))
+          newImages.map((image) => uploadImage(image))
         );
         updatedImageUrls = [...updatedImageUrls, ...uploaded];
-      }
-
-      if (deleteOldImages.length > 0) {
-        await deleteImages(deleteOldImages);
       }
 
       const finalCategoryId =
@@ -290,7 +295,7 @@ const ProjectDetail = ({ projectId, onClose }) => {
             <h3 className="text-black text-sm font-medium mb-2">Tiêu Đề</h3>
             <input
               type="text"
-              className="w-full p-2 border rounded-md"
+              className="w-full p-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={projectData.title}
               onChange={(e) =>
                 setProjectData({ ...projectData, title: e.target.value })
@@ -305,7 +310,7 @@ const ProjectDetail = ({ projectId, onClose }) => {
                 type="number"
                 min="0"
                 step="1000"
-                className="w-full p-2 border rounded-md"
+                className="w-full p-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={projectData.price}
                 onChange={(e) =>
                   setProjectData({ ...projectData, price: e.target.value })
@@ -319,7 +324,7 @@ const ProjectDetail = ({ projectId, onClose }) => {
                 type="number"
                 min="0"
                 step="1"
-                className="w-full p-2 border rounded-md"
+                className="w-full p-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={projectData.stock}
                 onChange={(e) =>
                   setProjectData({ ...projectData, stock: e.target.value })

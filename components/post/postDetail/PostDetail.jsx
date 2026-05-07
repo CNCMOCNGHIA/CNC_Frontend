@@ -7,7 +7,9 @@ import { toast } from "sonner";
 import "react-quill-new/dist/quill.snow.css";
 import "./PostDetail.css";
 import { uploadImage } from "@/services/upload";
+import { validateImage } from "@/lib/uploadValidate";
 import { getCategories } from "@/services/category";
+import { buildCategoryTree } from "@/lib/categoryTree";
 import { updatePost, getPost } from "@/services/post";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
@@ -46,8 +48,8 @@ const PostDetail = ({ postId, onClose }) => {
           setEditorHtml(data.description || "");
         }
 
-        const categoriesResult = await getCategories("post");
-        setCategories(categoriesResult.data?.[0]?.children ?? []);
+        const categoriesResult = await getCategories("Blog");
+        setCategories(buildCategoryTree(categoriesResult?.data));
       } catch (err) {
         console.error("Error fetching data:", err);
         setError("Failed to load data. Please try again.");
@@ -69,12 +71,18 @@ const PostDetail = ({ postId, onClose }) => {
       const file = input.files[0];
       if (!quillRef.current || !file) return;
 
+      const validationError = validateImage(file);
+      if (validationError) {
+        toast.error(validationError);
+        return;
+      }
+
       const quill = quillRef.current.getEditor();
       const range = quill.getSelection(true);
 
       try {
         setIsUploading(true);
-        const url = await uploadImage(file, "posts");
+        const url = await uploadImage(file);
         quill.insertEmbed(range.index, "image", url);
         quill.setSelection(range.index + 1);
       } catch (err) {
@@ -106,9 +114,16 @@ const PostDetail = ({ postId, onClose }) => {
     const files = Array.from(event.target.files);
     if (files.length === 0) return;
 
+    const validationError = validateImage(files[0]);
+    if (validationError) {
+      toast.error(validationError);
+      event.target.value = "";
+      return;
+    }
+
     try {
       setIsUploading(true);
-      const url = await uploadImage(files[0], "posts");
+      const url = await uploadImage(files[0]);
       setPostData((prev) => ({ ...prev, image: url }));
     } catch (err) {
       console.error("Error uploading image:", err);

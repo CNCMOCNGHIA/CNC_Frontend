@@ -1,16 +1,21 @@
 import api from "./api.js";
 
 // Backend (Result<T> envelope):
-//   GET    /api/categories/name?categoryName=...
-//   POST   /api/categories            body: { parentId?, name }
-//   DELETE /api/categories/{id}
+//   GET    /api/categories?type=Product|Blog
+//                                     response: { data: CategoryResponse[], resultStatus, messages }
+//                                     CategoryResponse: { id, parentId, name, level, type, childrenIds }
+//                                     (FLAT list — FE phải tự build tree qua lib/categoryTree.js)
 //
-// Response item: { id, parentId, name, level, children: [...] }
+//   POST   /api/categories            Authorization: Bearer <jwt>
+//                                     body: { name, type, parentId? }
+//                                     parent (nếu có) phải cùng type.
+//
+//   DELETE /api/categories/{id}       Authorization: Bearer <jwt>
 
-export const getCategories = async (name) => {
+export const getCategories = async (type = "Product") => {
   try {
-    const response = await api.get("/api/categories/name", {
-      params: { categoryName: name },
+    const response = await api.get("/api/categories", {
+      params: { type },
     });
     return response.data;
   } catch (error) {
@@ -19,9 +24,9 @@ export const getCategories = async (name) => {
   }
 };
 
-export const createCategory = async ({ parentId, name }) => {
+export const createCategory = async ({ name, type, parentId = null }) => {
   try {
-    const response = await api.post("/api/categories", { parentId, name });
+    const response = await api.post("/api/categories", { name, type, parentId });
     return response.data;
   } catch (error) {
     console.error("Error creating category:", error);
