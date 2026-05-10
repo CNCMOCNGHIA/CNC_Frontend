@@ -1,41 +1,54 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Calendar, User, ArrowRight } from "lucide-react";
 import { theme } from "@/constants/theme";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { toSlug } from "@/lib/slug";
 import { formatDateVN, resolveImageUrl } from "@/lib/format";
-import { getPosts } from "@/services/post";
+import { getBlogs } from "@/services/post";
+import { getCategories } from "@/services/category";
 import Link from "next/link";
 
-const normalizeApiPost = (p) => ({
-  id: p.postId ?? p.id,
+const normalizeApiBlog = (b) => ({
+  id: b.id,
   isApi: true,
-  title: p.title,
-  excerpt: p.description ?? "",
-  image: p.thumbnail ? resolveImageUrl(p.thumbnail) : null,
-  category: p.categoryName ?? p.category?.name ?? null,
-  date: formatDateVN(p.createdAt ?? p.createDate) || "",
+  title: b.title,
+  excerpt: b.description ?? "",
+  image: b.thumbnail ? resolveImageUrl(b.thumbnail) : null,
+  category: b.categoryName ?? null,
+  categoryId: b.categoryId ?? null,
+  date: formatDateVN(b.createdAt) || "",
   author: "",
 });
 
 export default function BlogView({ content }) {
-  const { hero, categories, featuredLabel, readMoreLabel, posts } = content ?? {};
+  const { hero, featuredLabel, readMoreLabel, posts } = content ?? {};
 
   const [apiPosts, setApiPosts] = useState(null);
+  const [apiCategories, setApiCategories] = useState([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        const result = await getPosts(1, 50);
-        const items = result?.data?.items ?? [];
-        if (!cancelled) setApiPosts(items.map(normalizeApiPost));
+        const [page, catEnvelope] = await Promise.all([
+          getBlogs({ pageNumber: 1, pageSize: 50 }),
+          getCategories("Blog"),
+        ]);
+        const items = page?.items ?? [];
+        if (!cancelled) {
+          setApiPosts(items.map(normalizeApiBlog));
+          setApiCategories(catEnvelope?.data ?? []);
+        }
       } catch (error) {
-        console.error("Error fetching posts:", error);
-        if (!cancelled) setApiPosts([]);
+        console.error("Error fetching blog data:", error);
+        if (!cancelled) {
+          setApiPosts([]);
+          setApiCategories([]);
+        }
       }
     })();
     return () => {
@@ -43,7 +56,11 @@ export default function BlogView({ content }) {
     };
   }, []);
 
-  const blogPosts = apiPosts && apiPosts.length > 0 ? apiPosts : (posts ?? []);
+  const allPosts = apiPosts && apiPosts.length > 0 ? apiPosts : (posts ?? []);
+  const blogPosts = useMemo(() => {
+    if (!selectedCategoryId) return allPosts;
+    return allPosts.filter((p) => p.categoryId === selectedCategoryId);
+  }, [allPosts, selectedCategoryId]);
   const featured = blogPosts[0];
 
   return (
@@ -74,19 +91,42 @@ export default function BlogView({ content }) {
 
       <Breadcrumb items={[{ label: "Tin tức" }]} />
 
-      {categories?.length > 0 && (
+      {apiCategories.length > 0 && (
         <section className="py-8 bg-[#2B2B2B]">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex flex-wrap gap-3 justify-center">
-              {categories.map((category) => (
+              <button
+                onClick={() => setSelectedCategoryId(null)}
+                className={`px-6 py-2 transition-colors ${
+                  selectedCategoryId === null
+                    ? "bg-[#D4A017] text-[#111111]"
+                    : "bg-[#111111] text-white hover:bg-[#D4A017] hover:text-[#111111]"
+                }`}
+              >
+                Tất cả
+              </button>
+              {apiCategories.map((category) => (
                 <button
-                  key={category}
-                  className="px-6 py-2 bg-[#111111] text-white hover:bg-[#D4A017] hover:text-[#111111] transition-colors"
+                  key={category.id}
+                  onClick={() => setSelectedCategoryId(category.id)}
+                  className={`px-6 py-2 transition-colors ${
+                    selectedCategoryId === category.id
+                      ? "bg-[#D4A017] text-[#111111]"
+                      : "bg-[#111111] text-white hover:bg-[#D4A017] hover:text-[#111111]"
+                  }`}
                 >
-                  {category}
+                  {category.name}
                 </button>
               ))}
             </div>
+          </div>
+        </section>
+      )}
+
+      {!featured && (
+        <section className={`py-20 ${theme.colors.bgPrimary}`}>
+          <div className="max-w-7xl mx-auto px-4">
+            <p className="text-center text-white/60">Chưa có bài viết nào.</p>
           </div>
         </section>
       )}

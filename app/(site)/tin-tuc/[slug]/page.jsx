@@ -8,23 +8,24 @@ import content from "@/default-content/tin-tuc-detail.json";
 import { theme } from "@/constants/theme";
 import { Breadcrumb } from "@/components/breadcrumb";
 import Link from "next/link";
-import { getPost } from "@/services/post";
+import { getBlog, getBlogs } from "@/services/post";
 import { formatDateVN, resolveImageUrl } from "@/lib/format";
+import { toSlug } from "@/lib/slug";
 
-const mergePost = (template, apiPost) => {
-  if (!apiPost) return template;
-  const heroImage = apiPost.thumbnail
-    ? resolveImageUrl(apiPost.thumbnail)
+const mergeBlog = (template, apiBlog) => {
+  if (!apiBlog) return template;
+  const heroImage = apiBlog.thumbnail
+    ? resolveImageUrl(apiBlog.thumbnail)
     : template.heroImage;
-  const mainImage = Array.isArray(apiPost.images) && apiPost.images.length
-    ? resolveImageUrl(apiPost.images[0])
+  const mainImage = Array.isArray(apiBlog.images) && apiBlog.images.length
+    ? resolveImageUrl(apiBlog.images[0])
     : heroImage ?? template.mainImage;
-  const date = formatDateVN(apiPost.createdAt ?? apiPost.createDate) || template.date;
+  const date = formatDateVN(apiBlog.createdAt) || template.date;
   return {
     ...template,
-    title: apiPost.title ?? template.title,
-    excerpt: apiPost.description ?? template.excerpt,
-    category: apiPost.categoryName ?? apiPost.category?.name ?? template.category,
+    title: apiBlog.title ?? template.title,
+    excerpt: apiBlog.description ?? template.excerpt,
+    category: apiBlog.categoryName ?? template.category,
     heroImage,
     mainImage,
     date,
@@ -35,19 +36,20 @@ export default function BlogDetail() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
 
-  const [apiPost, setApiPost] = useState(null);
+  const [apiBlog, setApiBlog] = useState(null);
   const [loading, setLoading] = useState(Boolean(id));
+  const [recentFromApi, setRecentFromApi] = useState(null);
 
   useEffect(() => {
     if (!id) return;
     let cancelled = false;
     (async () => {
       try {
-        const result = await getPost(id);
-        if (!cancelled) setApiPost(result?.data ?? null);
+        const data = await getBlog(id);
+        if (!cancelled) setApiBlog(data ?? null);
       } catch (error) {
-        console.error("Error fetching post:", error);
-        if (!cancelled) setApiPost(null);
+        console.error("Error fetching blog:", error);
+        if (!cancelled) setApiBlog(null);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -57,8 +59,35 @@ export default function BlogDetail() {
     };
   }, [id]);
 
-  const post = mergePost(content.post, apiPost);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const page = await getBlogs({ pageNumber: 1, pageSize: 6 });
+        const items = (page?.items ?? [])
+          .filter((b) => b.id !== id)
+          .slice(0, 4)
+          .map((b) => ({
+            id: b.id,
+            title: b.title,
+            image: b.thumbnail ? resolveImageUrl(b.thumbnail) : null,
+            date: formatDateVN(b.createdAt) || "",
+          }));
+        if (!cancelled) setRecentFromApi(items);
+      } catch (error) {
+        console.error("Error fetching recent posts:", error);
+        if (!cancelled) setRecentFromApi([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  const post = mergeBlog(content.post, apiBlog);
   const { recentPosts, recentPostsTitle } = content;
+  const useApiRecent = recentFromApi !== null && recentFromApi.length > 0;
+  const recentItems = useApiRecent ? recentFromApi : recentPosts;
 
   if (loading) {
     return (
@@ -206,39 +235,50 @@ export default function BlogDetail() {
 
               {/* Recent post cards */}
               <div className="flex flex-col gap-4">
-                {recentPosts.map((rPost, index) => (
-                  <motion.div
-                    key={rPost.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.08 }}
-                    viewport={{ once: true }}
-                  >
-                    <Link
-                      href={`/blog/${rPost.slug}`}
-                      className={`flex gap-3 items-start p-3 rounded-2xl transition-colors ${
-                        index === 0 ? "bg-[#111111]" : "bg-[#3A3A3A] hover:bg-[#111111]"
-                      }`}
+                {recentItems.map((rPost, index) => {
+                  const href = useApiRecent
+                    ? `/tin-tuc/${toSlug(rPost.title)}?id=${rPost.id}`
+                    : `/tin-tuc/${rPost.slug}`;
+                  return (
+                    <motion.div
+                      key={rPost.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.08 }}
+                      viewport={{ once: true }}
                     >
-                      <div className="relative shrink-0 w-[100px] h-[100px] rounded-2xl overflow-hidden">
-                        <img
-                          src={rPost.image}
-                          alt={rPost.title}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="flex flex-col gap-2 flex-1 min-w-0">
-                        <p className="text-white font-semibold text-lg leading-snug line-clamp-2">
-                          {rPost.title}
-                        </p>
-                        <div className="flex items-center gap-2 text-white/60">
-                          <Calendar className="w-4 h-4 shrink-0" />
-                          <span className="text-sm">{rPost.date}</span>
+                      <Link
+                        href={href}
+                        className={`flex gap-3 items-start p-3 rounded-2xl transition-colors ${
+                          index === 0 ? "bg-[#111111]" : "bg-[#3A3A3A] hover:bg-[#111111]"
+                        }`}
+                      >
+                        <div className="relative shrink-0 w-[100px] h-[100px] rounded-2xl overflow-hidden">
+                          {rPost.image ? (
+                            <img
+                              src={rPost.image}
+                              alt={rPost.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-[#2B2B2B]" />
+                          )}
                         </div>
-                      </div>
-                    </Link>
-                  </motion.div>
-                ))}
+                        <div className="flex flex-col gap-2 flex-1 min-w-0">
+                          <p className="text-white font-semibold text-lg leading-snug line-clamp-2">
+                            {rPost.title}
+                          </p>
+                          {rPost.date && (
+                            <div className="flex items-center gap-2 text-white/60">
+                              <Calendar className="w-4 h-4 shrink-0" />
+                              <span className="text-sm">{rPost.date}</span>
+                            </div>
+                          )}
+                        </div>
+                      </Link>
+                    </motion.div>
+                  );
+                })}
               </div>
             </motion.div>
           </aside>

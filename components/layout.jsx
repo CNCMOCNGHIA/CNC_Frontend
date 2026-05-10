@@ -2,13 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Menu, X, Phone, Search, ChevronDown, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { theme } from "@/constants/theme";
 import { toSlug } from "@/lib/slug";
 import fallbackContent from "@/default-content/cnc-infor.json";
 import CartHeaderButton from "@/components/site/CartHeaderButton";
+import { getCategories } from "@/services/category";
+import { getFavouriteProducts } from "@/services/product";
+import { buildCategoryTree } from "@/lib/categoryTree";
 
 const HEADER_HEIGHT = 144; // px — top row (~88) + nav row (~56)
 
@@ -22,6 +25,8 @@ export function Layout({ children, content: contentProp }) {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [openSubmenu, setOpenSubmenu] = useState(null);
   const [mobileExpanded, setMobileExpanded] = useState(() => new Set());
+  const [categoryNav, setCategoryNav] = useState(null);
+  const [favouriteNav, setFavouriteNav] = useState(null);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -31,6 +36,62 @@ export function Layout({ children, content: contentProp }) {
     setOpenSubmenu(null);
     window.scrollTo(0, 0);
   }, [pathname]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const envelope = await getCategories("Product");
+        const tree = buildCategoryTree(envelope?.data ?? []);
+        const items = tree.map((root) => ({
+          label: root.name,
+          path: `/san-pham?categoryId=${root.id}`,
+          children: root.children.map((child) => ({
+            label: child.name,
+            path: `/san-pham?categoryId=${child.id}`,
+          })),
+        }));
+        if (!cancelled && items.length > 0) setCategoryNav(items);
+      } catch (error) {
+        console.error("Error fetching nav categories:", error);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const items = await getFavouriteProducts();
+        const list = (items ?? []).map((p) => ({
+          label: p.title,
+          path: `/san-pham/${toSlug(p.title ?? "")}?id=${p.id}`,
+        }));
+        if (!cancelled && list.length > 0) setFavouriteNav(list);
+      } catch (error) {
+        console.error("Error fetching favourite products:", error);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const navLinks = useMemo(() => {
+    const links = content.navLinks ?? [];
+    return links.map((link) => {
+      if (link.label === "DANH MỤC SẢN PHẨM" && categoryNav) {
+        return { ...link, children: categoryNav };
+      }
+      if (link.label === "BÁN CHẠY" && favouriteNav) {
+        return { ...link, children: favouriteNav };
+      }
+      return link;
+    });
+  }, [content.navLinks, categoryNav, favouriteNav]);
 
   const toggleMobileExpanded = (key) => {
     setMobileExpanded((prev) => {
@@ -310,7 +371,7 @@ export function Layout({ children, content: contentProp }) {
         {/* Nav Row — Desktop */}
         <div className="hidden lg:block bg-[#1f1f1f] border-t border-[#D4A017]/30">
           <nav className="max-w-7xl mx-auto flex items-stretch h-14">
-            {content.navLinks.map((link) => renderDesktopLink(link))}
+            {navLinks.map((link) => renderDesktopLink(link))}
           </nav>
         </div>
       </header>
@@ -326,7 +387,7 @@ export function Layout({ children, content: contentProp }) {
             style={{ top: HEADER_HEIGHT, maxHeight: `calc(100vh - ${HEADER_HEIGHT}px)` }}
           >
             <div className="px-4 py-6 space-y-4">
-              {content.navLinks.map((link) => renderMobileLink(link))}
+              {navLinks.map((link) => renderMobileLink(link))}
             </div>
           </motion.div>
         )}

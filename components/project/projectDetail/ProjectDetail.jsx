@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
+import { Star } from "lucide-react";
 
 import "react-quill-new/dist/quill.snow.css";
 import "./ProjectDetail.css";
@@ -10,7 +11,8 @@ import { uploadImage } from "@/services/upload";
 import { validateImage } from "@/lib/uploadValidate";
 import { getCategories } from "@/services/category";
 import { buildCategoryTree } from "@/lib/categoryTree";
-import { getProject, updateProject } from "@/services/project";
+import { getProduct, updateProduct } from "@/services/product";
+import { resolveImageUrl } from "@/lib/format";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
@@ -45,12 +47,14 @@ const ProjectDetail = ({ projectId, onClose }) => {
   const [projectData, setProjectData] = useState({
     id: "",
     title: "",
+    subtitle: "",
     description: "",
     price: "",
     stock: "",
     categoryId: "",
-    images: [],
   });
+  // thumbnailRef: { type: "url", url } | { type: "newIndex", index } | null
+  const [thumbnailRef, setThumbnailRef] = useState(null);
   const [selectedCategories, setSelectedCategories] = useState({
     level2: null,
     level3: null,
@@ -71,27 +75,30 @@ const ProjectDetail = ({ projectId, onClose }) => {
     const initialize = async () => {
       setIsLoading(true);
       try {
-        const projectResult = await getProject(projectId);
-        const data = projectResult.data;
+        const data = await getProduct(projectId);
+        const categoryId = data.category?.id ?? "";
         setProjectData({
-          id: data.postId,
-          title: data.title,
-          description: data.description,
+          id: data.id,
+          title: data.title ?? "",
+          subtitle: data.subtitle ?? "",
+          description: data.description ?? "",
           price: data.price ?? "",
           stock: data.stock ?? "",
-          categoryId: data.categoryId,
-          images: data.images || [],
+          categoryId,
         });
         setEditorHtml(data.description || "");
         setImages(data.images || []);
+        setThumbnailRef(
+          data.thumbnail ? { type: "url", url: data.thumbnail } : null
+        );
 
         const categoryResult = await getCategories("Product");
         const categoryList = buildCategoryTree(categoryResult?.data);
         setCategories(categoryList);
 
-        if (data.categoryId && categoryList.length) {
+        if (categoryId && categoryList.length) {
           setSelectedCategories(
-            findCategoryHierarchy(categoryList, data.categoryId)
+            findCategoryHierarchy(categoryList, categoryId)
           );
         }
       } catch (err) {
@@ -207,56 +214,99 @@ const ProjectDetail = ({ projectId, onClose }) => {
 
   const handleDeleteNewImage = (indexToDelete) => {
     setNewImages((prev) => prev.filter((_, index) => index !== indexToDelete));
+    setThumbnailRef((prev) => {
+      if (prev?.type !== "newIndex") return prev;
+      if (prev.index === indexToDelete) return null;
+      return prev.index > indexToDelete
+        ? { type: "newIndex", index: prev.index - 1 }
+        : prev;
+    });
   };
 
-  const handleDeleteOldImage = (filename) => {
-    setImages((prev) => prev.filter((image) => image !== filename));
+  const handleDeleteOldImage = (url) => {
+    setImages((prev) => prev.filter((image) => image !== url));
+    setThumbnailRef((prev) =>
+      prev?.type === "url" && prev.url === url ? null : prev
+    );
   };
+
+  const isExistingThumb = (url) =>
+    thumbnailRef?.type === "url" && thumbnailRef.url === url;
+  const isNewThumb = (index) =>
+    thumbnailRef?.type === "newIndex" && thumbnailRef.index === index;
 
   const handleSave = async () => {
+    if (!projectData.title.trim()) {
+      toast.error("Vui lòng nhập tiêu đề");
+      return;
+    }
+
+    const finalCategoryId =
+      selectedCategories.level4?.categoryId ||
+      selectedCategories.level3?.categoryId ||
+      selectedCategories.level2?.categoryId ||
+      projectData.categoryId;
+    if (!finalCategoryId) {
+      toast.error("Vui lòng chọn danh mục");
+      return;
+    }
+
+    const priceNum = Number(projectData.price);
+    const stockNum = Number(projectData.stock);
+    if (!Number.isFinite(priceNum) || priceNum < 0) {
+      toast.error("Giá không hợp lệ");
+      return;
+    }
+    if (!Number.isInteger(stockNum) || stockNum < 0) {
+      toast.error("Số lượng tồn kho không hợp lệ");
+      return;
+    }
+
     try {
       setIsUploading(true);
-      let updatedImageUrls = [...images];
-
+      let uploadedNewUrls = [];
       if (newImages.length > 0) {
-        const uploaded = await Promise.all(
+        uploadedNewUrls = await Promise.all(
           newImages.map((image) => uploadImage(image))
         );
-        updatedImageUrls = [...updatedImageUrls, ...uploaded];
       }
+      const finalImages = [...images, ...uploadedNewUrls];
 
-      const finalCategoryId =
-        selectedCategories.level4?.categoryId ||
-        selectedCategories.level3?.categoryId ||
-        selectedCategories.level2?.categoryId ||
-        projectData.categoryId;
-
-      const priceNum = Number(projectData.price);
-      const stockNum = Number(projectData.stock);
-      if (!Number.isFinite(priceNum) || priceNum < 0) {
-        toast.error("Giá không hợp lệ");
-        setIsUploading(false);
-        return;
-      }
-      if (!Number.isInteger(stockNum) || stockNum < 0) {
-        toast.error("Số lượng tồn kho không hợp lệ");
+      if (!finalImages.length) {
+        toast.error("Sản phẩm phải có ít nhất 1 ảnh");
         setIsUploading(false);
         return;
       }
 
-      await updateProject(projectData.id, {
-        ...projectData,
-        description: editorHtml,
+      let thumbnail = null;
+      if (thumbnailRef?.type === "url" && finalImages.includes(thumbnailRef.url)) {
+        thumbnail = thumbnailRef.url;
+      } else if (
+        thumbnailRef?.type === "newIndex" &&
+        uploadedNewUrls[thumbnailRef.index]
+      ) {
+        thumbnail = uploadedNewUrls[thumbnailRef.index];
+      } else {
+        thumbnail = finalImages[0];
+      }
+
+      await updateProduct(projectData.id, {
+        thumbnail,
+        title: projectData.title,
+        subtitle: projectData.subtitle || null,
         price: priceNum,
         stock: stockNum,
+        description: editorHtml,
         categoryId: finalCategoryId,
-        images: updatedImageUrls,
+        images: finalImages,
       });
       toast.success("Cập nhật sản phẩm thành công");
       onClose();
     } catch (err) {
-      console.error("Error updating project:", err);
-      setError("Failed to update project. Please try again.");
+      console.error("Error updating product:", err);
+      const message = err?.messages?.[0] ?? "Failed to update product. Please try again.";
+      setError(message);
+      toast.error(message);
     } finally {
       setIsUploading(false);
     }
@@ -299,6 +349,20 @@ const ProjectDetail = ({ projectId, onClose }) => {
               value={projectData.title}
               onChange={(e) =>
                 setProjectData({ ...projectData, title: e.target.value })
+              }
+            />
+          </div>
+
+          <div className="mb-4">
+            <h3 className="text-black text-sm font-medium mb-2">
+              Phụ đề <span className="text-gray-400 font-normal">(không bắt buộc)</span>
+            </h3>
+            <input
+              type="text"
+              className="w-full p-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={projectData.subtitle}
+              onChange={(e) =>
+                setProjectData({ ...projectData, subtitle: e.target.value })
               }
             />
           </div>
@@ -351,62 +415,84 @@ const ProjectDetail = ({ projectId, onClose }) => {
 
           <div className="mb-6 mt-6">
             <h3 className="text-black text-sm font-medium mb-2">Hình ảnh</h3>
+            <p className="text-xs text-gray-500 mb-2">
+              Click ngôi sao để chọn ảnh đại diện (thumbnail).
+            </p>
             <div className="grid grid-cols-3 gap-4 mt-4">
-              {images.map((image, index) => (
-                <div
-                  key={index}
-                  className="h-48 overflow-hidden relative group"
-                >
-                  <img
-                    src={
-                      typeof image === "string"
-                        ? image
-                        : URL.createObjectURL(image)
-                    }
-                    alt={`upload-${index}`}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-2">
-                    <button
-                      onClick={() => setSelectedImage(image)}
-                      className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full transition-colors"
-                      title="Xem chi tiết"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
+              {images.map((image, index) => {
+                const isThumb = isExistingThumb(image);
+                return (
+                  <div
+                    key={image}
+                    className={`h-48 overflow-hidden relative group border-2 ${
+                      isThumb ? "border-amber-500" : "border-transparent"
+                    }`}
+                  >
+                    <img
+                      src={resolveImageUrl(image)}
+                      alt={`product-${index}`}
+                      className="w-full h-full object-cover"
+                    />
+                    {isThumb && (
+                      <span className="absolute top-2 left-2 bg-amber-500 text-white text-xs font-semibold px-2 py-0.5 rounded">
+                        Thumbnail
+                      </span>
+                    )}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-2">
+                      <button
+                        onClick={() =>
+                          setThumbnailRef({ type: "url", url: image })
+                        }
+                        className={`p-2 rounded-full transition-colors ${
+                          isThumb
+                            ? "bg-amber-500 text-white"
+                            : "bg-white text-gray-700 hover:bg-amber-500 hover:text-white"
+                        }`}
+                        title={isThumb ? "Đang là thumbnail" : "Đặt làm thumbnail"}
                       >
-                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                        <path
-                          fillRule="evenodd"
-                          d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={() => handleDeleteOldImage(image)}
-                      className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition-colors"
-                      title="Xóa ảnh"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
+                        <Star size={18} fill={isThumb ? "currentColor" : "none"} />
+                      </button>
+                      <button
+                        onClick={() => setSelectedImage(image)}
+                        className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full transition-colors"
+                        title="Xem chi tiết"
                       >
-                        <path
-                          fillRule="evenodd"
-                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                          <path
+                            fillRule="evenodd"
+                            d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => handleDeleteOldImage(image)}
+                        className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition-colors"
+                        title="Xóa ảnh"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -416,57 +502,80 @@ const ProjectDetail = ({ projectId, onClose }) => {
             </h3>
             <input type="file" multiple onChange={handleImageUpload} />
             <div className="grid grid-cols-3 gap-4 mt-4">
-              {newImages.map((image, index) => (
-                <div
-                  key={index}
-                  className="h-48 overflow-hidden relative group"
-                >
-                  <img
-                    src={URL.createObjectURL(image)}
-                    alt={`upload-${index}`}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-2">
-                    <button
-                      onClick={() => setSelectedImage(image)}
-                      className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full transition-colors"
-                      title="Xem chi tiết"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
+              {newImages.map((image, index) => {
+                const isThumb = isNewThumb(index);
+                return (
+                  <div
+                    key={index}
+                    className={`h-48 overflow-hidden relative group border-2 ${
+                      isThumb ? "border-amber-500" : "border-transparent"
+                    }`}
+                  >
+                    <img
+                      src={URL.createObjectURL(image)}
+                      alt={`upload-${index}`}
+                      className="w-full h-full object-cover"
+                    />
+                    {isThumb && (
+                      <span className="absolute top-2 left-2 bg-amber-500 text-white text-xs font-semibold px-2 py-0.5 rounded">
+                        Thumbnail
+                      </span>
+                    )}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-2">
+                      <button
+                        onClick={() =>
+                          setThumbnailRef({ type: "newIndex", index })
+                        }
+                        className={`p-2 rounded-full transition-colors ${
+                          isThumb
+                            ? "bg-amber-500 text-white"
+                            : "bg-white text-gray-700 hover:bg-amber-500 hover:text-white"
+                        }`}
+                        title={isThumb ? "Đang là thumbnail" : "Đặt làm thumbnail"}
                       >
-                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                        <path
-                          fillRule="evenodd"
-                          d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={() => handleDeleteNewImage(index)}
-                      className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition-colors"
-                      title="Xóa ảnh"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
+                        <Star size={18} fill={isThumb ? "currentColor" : "none"} />
+                      </button>
+                      <button
+                        onClick={() => setSelectedImage(image)}
+                        className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full transition-colors"
+                        title="Xem chi tiết"
                       >
-                        <path
-                          fillRule="evenodd"
-                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                          <path
+                            fillRule="evenodd"
+                            d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => handleDeleteNewImage(index)}
+                        className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition-colors"
+                        title="Xóa ảnh"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
@@ -499,7 +608,7 @@ const ProjectDetail = ({ projectId, onClose }) => {
               <img
                 src={
                   typeof selectedImage === "string"
-                    ? selectedImage
+                    ? resolveImageUrl(selectedImage)
                     : URL.createObjectURL(selectedImage)
                 }
                 alt="Detail view"

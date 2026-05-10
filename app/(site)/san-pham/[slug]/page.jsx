@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "motion/react";
 import { Phone, ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -7,18 +8,13 @@ import { useSearchParams } from "next/navigation";
 import content from "@/default-content/san-pham-detail.json";
 import { theme } from "@/constants/theme";
 import { Breadcrumb } from "@/components/breadcrumb";
-import { getProject } from "@/services/project";
+import { getProduct, getProducts } from "@/services/product";
 import { formatVND, resolveImageUrl } from "@/lib/format";
+import { toSlug } from "@/lib/slug";
 
-const formatPriceRange = (apiProduct) => {
-  const min = Number(apiProduct?.minPrice);
-  const max = Number(apiProduct?.maxPrice);
-  if (Number.isFinite(min) && Number.isFinite(max) && min !== max) {
-    return `${formatVND(min)} - ${formatVND(max)}`;
-  }
-  if (Number.isFinite(min) && min > 0) return formatVND(min);
-  if (Number.isFinite(apiProduct?.price)) return formatVND(apiProduct.price);
-  return null;
+const formatPrice = (apiProduct) => {
+  const price = Number(apiProduct?.price);
+  return Number.isFinite(price) ? formatVND(price) : null;
 };
 
 const mergeProduct = (template, apiProduct) => {
@@ -26,11 +22,11 @@ const mergeProduct = (template, apiProduct) => {
   const images = Array.isArray(apiProduct.images) && apiProduct.images.length
     ? apiProduct.images.map(resolveImageUrl)
     : (apiProduct.thumbnail ? [resolveImageUrl(apiProduct.thumbnail)] : template.images);
-  const price = formatPriceRange(apiProduct) ?? template.price;
+  const price = formatPrice(apiProduct) ?? template.price;
   return {
     ...template,
     name: apiProduct.title ?? template.name,
-    category: apiProduct.categoryName ?? apiProduct.category?.name ?? template.category,
+    category: apiProduct.category?.name ?? template.category,
     price,
     images,
     mainImage: images?.[0] ?? template.mainImage,
@@ -53,14 +49,15 @@ export default function ProductDetail() {
   const [apiProduct, setApiProduct] = useState(null);
   const [loading, setLoading] = useState(Boolean(id));
   const [activeThumb, setActiveThumb] = useState(0);
+  const [relatedFromApi, setRelatedFromApi] = useState(null);
 
   useEffect(() => {
     if (!id) return;
     let cancelled = false;
     (async () => {
       try {
-        const result = await getProject(id);
-        if (!cancelled) setApiProduct(result?.data ?? null);
+        const data = await getProduct(id);
+        if (!cancelled) setApiProduct(data ?? null);
       } catch (error) {
         console.error("Error fetching product:", error);
         if (!cancelled) setApiProduct(null);
@@ -73,8 +70,33 @@ export default function ProductDetail() {
     };
   }, [id]);
 
+  useEffect(() => {
+    if (!apiProduct) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const categoryId = apiProduct.category?.id;
+        const page = await getProducts({
+          pageNumber: 1,
+          pageSize: 6,
+          ...(categoryId ? { categoryId } : {}),
+        });
+        const items = (page?.items ?? []).filter((p) => p.id !== apiProduct.id).slice(0, 3);
+        if (!cancelled) setRelatedFromApi(items);
+      } catch (error) {
+        console.error("Error fetching related products:", error);
+        if (!cancelled) setRelatedFromApi([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [apiProduct]);
+
   const product = mergeProduct(content.product, apiProduct);
   const { relatedProducts, contactLabel, orderLabel, relatedTitle } = content;
+  const useApiRelated = relatedFromApi !== null && relatedFromApi.length > 0;
+  const relatedItems = useApiRelated ? relatedFromApi : relatedProducts;
 
   if (loading) {
     return (
@@ -121,9 +143,8 @@ export default function ProductDetail() {
               >
                 <img src={img} alt={`${product.name} ${i + 1}`} className="w-full h-full object-cover" />
                 <div
-                  className={`absolute inset-0 border-2 transition-colors ${
-                    i === activeThumb ? "border-[#D4A017]" : "border-white/20"
-                  }`}
+                  className={`absolute inset-0 border-2 transition-colors ${i === activeThumb ? "border-[#D4A017]" : "border-white/20"
+                    }`}
                 />
               </button>
             ))}
@@ -286,38 +307,71 @@ export default function ProductDetail() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {relatedProducts.map((item, index) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="bg-[#111111] overflow-hidden group cursor-pointer"
-              >
-                <div className="relative h-64 overflow-hidden">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                </div>
-                <div className="p-7">
-                  <h3 className="text-2xl text-white font-bold mb-2 group-hover:text-[#D4A017] transition-colors">
-                    {item.name}
-                  </h3>
-                  <p className="text-white/70 mb-4">{item.description}</p>
-                  <div className="space-y-2">
-                    {item.specs.map((spec) => (
-                      <div key={spec} className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 bg-[#D4A017] shrink-0" />
-                        <span className="text-sm text-white/60">{spec}</span>
-                      </div>
-                    ))}
+            {relatedItems.map((rawItem, index) => {
+              const item = useApiRelated
+                ? {
+                    id: rawItem.id,
+                    name: rawItem.title,
+                    description: rawItem.subtitle ?? rawItem.description ?? "",
+                    image: resolveImageUrl(rawItem.thumbnail ?? rawItem.images?.[0] ?? ""),
+                    price: Number(rawItem.price ?? 0),
+                    specs: null,
+                  }
+                : rawItem;
+              const card = (
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="bg-[#111111] overflow-hidden group cursor-pointer h-full"
+                >
+                  <div className="relative h-64 overflow-hidden">
+                    {item.image ? (
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-[#2B2B2B]" />
+                    )}
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                  <div className="p-7">
+                    <h3 className="text-2xl text-white font-bold mb-2 group-hover:text-[#D4A017] transition-colors">
+                      {item.name}
+                    </h3>
+                    {item.description && (
+                      <p className="text-white/70 mb-4 line-clamp-2">{item.description}</p>
+                    )}
+                    {useApiRelated ? (
+                      <p className="text-xl text-[#D4A017] font-semibold">
+                        {formatVND(item.price)}
+                      </p>
+                    ) : (
+                      <div className="space-y-2">
+                        {item.specs?.map((spec) => (
+                          <div key={spec} className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-[#D4A017] shrink-0" />
+                            <span className="text-sm text-white/60">{spec}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              );
+
+              if (useApiRelated) {
+                const slug = toSlug(item.name ?? "");
+                return (
+                  <Link key={item.id} href={`/san-pham/${slug}?id=${item.id}`}>
+                    {card}
+                  </Link>
+                );
+              }
+              return <div key={item.id}>{card}</div>;
+            })}
           </div>
         </div>
       </section>

@@ -1,99 +1,52 @@
-import api from "./api.js";
+import api, { unwrap } from "./api.js";
 
-// Backend: Blogs (Result<T> envelope)
-//   GET    /api/blogs?Page=&PageSize=&Search=        Public  list + paging
-//   GET    /api/blogs/{blogId}                       Public  detail
-//   PUT    /api/blogs?blogId={guid?}                 Admin   upsert
-//   DELETE /api/blogs/{blogId}                       Admin
+// Backend: Blogs. Envelope is Result<T>; helpers return T after unwrap.
 //
-// Backend item:
-//   { id, thumbnail, title, description, isFeatured, createdAt, categoryId, categoryName, images }
+//   GET    /api/blogs?pageNumber=&pageSize=&search=    Public  list (search = title contains, case-sensitive)
+//   GET    /api/blogs/{blogId}                         Public  detail
+//   POST   /api/blogs                                  Admin   create  → returns new id (string)
+//   PUT    /api/blogs/{blogId}                         Admin   update  → returns true
+//   DELETE /api/blogs/{blogId}                         Admin
 //
-// FE legacy shape used by callers: { postId, createDate, ... }
-// `mapBlog` keeps existing UI working until callers migrate.
+// Canonical Blog shape:
+//   { id, thumbnail, title, description, isFeatured, createdAt,
+//     categoryId, categoryName, images: string[] }
+//
+// Quirks:
+// - PUT replaces fields including images; sending null/omitting clears them.
+// - 4xx/5xx with envelope are normalized into ApiError by the response interceptor.
 
-const mapBlog = (blog) => {
-  if (!blog || typeof blog !== "object") return blog;
-  return {
-    ...blog,
-    postId: blog.postId ?? blog.id,
-    createDate: blog.createDate ?? blog.createdAt,
-    type: "Post",
-  };
-};
-
-const mapPaged = (envelope) => {
-  if (!envelope?.data?.items) return envelope;
-  return {
-    ...envelope,
-    data: { ...envelope.data, items: envelope.data.items.map(mapBlog) },
-  };
-};
-
-const mapSingle = (envelope) =>
-  envelope?.data ? { ...envelope, data: mapBlog(envelope.data) } : envelope;
-
-export const getPosts = async (
+export const getBlogs = async ({
   pageNumber = 1,
-  pageSize = 5,
-  _categoryName,
-  search
-) => {
-  try {
-    const response = await api.get("/api/blogs", {
-      params: {
-        pageNumber,
-        pageSize,
-        ...(search ? { search } : {}),
-      },
-    });
-    return mapPaged(response.data);
-  } catch (error) {
-    console.error("Error fetching posts:", error);
-    throw error;
-  }
+  pageSize = 10,
+  search,
+} = {}) => {
+  const response = await api.get("/api/blogs", {
+    params: {
+      pageNumber,
+      pageSize,
+      ...(search ? { search } : {}),
+    },
+  });
+  return unwrap(response.data);
 };
 
-export const getPost = async (id) => {
-  try {
-    const response = await api.get(`/api/blogs/${id}`);
-    return mapSingle(response.data);
-  } catch (error) {
-    console.error("Error fetching post:", error);
-    throw error;
-  }
+export const getBlog = async (id) => {
+  const response = await api.get(`/api/blogs/${id}`);
+  return unwrap(response.data);
 };
 
-// Upsert: omit blogId to create.
-export const createPost = async (post) => {
-  try {
-    const response = await api.put("/api/blogs", post);
-    return mapSingle(response.data);
-  } catch (error) {
-    console.error("Error creating post:", error);
-    throw error;
-  }
+export const createBlog = async (payload) => {
+  const response = await api.post("/api/blogs", payload);
+  return unwrap(response.data); // new blog id (string)
 };
 
-// Upsert: pass blogId to update.
-export const updatePost = async (id, post) => {
-  try {
-    const response = await api.put("/api/blogs", post, {
-      params: { blogId: id },
-    });
-    return mapSingle(response.data);
-  } catch (error) {
-    console.error("Error updating post:", error);
-    throw error;
-  }
+export const updateBlog = async (id, payload) => {
+  const response = await api.put(`/api/blogs/${id}`, payload);
+  return unwrap(response.data); // true
 };
 
-export const deletePost = async (id) => {
-  try {
-    const response = await api.delete(`/api/blogs/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error deleting post:", error);
-    throw error;
-  }
+export const deleteBlog = async (id) => {
+  const response = await api.delete(`/api/blogs/${id}`);
+  return unwrap(response.data);
 };

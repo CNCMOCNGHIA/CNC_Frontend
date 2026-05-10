@@ -13,7 +13,8 @@ import { toast } from "sonner";
 
 import CreatePost from "./createPost/CreatePost";
 import PostDetail from "./postDetail/PostDetail";
-import { getPosts, deletePost } from "@/services/post";
+import { getBlogs, deleteBlog } from "@/services/post";
+import { formatDateVN, resolveImageUrl } from "@/lib/format";
 
 const PostTable = () => {
   const [page, setPage] = useState({});
@@ -23,65 +24,68 @@ const PostTable = () => {
   const [isPostDetailOpen, setIsPostDetailOpen] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState(null);
 
-  const loadPage = async (pageNumber) => {
+  const loadPage = async (pageNumber, search) => {
     try {
-      const result = await getPosts(pageNumber, 5, "Post");
-      setFilteredPosts(result.data.items);
+      const result = await getBlogs({
+        pageNumber,
+        pageSize: 5,
+        ...(search ? { search } : {}),
+      });
+      setFilteredPosts(result?.items ?? []);
       setPage({
-        pageNumber: result.data.pageNumber,
-        pageSize: result.data.pageSize,
-        totalCount: result.data.totalCount,
-        totalPages: result.data.totalPages,
-        hasNext: result.data.hasNext,
-        hasPrevious: result.data.hasPrevious,
+        pageNumber: result?.pageNumber ?? pageNumber,
+        pageSize: result?.pageSize ?? 5,
+        totalCount: result?.totalCount ?? 0,
+        totalPages: result?.totalPages ?? 0,
+        hasNext: result?.hasNext ?? false,
+        hasPrevious: result?.hasPrevious ?? false,
       });
     } catch (error) {
-      console.error("Error fetching posts:", error);
+      console.error("Error fetching blogs:", error);
+      toast.error("Không thể tải danh sách bài đăng");
     }
   };
 
   useEffect(() => {
-    loadPage(1);
+    loadPage(1, "");
   }, []);
 
   const handlePageChange = async (value) => {
-    await loadPage(value);
+    await loadPage(value, searchTerm);
     window.scrollTo(0, 0);
   };
 
-  const handleSearch = (e) => {
-    const term = e.target.value.toLowerCase();
-    setSearchTerm(term);
-    setFilteredPosts((prev) =>
-      prev.filter(
-        (post) =>
-          post.title?.toLowerCase().includes(term) ||
-          post.categoryName?.toLowerCase().includes(term)
-      )
-    );
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    loadPage(1, searchTerm.trim());
   };
 
-  const handleDeletePost = async (postId) => {
+  const handleDeleteBlog = async (id) => {
+    if (!id) return;
     if (!window.confirm("Bạn có chắc muốn xóa bài đăng này không?")) return;
     try {
-      await deletePost(postId);
-      setFilteredPosts((prev) => prev.filter((p) => p.postId !== postId));
+      await deleteBlog(id);
       toast.success("Xóa bài đăng thành công!");
+      await loadPage(page.pageNumber, searchTerm);
     } catch (error) {
-      console.error("Error deleting post:", error);
-      toast.error("Xóa bài đăng thất bại!");
+      console.error("Error deleting blog:", error);
+      toast.error(error?.messages?.[0] ?? "Xóa bài đăng thất bại!");
     }
   };
 
   const openCreatePost = () => setIsCreatePostOpen(true);
-  const closeCreatePost = () => setIsCreatePostOpen(false);
-  const openPostDetail = (postId) => {
-    setSelectedPostId(postId);
+  const closeCreatePost = () => {
+    setIsCreatePostOpen(false);
+    loadPage(page.pageNumber, searchTerm);
+  };
+  const openPostDetail = (id) => {
+    setSelectedPostId(id);
     setIsPostDetailOpen(true);
   };
   const closePostDetail = () => {
     setSelectedPostId(null);
     setIsPostDetailOpen(false);
+    loadPage(page.pageNumber, searchTerm);
   };
 
   return (
@@ -91,18 +95,18 @@ const PostTable = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
     >
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 gap-4 flex-wrap">
         <h2 className="text-xl font-semibold text-black">Quản Lý Bài Đăng</h2>
-        <div className="relative">
+        <form onSubmit={handleSearchSubmit} className="relative">
           <input
             type="text"
-            placeholder="Search posts..."
+            placeholder="Tìm bài đăng..."
             className="bg-black text-white placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onChange={handleSearch}
+            onChange={(e) => setSearchTerm(e.target.value)}
             value={searchTerm}
           />
           <Search className="absolute left-3 top-2.5 text-white" size={18} />
-        </div>
+        </form>
       </div>
 
       <div className="overflow-x-auto">
@@ -123,43 +127,50 @@ const PostTable = () => {
           </thead>
 
           <tbody className="divide-y divide-gray-700">
-            {filteredPosts.map((post) => (
-              <motion.tr
-                key={post.postId}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black flex gap-2 items-center">
-                  <img
-                    src="https://images.unsplash.com/photo-1627989580309-bfaf3e58af6f?w=500&auto=format&fit=crop&q=60"
-                    alt="post img"
-                    className="size-10 rounded-full"
-                  />
-                  {post.title}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                  {post.categoryName}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                  {post.createDate}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                  <button
-                    className="text-indigo-400 hover:text-indigo-300 mr-2"
-                    onClick={() => openPostDetail(post.postId)}
-                  >
-                    <Edit size={18} />
-                  </button>
-                  <button
-                    className="text-red-400 hover:text-red-300"
-                    onClick={() => handleDeletePost(post.postId)}
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                </td>
-              </motion.tr>
-            ))}
+            {filteredPosts.map((post) => {
+              const thumbUrl = resolveImageUrl(post.thumbnail);
+              return (
+                <motion.tr
+                  key={post.id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black flex gap-2 items-center">
+                    {thumbUrl ? (
+                      <img
+                        src={thumbUrl}
+                        alt={post.title ?? "thumbnail"}
+                        className="size-10 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="size-10 rounded-full bg-gray-200" />
+                    )}
+                    {post.title}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                    {post.categoryName ?? "—"}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                    {formatDateVN(post.createdAt)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                    <button
+                      className="text-indigo-400 hover:text-indigo-300 mr-2"
+                      onClick={() => openPostDetail(post.id)}
+                    >
+                      <Edit size={18} />
+                    </button>
+                    <button
+                      className="text-red-400 hover:text-red-300"
+                      onClick={() => handleDeleteBlog(post.id)}
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </td>
+                </motion.tr>
+              );
+            })}
             <tr>
               <td
                 colSpan="4"

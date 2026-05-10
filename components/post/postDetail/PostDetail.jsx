@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
+import { Star } from "lucide-react";
 
 import "react-quill-new/dist/quill.snow.css";
 import "./PostDetail.css";
@@ -10,7 +11,8 @@ import { uploadImage } from "@/services/upload";
 import { validateImage } from "@/lib/uploadValidate";
 import { getCategories } from "@/services/category";
 import { buildCategoryTree } from "@/lib/categoryTree";
-import { updatePost, getPost } from "@/services/post";
+import { updateBlog, getBlog } from "@/services/post";
+import { resolveImageUrl } from "@/lib/format";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
@@ -19,10 +21,13 @@ const PostDetail = ({ postId, onClose }) => {
     id: "",
     title: "",
     description: "",
+    isFeatured: false,
     categoryId: "",
-    categoryName: "",
-    image: "",
   });
+  const [images, setImages] = useState([]); // existing URLs
+  const [newImages, setNewImages] = useState([]); // pending File[]
+  // thumbnailRef: { type: "url", url } | { type: "newIndex", index } | null
+  const [thumbnailRef, setThumbnailRef] = useState(null);
   const [editorHtml, setEditorHtml] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [categories, setCategories] = useState([]);
@@ -35,16 +40,18 @@ const PostDetail = ({ postId, onClose }) => {
       try {
         setIsLoading(true);
         if (postId) {
-          const result = await getPost(postId);
-          const data = result.data;
+          const data = await getBlog(postId);
           setPostData({
-            id: data.postId,
-            title: data.title,
-            description: data.description,
-            categoryId: data.categoryId,
-            categoryName: data.categoryName,
-            image: data.images?.[0] ?? "",
+            id: data.id,
+            title: data.title ?? "",
+            description: data.description ?? "",
+            isFeatured: Boolean(data.isFeatured),
+            categoryId: data.categoryId ?? "",
           });
+          setImages(data.images ?? []);
+          setThumbnailRef(
+            data.thumbnail ? { type: "url", url: data.thumbnail } : null
+          );
           setEditorHtml(data.description || "");
         }
 
@@ -110,49 +117,93 @@ const PostDetail = ({ postId, onClose }) => {
     []
   );
 
-  const handleImageUpload = async (event) => {
+  const handleImageUpload = (event) => {
     const files = Array.from(event.target.files);
-    if (files.length === 0) return;
+    for (const file of files) {
+      const validationError = validateImage(file);
+      if (validationError) {
+        toast.error(`${file.name}: ${validationError}`);
+        event.target.value = "";
+        return;
+      }
+    }
+    setNewImages(files);
+  };
 
-    const validationError = validateImage(files[0]);
-    if (validationError) {
-      toast.error(validationError);
-      event.target.value = "";
+  const handleDeleteOldImage = (url) => {
+    setImages((prev) => prev.filter((image) => image !== url));
+    setThumbnailRef((prev) =>
+      prev?.type === "url" && prev.url === url ? null : prev
+    );
+  };
+
+  const handleDeleteNewImage = (indexToDelete) => {
+    setNewImages((prev) => prev.filter((_, index) => index !== indexToDelete));
+    setThumbnailRef((prev) => {
+      if (prev?.type !== "newIndex") return prev;
+      if (prev.index === indexToDelete) return null;
+      return prev.index > indexToDelete
+        ? { type: "newIndex", index: prev.index - 1 }
+        : prev;
+    });
+  };
+
+  const isExistingThumb = (url) =>
+    thumbnailRef?.type === "url" && thumbnailRef.url === url;
+  const isNewThumb = (index) =>
+    thumbnailRef?.type === "newIndex" && thumbnailRef.index === index;
+
+  const handleSave = async () => {
+    setError(null);
+    if (!postData.title.trim()) {
+      setError("Tiêu đề không được trống");
+      toast.error("Tiêu đề không được trống");
       return;
     }
 
     try {
       setIsUploading(true);
-      const url = await uploadImage(files[0]);
-      setPostData((prev) => ({ ...prev, image: url }));
-    } catch (err) {
-      console.error("Error uploading image:", err);
-      setError("Failed to upload image. Please try again.");
-    } finally {
-      setIsUploading(false);
-    }
-  };
+      let uploadedNewUrls = [];
+      if (newImages.length > 0) {
+        uploadedNewUrls = await Promise.all(
+          newImages.map((image) => uploadImage(image))
+        );
+      }
+      const finalImages = [...images, ...uploadedNewUrls];
 
-  const handleSave = async () => {
-    try {
-      setIsUploading(true);
-      setError(null);
-
-      if (!postData.title.trim()) {
-        setError("Title is required");
+      if (!finalImages.length) {
+        toast.error("Bài đăng phải có ít nhất 1 ảnh");
+        setIsUploading(false);
         return;
       }
 
-      await updatePost(postData.id, {
-        ...postData,
+      let thumbnail = null;
+      if (thumbnailRef?.type === "url" && finalImages.includes(thumbnailRef.url)) {
+        thumbnail = thumbnailRef.url;
+      } else if (
+        thumbnailRef?.type === "newIndex" &&
+        uploadedNewUrls[thumbnailRef.index]
+      ) {
+        thumbnail = uploadedNewUrls[thumbnailRef.index];
+      } else {
+        thumbnail = finalImages[0];
+      }
+
+      await updateBlog(postData.id, {
+        thumbnail,
+        title: postData.title,
         description: editorHtml,
-        images: postData.image ? [postData.image] : [],
+        isFeatured: postData.isFeatured,
+        categoryId: postData.categoryId || null,
+        images: finalImages,
       });
       toast.success("Cập nhật bài đăng thành công");
       onClose();
     } catch (err) {
-      console.error("Error updating post:", err);
-      setError("Failed to update post. Please try again.");
+      console.error("Error updating blog:", err);
+      const message = err?.messages?.[0] ?? "Failed to update blog. Please try again.";
+      setError(message);
+      toast.error(message);
     } finally {
       setIsUploading(false);
     }
@@ -205,22 +256,139 @@ const PostDetail = ({ postId, onClose }) => {
               </div>
 
               <div className="mb-6 mt-6">
-                <h3 className="text-black text-sm font-medium">Hình ảnh</h3>
+                <h3 className="text-black text-sm font-medium mb-2">Hình ảnh</h3>
+                <p className="text-xs text-gray-500 mb-2">
+                  Click ngôi sao để chọn ảnh đại diện (thumbnail).
+                </p>
+                <div className="grid grid-cols-3 gap-4 mt-2">
+                  {images.map((image, index) => {
+                    const isThumb = isExistingThumb(image);
+                    return (
+                      <div
+                        key={image}
+                        className={`h-48 overflow-hidden relative group border-2 ${
+                          isThumb ? "border-amber-500" : "border-transparent"
+                        }`}
+                      >
+                        <img
+                          src={resolveImageUrl(image)}
+                          alt={`blog-${index}`}
+                          className="w-full h-full object-cover"
+                        />
+                        {isThumb && (
+                          <span className="absolute top-2 left-2 bg-amber-500 text-white text-xs font-semibold px-2 py-0.5 rounded">
+                            Thumbnail
+                          </span>
+                        )}
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setThumbnailRef({ type: "url", url: image })
+                            }
+                            className={`p-2 rounded-full transition-colors ${
+                              isThumb
+                                ? "bg-amber-500 text-white"
+                                : "bg-white text-gray-700 hover:bg-amber-500 hover:text-white"
+                            }`}
+                            title={isThumb ? "Đang là thumbnail" : "Đặt làm thumbnail"}
+                          >
+                            <Star size={18} fill={isThumb ? "currentColor" : "none"} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteOldImage(image)}
+                            className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition-colors"
+                            title="Xóa ảnh"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="mb-6 mt-6">
+                <h3 className="text-black text-sm font-medium mb-2">
+                  Thêm hình ảnh
+                </h3>
                 <input
                   type="file"
+                  multiple
                   onChange={handleImageUpload}
                   accept="image/*"
                 />
                 <div className="grid grid-cols-3 gap-4 mt-4">
-                  {postData.image && (
-                    <div className="h-48 overflow-hidden">
-                      <img
-                        src={postData.image}
-                        alt="Post"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  )}
+                  {newImages.map((image, index) => {
+                    const isThumb = isNewThumb(index);
+                    return (
+                      <div
+                        key={index}
+                        className={`h-48 overflow-hidden relative group border-2 ${
+                          isThumb ? "border-amber-500" : "border-transparent"
+                        }`}
+                      >
+                        <img
+                          src={URL.createObjectURL(image)}
+                          alt={`upload-${index}`}
+                          className="w-full h-full object-cover"
+                        />
+                        {isThumb && (
+                          <span className="absolute top-2 left-2 bg-amber-500 text-white text-xs font-semibold px-2 py-0.5 rounded">
+                            Thumbnail
+                          </span>
+                        )}
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setThumbnailRef({ type: "newIndex", index })
+                            }
+                            className={`p-2 rounded-full transition-colors ${
+                              isThumb
+                                ? "bg-amber-500 text-white"
+                                : "bg-white text-gray-700 hover:bg-amber-500 hover:text-white"
+                            }`}
+                            title={isThumb ? "Đang là thumbnail" : "Đặt làm thumbnail"}
+                          >
+                            <Star size={18} fill={isThumb ? "currentColor" : "none"} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteNewImage(index)}
+                            className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition-colors"
+                            title="Xóa ảnh"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -248,6 +416,23 @@ const PostDetail = ({ postId, onClose }) => {
                     </option>
                   ))}
                 </select>
+              </div>
+
+              <div className="mb-4">
+                <label className="flex items-center gap-2 text-black text-sm font-medium select-none">
+                  <input
+                    type="checkbox"
+                    className="size-4"
+                    checked={postData.isFeatured}
+                    onChange={(e) =>
+                      setPostData((prev) => ({
+                        ...prev,
+                        isFeatured: e.target.checked,
+                      }))
+                    }
+                  />
+                  Đánh dấu nổi bật (Featured)
+                </label>
               </div>
             </div>
 

@@ -1,16 +1,19 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ShoppingCart } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { ChevronDown, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 
 import { theme } from "@/constants/theme";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { toSlug } from "@/lib/slug";
 import { formatVND, resolveImageUrl } from "@/lib/format";
-import { getProjects } from "@/services/project";
+import { getProducts } from "@/services/product";
+import { getCategories } from "@/services/category";
+import { buildCategoryTree } from "@/lib/categoryTree";
 import { useCartStore } from "@/stores/cartStore";
 
 const FALLBACK_PRODUCTS = [
@@ -34,16 +37,13 @@ const FALLBACK_PRODUCTS = [
   },
 ];
 
-const ALL_CATEGORY = { id: "all", label: "Tất cả" };
-
 const normalizeApiProduct = (p) => {
-  const id = p.postId ?? p.id ?? p.productId;
   const stock = Number(p.stock ?? 0);
   const price = Number(p.price ?? 0);
   const rawThumb = p.thumbnail ?? p.images?.[0] ?? null;
   const thumbnail = rawThumb ? resolveImageUrl(rawThumb) : null;
   return {
-    id,
+    id: p.id,
     isApi: true,
     title: p.title,
     name: p.title,
@@ -53,32 +53,38 @@ const normalizeApiProduct = (p) => {
     image: thumbnail,
     price,
     stock,
-    categoryId: p.categoryId ?? p.category?.id ?? null,
-    categoryName: p.categoryName ?? p.category?.name ?? "Khác",
+    categoryId: p.category?.id ?? null,
+    categoryName: p.category?.name ?? "Khác",
   };
 };
 
 export default function ProductsView({ content }) {
   const { hero, capabilities, customQuoteCta } = content ?? {};
+  const searchParams = useSearchParams();
+  const urlCategoryId = searchParams.get("categoryId");
 
   const [apiProducts, setApiProducts] = useState(null); // null = chưa load, [] = đã load nhưng rỗng
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedCategoryId, setSelectedCategoryId] = useState(urlCategoryId); // null = Tất cả
+  const [categoryTree, setCategoryTree] = useState([]);
+  const [hoveredRootId, setHoveredRootId] = useState(null);
 
   const addItem = useCartStore((s) => s.addItem);
+
+  useEffect(() => {
+    setSelectedCategoryId(urlCategoryId);
+  }, [urlCategoryId]);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        const result = await getProjects(1, 50);
-        const items = result?.data?.items ?? [];
-        if (!cancelled) setApiProducts(items.map(normalizeApiProduct));
+        const envelope = await getCategories("Product");
+        const flat = envelope?.data ?? [];
+        if (!cancelled) setCategoryTree(buildCategoryTree(flat));
       } catch (error) {
-        console.error("Error fetching products:", error);
-        if (!cancelled) setApiProducts([]);
-      } finally {
-        if (!cancelled) setLoading(false);
+        console.error("Error fetching categories:", error);
+        if (!cancelled) setCategoryTree([]);
       }
     })();
     return () => {
@@ -86,27 +92,39 @@ export default function ProductsView({ content }) {
     };
   }, []);
 
-  const usingFallback = !loading && (!apiProducts || apiProducts.length === 0);
+  const fetchProducts = useCallback(async (categoryId) => {
+    setLoading(true);
+    try {
+      const page = await getProducts({
+        pageNumber: 1,
+        pageSize: 50,
+        ...(categoryId ? { categoryId } : {}),
+      });
+      const items = page?.items ?? [];
+      return items.map(normalizeApiProduct);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const items = await fetchProducts(selectedCategoryId);
+      if (!cancelled) setApiProducts(items);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedCategoryId, fetchProducts]);
+
+  const usingFallback =
+    !loading && !selectedCategoryId && (!apiProducts || apiProducts.length === 0);
   const products = usingFallback ? FALLBACK_PRODUCTS : apiProducts ?? [];
-
-  const categories = useMemo(() => {
-    if (usingFallback || !products.length) return [ALL_CATEGORY];
-    const seen = new Map();
-    products.forEach((p) => {
-      const key = p.categoryId ?? p.categoryName ?? "uncat";
-      if (!seen.has(key)) {
-        seen.set(key, { id: String(key), label: p.categoryName ?? "Khác" });
-      }
-    });
-    return [ALL_CATEGORY, ...seen.values()];
-  }, [products, usingFallback]);
-
-  const filteredProducts =
-    selectedCategory === "all"
-      ? products
-      : products.filter(
-          (p) => String(p.categoryId ?? p.categoryName ?? "uncat") === selectedCategory
-        );
+  const filteredProducts = products;
 
   const handleAddToCart = (product, e) => {
     e.preventDefault();
@@ -161,22 +179,67 @@ export default function ProductsView({ content }) {
 
       <Breadcrumb items={[{ label: "Sản phẩm" }]} />
 
-      {categories.length > 1 && (
+      {categoryTree.length > 0 && (
         <section className="py-12 bg-[#2B2B2B] top-[120px] z-40">
           <div className="max-w-7xl mx-auto px-4">
-            <div className="flex flex-wrap gap-4 justify-center">
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`px-8 py-3 transition-colors ${
-                    selectedCategory === category.id
-                      ? "bg-[#D4A017] text-[#111111]"
-                      : "bg-[#111111] text-white hover:bg-[#D4A017] hover:text-[#111111]"
-                  }`}
+            <div
+              className="flex flex-wrap gap-4 justify-center"
+              onMouseLeave={() => setHoveredRootId(null)}
+            >
+              <button
+                onClick={() => setSelectedCategoryId(null)}
+                onMouseEnter={() => setHoveredRootId(null)}
+                className={`px-8 py-3 transition-colors ${
+                  selectedCategoryId === null
+                    ? "bg-[#D4A017] text-[#111111]"
+                    : "bg-[#111111] text-white hover:bg-[#D4A017] hover:text-[#111111]"
+                }`}
+              >
+                Tất cả
+              </button>
+
+              {categoryTree.map((root) => (
+                <div
+                  key={root.id}
+                  className="relative"
+                  onMouseEnter={() => setHoveredRootId(root.id)}
                 >
-                  {category.label}
-                </button>
+                  <button
+                    onClick={() => setSelectedCategoryId(root.id)}
+                    className={`flex items-center gap-2 px-8 py-3 transition-colors ${
+                      selectedCategoryId === root.id ||
+                      root.children.some((c) => c.id === selectedCategoryId)
+                        ? "bg-[#D4A017] text-[#111111]"
+                        : "bg-[#111111] text-white hover:bg-[#D4A017] hover:text-[#111111]"
+                    }`}
+                  >
+                    {root.name}
+                    {root.children.length > 0 && <ChevronDown className="w-4 h-4" />}
+                  </button>
+
+                  {root.children.length > 0 && hoveredRootId === root.id && (
+                    <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 z-50">
+                      <div className="bg-[#111111] border border-[#D4A017]/30 shadow-lg min-w-[220px] py-2">
+                        {root.children.map((child) => (
+                          <button
+                            key={child.id}
+                            onClick={() => {
+                              setSelectedCategoryId(child.id);
+                              setHoveredRootId(null);
+                            }}
+                            className={`w-full text-left px-5 py-2 transition-colors ${
+                              selectedCategoryId === child.id
+                                ? "bg-[#D4A017] text-[#111111]"
+                                : "text-white hover:bg-[#D4A017] hover:text-[#111111]"
+                            }`}
+                          >
+                            {child.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           </div>
@@ -223,11 +286,10 @@ export default function ProductsView({ content }) {
                         <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-transparent to-transparent opacity-60" />
                         {product.isApi && (
                           <span
-                            className={`absolute top-4 right-4 px-3 py-1 text-xs font-semibold ${
-                              outOfStock
+                            className={`absolute top-4 right-4 px-3 py-1 text-xs font-semibold ${outOfStock
                                 ? "bg-red-600 text-white"
                                 : "bg-[#D4A017] text-[#111111]"
-                            }`}
+                              }`}
                           >
                             {outOfStock
                               ? "Hết hàng"

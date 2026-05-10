@@ -15,7 +15,7 @@ import { toast } from "sonner";
 
 import CreateProject from "./createProject/CreateProject";
 import ProjectDetail from "./projectDetail/ProjectDetail";
-import { getProjects, deleteProject } from "@/services/project";
+import { getProducts, deleteProduct } from "@/services/product";
 import { formatVND, formatDateVN, resolveImageUrl } from "@/lib/format";
 
 const PAGE_SIZE = 5;
@@ -39,15 +39,19 @@ const ProductTable = () => {
   const loadPage = async (pageNumber, search) => {
     setLoading(true);
     try {
-      const result = await getProjects(pageNumber, PAGE_SIZE, search);
-      setItems(result?.data?.items ?? []);
+      const result = await getProducts({
+        pageNumber,
+        pageSize: PAGE_SIZE,
+        ...(search ? { title: search } : {}),
+      });
+      setItems(result?.items ?? []);
       setPage({
-        pageNumber: result?.data?.pageNumber ?? pageNumber,
-        pageSize: result?.data?.pageSize ?? PAGE_SIZE,
-        totalCount: result?.data?.totalCount ?? 0,
-        totalPages: result?.data?.totalPages ?? 0,
-        hasNext: result?.data?.hasNext ?? false,
-        hasPrevious: result?.data?.hasPrevious ?? false,
+        pageNumber: result?.pageNumber ?? pageNumber,
+        pageSize: result?.pageSize ?? PAGE_SIZE,
+        totalCount: result?.totalCount ?? 0,
+        totalPages: result?.totalPages ?? 0,
+        hasNext: result?.hasNext ?? false,
+        hasPrevious: result?.hasPrevious ?? false,
       });
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -71,19 +75,19 @@ const ProductTable = () => {
     loadPage(1, searchTerm.trim());
   };
 
-  const handleDeleteProject = async (postId) => {
-    if (!postId) {
+  const handleDeleteProduct = async (id) => {
+    if (!id) {
       toast.error("Sản phẩm không có ID hợp lệ");
       return;
     }
     if (!window.confirm("Bạn có chắc muốn xóa sản phẩm này không?")) return;
     try {
-      await deleteProject(postId);
+      await deleteProduct(id);
       toast.success("Xóa sản phẩm thành công!");
       await loadPage(page.pageNumber, searchTerm);
     } catch (error) {
-      console.error("Error deleting project:", error);
-      toast.error("Xóa sản phẩm thất bại!");
+      console.error("Error deleting product:", error);
+      toast.error(error?.messages?.[0] ?? "Xóa sản phẩm thất bại!");
     }
   };
 
@@ -171,13 +175,13 @@ const ProductTable = () => {
                 </td>
               </tr>
             ) : (
-              items.map((project) => {
-                const stock = Number(project.stock ?? 0);
+              items.map((product) => {
+                const stock = Number(product.stock ?? 0);
                 const outOfStock = stock <= 0;
-                const thumbUrl = resolveImageUrl(project.thumbnail);
+                const thumbUrl = resolveImageUrl(product.thumbnail);
                 return (
                   <motion.tr
-                    key={project.postId ?? project.id ?? project.title}
+                    key={product.id ?? product.title}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.2 }}
@@ -187,7 +191,7 @@ const ProductTable = () => {
                         {thumbUrl ? (
                           <img
                             src={thumbUrl}
-                            alt={project.title ?? "thumbnail"}
+                            alt={product.title ?? "thumbnail"}
                             className="w-12 h-12 rounded object-cover bg-gray-100 shrink-0"
                           />
                         ) : (
@@ -197,35 +201,34 @@ const ProductTable = () => {
                         )}
                         <div className="min-w-0">
                           <div className="font-medium truncate max-w-xs">
-                            {project.title}
+                            {product.title}
                           </div>
-                          {project.subtitle && (
+                          {product.subtitle && (
                             <div className="text-xs text-gray-500 truncate max-w-xs">
-                              {project.subtitle}
+                              {product.subtitle}
                             </div>
                           )}
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-3 text-sm text-black text-right whitespace-nowrap font-medium">
-                      {formatVND(project.price)}
+                      {formatVND(product.price)}
                     </td>
                     <td className="px-4 py-3 text-right whitespace-nowrap">
                       <span
-                        className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${
-                          outOfStock
+                        className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${outOfStock
                             ? "bg-red-100 text-red-700 border border-red-200"
                             : "bg-emerald-100 text-emerald-700 border border-emerald-200"
-                        }`}
+                          }`}
                       >
                         {outOfStock ? "Hết hàng" : `Còn ${stock}`}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-700">
-                      {project.categoryName ?? "—"}
+                      {product.category?.name ?? "—"}
                     </td>
                     <td className="px-4 py-3 text-center">
-                      {project.isFavourite ? (
+                      {product.isFavourite ? (
                         <Star
                           size={18}
                           className="text-amber-500 fill-amber-500 inline-block"
@@ -235,19 +238,19 @@ const ProductTable = () => {
                       )}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
-                      {formatDateVN(project.createDate)}
+                      {formatDateVN(product.createDate)}
                     </td>
                     <td className="px-4 py-3 text-right text-sm whitespace-nowrap">
                       <button
                         className="text-indigo-600 hover:text-indigo-800 mr-3"
-                        onClick={() => openProjectDetail(project.postId)}
+                        onClick={() => openProjectDetail(product.id)}
                         aria-label="Sửa"
                       >
                         <Edit size={18} />
                       </button>
                       <button
                         className="text-red-500 hover:text-red-700"
-                        onClick={() => handleDeleteProject(project.postId)}
+                        onClick={() => handleDeleteProduct(product.id)}
                         aria-label="Xoá"
                       >
                         <Trash2 size={18} />
