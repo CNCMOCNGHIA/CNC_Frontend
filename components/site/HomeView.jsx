@@ -7,6 +7,7 @@ import { motion } from "motion/react";
 import { theme } from "@/constants/theme";
 import { toSlug } from "@/lib/slug";
 import { resolveImageUrl } from "@/lib/format";
+import { toYouTubeEmbedUrl } from "@/lib/youtube";
 import { getFavouriteProducts } from "@/services/product";
 
 const productToGridItem = (p) => {
@@ -179,43 +180,52 @@ export default function HomeView({ content }) {
         <section className={`py-20 ${theme.colors.bgPrimary}`}>
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-5xl md:text-7xl text-black mb-4">{servicesSection.title}</h2>
+              <h2 className="font-body font-bold tracking-wider text-4xl md:text-5xl text-[#D4A017] uppercase mb-3">{servicesSection.title}</h2>
               <p className="text-xl text-black/70 max-w-2xl mx-auto">
                 {servicesSection.description}
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {(servicesSection.items ?? []).map((service, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  className="group relative h-96 overflow-hidden"
-                >
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+              {/* Left column - Image */}
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="relative h-[636px] overflow-hidden"
+              >
+                <img
+                  src={resolveImageUrl(servicesSection.image)}
+                  alt={servicesSection.imageAlt ?? "Services"}
+                  className="w-full h-full object-cover"
+                />
+              </motion.div>
+
+              {/* Right column - Service items stacked */}
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="flex flex-col gap-6"
+              >
+                {(servicesSection.items ?? []).map((service, index) => (
                   <div
-                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                    style={{ backgroundImage: `url('${resolveImageUrl(service.image)}')` }}
+                    key={index}
+                    className="bg-black/80 p-8 rounded"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
-                  </div>
-                  <div className="relative h-full flex flex-col justify-end p-8">
-                    <h3 className="text-3xl md:text-4xl text-white mb-3">{service.title}</h3>
-                    <p className="text-white/80 mb-4">{service.description}</p>
-                    {servicesSection.learnMoreLabel && (
-                      <Link
-                        href={servicesSection.learnMoreHref || "#"}
-                        className={`inline-flex items-center gap-2 ${theme.colors.brandText} hover:gap-4 transition-all`}
-                      >
-                        {servicesSection.learnMoreLabel}
-                        <ArrowRight className="w-5 h-5" />
-                      </Link>
+                    <h3 className="text-2xl md:text-3xl text-white mb-4">{service.title}</h3>
+                    {service.details && Array.isArray(service.details) ? (
+                      <ul className="space-y-2">
+                        {service.details.map((detail, i) => (
+                          <li key={i} className={`${theme.colors.brandText}`}>– {detail}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className={`${theme.colors.brandText}`}>{service.description}</p>
                     )}
                   </div>
-                </motion.div>
-              ))}
+                ))}
+              </motion.div>
             </div>
           </div>
         </section>
@@ -257,11 +267,21 @@ export default function HomeView({ content }) {
                 viewport={{ once: true }}
                 className="relative h-[500px]"
               >
-                <img
-                  src={resolveImageUrl(whyChooseUs.image)}
-                  alt={whyChooseUs.imageAlt ?? ""}
-                  className="w-full h-full object-cover"
-                />
+                {whyChooseUs.youtubeUrl ? (
+                  <iframe
+                    src={toYouTubeEmbedUrl(whyChooseUs.youtubeUrl)}
+                    className="w-full h-full"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                ) : (
+                  <img
+                    src={resolveImageUrl(whyChooseUs.image)}
+                    alt={whyChooseUs.imageAlt ?? ""}
+                    className="w-full h-full object-cover"
+                  />
+                )}
               </motion.div>
             </div>
           </div>

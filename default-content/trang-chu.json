@@ -37,28 +37,29 @@
   "servicesSection": {
     "title": "DICH VỤ CỦA CHÚNG TÔI",
     "description": "Comprehensive CNC processing solutions for furniture manufacturers",
-    "learnMoreLabel": "LEARN MORE",
-    "learnMoreHref": "/dich-vu",
+    "image": "images/dich-vu-workspace.png",
+    "imageAlt": "Industrial workshop",
     "items": [
       {
-        "title": "CNC CUTTING",
-        "description": "Precision CNC cutting for wood panels and furniture components",
-        "image": "images/dich-vu-1.jpeg"
+        "title": "Gia công nội thất theo bản vẽ 2D, 3D",
+        "details": [
+          "Từ bếp, tủ áo, giương, bàn ghế",
+          "Nội thất căn hộ, showroom, văn phòng"
+        ]
       },
       {
-        "title": "PUR EDGE BANDING",
-        "description": "High-quality edge banding with PUR adhesive for durability",
-        "image": "images/dich-vu-2.jpeg"
+        "title": "Cắt CNC – lên file sản xuất",
+        "details": [
+          "Nhận file 3D → triển khai sản xuất",
+          "Chính xác – nhanh – chuyên nghiệp"
+        ]
       },
       {
-        "title": "MDF BENDING",
-        "description": "Specialized MDF bending for curved furniture designs",
-        "image": "images/dich-vu-3.jpeg"
-      },
-      {
-        "title": "DRILLING & ROUTING",
-        "description": "Precision drilling and handle routing for cabinet hardware",
-        "image": "images/dich-vu-4.jpeg"
+        "title": "Cung cấp vật tư vận gõ công nghiệp",
+        "details": [
+          "MDF, MFC, HDF, Plywood...",
+          "Đa dạng màu sắc, đắp ứng mọi nhu cầu thiết kế"
+        ]
       }
     ]
   },
@@ -108,6 +109,7 @@
       "Competitive B2B pricing",
       "Quality assurance guaranteed"
     ],
+    "youtubeUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     "image": "images/ly-do.jpeg",
     "imageAlt": "Modern industrial workshop"
   },
