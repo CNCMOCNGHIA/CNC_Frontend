@@ -162,7 +162,7 @@ export default function SiteInfoEditor() {
         </div>
       </div>
 
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 overflow-hidden">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-[3fr_2fr] overflow-hidden">
         <div className="overflow-y-auto p-4 bg-gray-50 border-r border-gray-200">
           <SectionCard title="Brand">
             <div className="grid grid-cols-3 gap-2">
@@ -336,8 +336,8 @@ export default function SiteInfoEditor() {
           </SectionCard>
         </div>
 
-        <div className="overflow-y-auto bg-gray-100">
-          <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-2 text-xs text-gray-500">
+        <div className="overflow-y-auto bg-gray-100 transform-gpu relative">
+          <div className="bg-white border-b border-gray-200 px-4 py-2 text-xs text-gray-500">
             Xem trước (header + footer)
           </div>
           <div className="bg-[#2B2B2B]">
