@@ -166,33 +166,13 @@ export default function HomeEditor() {
               value={hotProducts?.description}
               onChange={(v) => setSection("hotProducts", { ...hotProducts, description: v })}
             />
-            <ListField
-              label="Danh sách sản phẩm"
-              items={hotProducts?.items}
-              onChange={(items) => setSection("hotProducts", { ...hotProducts, items })}
-              emptyItem={emptyImageItem}
-              addLabel="Thêm sản phẩm"
-              renderItem={(item, set) => (
-                <div className="space-y-2">
-                  <TextField
-                    label="Tên"
-                    value={item.name}
-                    onChange={(v) => set({ ...item, name: v })}
-                  />
-                  <ImageField
-                    label="Ảnh"
-                    value={item.image}
-                    onChange={(v) => set({ ...item, image: v })}
-                  />
-                  <TextField
-                    label="Liên kết (tuỳ chọn)"
-                    value={item.href}
-                    onChange={(v) => set({ ...item, href: v })}
-                    placeholder="/san-pham/..."
-                  />
-                </div>
-              )}
-            />
+            <div className="text-xs text-gray-600 bg-blue-50 border border-blue-200 rounded p-3">
+              Danh sách hiển thị tự động lấy từ các sản phẩm đã được đánh dấu
+              <span className="font-semibold"> “Yêu thích” </span>
+              trong mục
+              <span className="font-mono"> /management/product</span>
+              {" "}(tối đa 3 sản phẩm).
+            </div>
           </SectionCard>
 
           <SectionCard title="Số liệu (Stats)" defaultOpen={false}>

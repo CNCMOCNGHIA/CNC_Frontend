@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ChevronDown, ChevronUp, Plus, Trash2, Upload, X } from "lucide-react";
 import { uploadImage } from "@/services/upload";
 import { validateImage } from "@/lib/uploadValidate";
+import { resolveImageUrl } from "@/lib/format";
 
 export function SectionCard({ title, description, defaultOpen = true, children }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -122,7 +123,11 @@ export function ImageField({ label, value, onChange }) {
         <div className="w-32 h-20 bg-gray-100 rounded border border-gray-200 overflow-hidden flex-shrink-0">
           {value ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={value} alt="" className="w-full h-full object-cover" />
+            <img
+              src={resolveImageUrl(value)}
+              alt=""
+              className="w-full h-full object-cover"
+            />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
               Chưa có ảnh

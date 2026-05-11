@@ -42,6 +42,17 @@
   color: #999999;
 }
 
+/* Responsive YouTube / video embed */
+.ql-editor iframe.ql-video,
+.preview-content iframe.ql-video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  display: block;
+  margin: 1em 0;
+  border-radius: 4px;
+}
+
 /* Preview container */
 .preview-container {
   height: calc(90vh - 12rem);

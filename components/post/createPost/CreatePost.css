@@ -135,6 +135,17 @@
   border-radius: 4px;
 }
 
+/* Responsive YouTube / video embed */
+.ql-editor iframe.ql-video,
+.preview-content iframe.ql-video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  display: block;
+  margin: 1em 0;
+  border-radius: 4px;
+}
+
 /* Style for image thumbnails in upload section */
 .thumbnail-grid {
   display: grid;

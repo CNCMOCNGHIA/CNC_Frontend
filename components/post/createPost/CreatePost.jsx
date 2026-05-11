@@ -12,6 +12,8 @@ import { validateImage } from "@/lib/uploadValidate";
 import { getCategories } from "@/services/category";
 import { buildCategoryTree } from "@/lib/categoryTree";
 import { createBlog } from "@/services/post";
+import { resolveImageUrl } from "@/lib/format";
+import { toYouTubeEmbedUrl } from "@/lib/youtube";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
@@ -59,7 +61,7 @@ const CreatePost = ({ onClose }) => {
       try {
         setIsUploading(true);
         const url = await uploadImage(file);
-        quill.insertEmbed(range.index, "image", url);
+        quill.insertEmbed(range.index, "image", resolveImageUrl(url));
         quill.setSelection(range.index + 1);
       } catch (error) {
         console.error("Error uploading image:", error);
@@ -70,6 +72,23 @@ const CreatePost = ({ onClose }) => {
     };
   };
 
+  const videoHandler = () => {
+    const raw = window.prompt(
+      "Dán link YouTube (vd: https://www.youtube.com/watch?v=..., https://youtu.be/...):"
+    );
+    if (!raw) return;
+    const embedUrl = toYouTubeEmbedUrl(raw);
+    if (!embedUrl) {
+      toast.error("Link YouTube không hợp lệ");
+      return;
+    }
+    const quill = quillRef.current?.getEditor();
+    if (!quill) return;
+    const range = quill.getSelection(true);
+    quill.insertEmbed(range.index, "video", embedUrl);
+    quill.setSelection(range.index + 1);
+  };
+
   const modules = useMemo(
     () => ({
       toolbar: {
@@ -78,9 +97,9 @@ const CreatePost = ({ onClose }) => {
           ["bold", "italic", "underline", "link"],
           [{ list: "ordered" }, { list: "bullet" }],
           [{ align: [] }],
-          ["image"],
+          ["image", "video"],
         ],
-        handlers: { image: imageHandler },
+        handlers: { image: imageHandler, video: videoHandler },
       },
     }),
     []

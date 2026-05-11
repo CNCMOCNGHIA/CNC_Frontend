@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { Award, Users, Target, Factory } from "lucide-react";
 import { theme } from "@/constants/theme";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { resolveImageUrl } from "@/lib/format";
 
 const ICON_MAP = {
   award: Award,
@@ -21,7 +22,7 @@ export default function AboutView({ content }) {
         <section className="relative h-[60vh] min-h-[500px]">
           <div
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url('${hero.backgroundImage}')` }}
+            style={{ backgroundImage: `url('${resolveImageUrl(hero.backgroundImage)}')` }}
           >
             <div className="absolute inset-0 bg-[#111111]/70" />
           </div>
@@ -67,7 +68,7 @@ export default function AboutView({ content }) {
                 className="relative h-[500px]"
               >
                 <img
-                  src={story.image}
+                  src={resolveImageUrl(story.image)}
                   alt={story.imageAlt ?? ""}
                   className={`w-full h-full object-cover ${theme.colors.borderDark}`}
                 />
@@ -138,7 +139,7 @@ export default function AboutView({ content }) {
                 >
                   <div className="relative h-64 overflow-hidden">
                     <img
-                      src={machine.image}
+                      src={resolveImageUrl(machine.image)}
                       alt={machine.name}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
@@ -170,7 +171,7 @@ export default function AboutView({ content }) {
                 className="relative h-[500px]"
               >
                 <img
-                  src={facility.image}
+                  src={resolveImageUrl(facility.image)}
                   alt={facility.imageAlt ?? ""}
                   className="w-full h-full object-cover"
                 />

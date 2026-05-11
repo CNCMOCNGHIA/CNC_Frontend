@@ -69,7 +69,7 @@ export default function BlogView({ content }) {
         <section className="relative h-[60vh] min-h-[500px]">
           <div
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url('${hero.backgroundImage}')` }}
+            style={{ backgroundImage: `url('${resolveImageUrl(hero.backgroundImage)}')` }}
           >
             <div className="absolute inset-0 bg-[#111111]/70" />
           </div>

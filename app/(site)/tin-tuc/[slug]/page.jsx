@@ -1,36 +1,19 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Calendar, User } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import content from "@/default-content/tin-tuc-detail.json";
 import { theme } from "@/constants/theme";
 import { Breadcrumb } from "@/components/breadcrumb";
 import Link from "next/link";
 import { getBlog, getBlogs } from "@/services/post";
 import { formatDateVN, resolveImageUrl } from "@/lib/format";
 import { toSlug } from "@/lib/slug";
+import { embedYouTubeLinks } from "@/lib/youtube";
 
-const mergeBlog = (template, apiBlog) => {
-  if (!apiBlog) return template;
-  const heroImage = apiBlog.thumbnail
-    ? resolveImageUrl(apiBlog.thumbnail)
-    : template.heroImage;
-  const mainImage = Array.isArray(apiBlog.images) && apiBlog.images.length
-    ? resolveImageUrl(apiBlog.images[0])
-    : heroImage ?? template.mainImage;
-  const date = formatDateVN(apiBlog.createdAt) || template.date;
-  return {
-    ...template,
-    title: apiBlog.title ?? template.title,
-    excerpt: apiBlog.description ?? template.excerpt,
-    category: apiBlog.categoryName ?? template.category,
-    heroImage,
-    mainImage,
-    date,
-  };
-};
+const RECENT_SIDEBAR_TITLE = "Bài viết khác";
+const FALLBACK_HERO = "/images/trang-chu.jpeg";
 
 export default function BlogDetail() {
   const searchParams = useSearchParams();
@@ -38,10 +21,13 @@ export default function BlogDetail() {
 
   const [apiBlog, setApiBlog] = useState(null);
   const [loading, setLoading] = useState(Boolean(id));
-  const [recentFromApi, setRecentFromApi] = useState(null);
+  const [recent, setRecent] = useState([]);
 
   useEffect(() => {
-    if (!id) return;
+    if (!id) {
+      setLoading(false);
+      return;
+    }
     let cancelled = false;
     (async () => {
       try {
@@ -73,21 +59,16 @@ export default function BlogDetail() {
             image: b.thumbnail ? resolveImageUrl(b.thumbnail) : null,
             date: formatDateVN(b.createdAt) || "",
           }));
-        if (!cancelled) setRecentFromApi(items);
+        if (!cancelled) setRecent(items);
       } catch (error) {
         console.error("Error fetching recent posts:", error);
-        if (!cancelled) setRecentFromApi([]);
+        if (!cancelled) setRecent([]);
       }
     })();
     return () => {
       cancelled = true;
     };
   }, [id]);
-
-  const post = mergeBlog(content.post, apiBlog);
-  const { recentPosts, recentPostsTitle } = content;
-  const useApiRecent = recentFromApi !== null && recentFromApi.length > 0;
-  const recentItems = useApiRecent ? recentFromApi : recentPosts;
 
   if (loading) {
     return (
@@ -97,14 +78,29 @@ export default function BlogDetail() {
     );
   }
 
+  if (!apiBlog) {
+    return (
+      <div className={`${theme.colors.bgPrimary} min-h-[60vh] flex items-center justify-center`}>
+        <p className="text-white/60">Không tìm thấy bài viết.</p>
+      </div>
+    );
+  }
+
+  const title = apiBlog.title ?? "";
+  const category = apiBlog.categoryName ?? apiBlog.category?.name ?? "Tin tức";
+  const heroImage = apiBlog.thumbnail
+    ? resolveImageUrl(apiBlog.thumbnail)
+    : FALLBACK_HERO;
+  const date = formatDateVN(apiBlog.createdAt) || "";
+  const descriptionHtml = embedYouTubeLinks(apiBlog.description ?? "");
+
   return (
     <div className={`${theme.fonts.body} ${theme.colors.lightText}`}>
-
       {/* ── Hero Banner ──────────────────────────────────────────────── */}
       <section className="relative h-[60vh] min-h-[500px]">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url('${post.heroImage}')` }}
+          style={{ backgroundImage: `url('${heroImage}')` }}
         >
           <div className="absolute inset-0 bg-[#111111]/70" />
         </div>
@@ -116,27 +112,20 @@ export default function BlogDetail() {
             transition={{ duration: 0.8 }}
             className="max-w-2xl"
           >
-            {/* Category badge */}
             <div className="inline-block bg-[#D4A017] text-[#111111] px-4 py-2 text-sm mb-6 w-fit">
-              {post.category}
+              {category}
             </div>
 
-            {/* Title */}
             <h1 className={`${theme.fonts.heading} text-5xl md:text-6xl text-white leading-tight mb-6`}>
-              {post.title}
+              {title}
             </h1>
 
-            {/* Meta */}
-            <div className="flex items-center gap-6 text-white/80">
-              <div className="flex items-center gap-2">
+            {date && (
+              <div className="flex items-center gap-2 text-white/80">
                 <Calendar className="w-5 h-5" />
-                <span>{post.date}</span>
+                <span>{date}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <User className="w-5 h-5" />
-                <span>{post.author}</span>
-              </div>
-            </div>
+            )}
           </motion.div>
         </div>
 
@@ -146,76 +135,20 @@ export default function BlogDetail() {
       <Breadcrumb
         items={[
           { label: "Tin tức", href: "/tin-tuc" },
-          { label: post.title },
+          { label: title },
         ]}
       />
 
       {/* ── Content + Sidebar ────────────────────────────────────────── */}
       <section className={`${theme.colors.bgPrimary} py-8 px-4`}>
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 items-start">
-
-          {/* ── Main content ── */}
-          <div className="flex-1 flex flex-col gap-0 min-w-0">
-
-            {post.sections.map((section, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-              >
-                {/* Text-only section */}
-                {section.type === "text" && (
-                  <div className="bg-[#2B2B2B] p-8">
-                    <h2 className="text-2xl text-white font-bold mb-4">{section.title}</h2>
-                    <p className="text-white/80 text-xl leading-relaxed">{section.content}</p>
-                  </div>
-                )}
-
-                {/* Image break between sections */}
-                {index === 0 && (
-                  <div className="relative w-full h-[360px] overflow-hidden border border-black">
-                    <img
-                      src={post.mainImage}
-                      alt={post.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-
-                {/* List section */}
-                {section.type === "list" && (
-                  <div className="bg-[#2B2B2B] p-8">
-                    <h2 className="text-2xl md:text-3xl text-white font-bold mb-5">{section.title}</h2>
-                    <ul className="space-y-2 text-white/80 list-disc list-inside">
-                      {section.items.map((item) => (
-                        <li key={item} className="text-xl leading-9">{item}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Text + nested list section */}
-                {section.type === "text-list" && (
-                  <div className="bg-[#2B2B2B] p-8">
-                    <h2 className="text-2xl md:text-3xl text-white font-bold mb-5">{section.title}</h2>
-                    <ul className="space-y-3 text-white/80 list-disc list-inside">
-                      <li className="text-xl leading-9">{section.content}</li>
-                      <li className="text-xl leading-9">
-                        {section.subTitle}
-                        <ul className="list-disc list-inside ml-6 mt-1 space-y-1">
-                          {section.subItems.map((item) => (
-                            <li key={item} className="text-xl">{item}</li>
-                          ))}
-                        </ul>
-                      </li>
-                    </ul>
-                  </div>
-                )}
-              </motion.div>
-            ))}
-          </div>
+          {/* ── Main content (HTML từ Quill — đã được chèn bởi admin đã xác thực) ── */}
+          <article className="flex-1 min-w-0 bg-[#2B2B2B] p-8 text-white/80 blog-content">
+            <div
+              className="prose prose-invert max-w-none text-xl leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: descriptionHtml }}
+            />
+          </article>
 
           {/* ── Sidebar ── */}
           <aside className="w-full lg:w-[400px] shrink-0">
@@ -225,21 +158,18 @@ export default function BlogDetail() {
               viewport={{ once: true }}
               className="bg-[#2B2B2B] p-6 flex flex-col gap-6 sticky top-[140px]"
             >
-              {/* Sidebar title */}
               <div>
                 <div className="w-[200px] h-[5px] bg-[#D9D9D9] mb-5" />
                 <h3 className={`${theme.fonts.heading} text-3xl text-white`}>
-                  {recentPostsTitle}
+                  {RECENT_SIDEBAR_TITLE}
                 </h3>
               </div>
 
-              {/* Recent post cards */}
               <div className="flex flex-col gap-4">
-                {recentItems.map((rPost, index) => {
-                  const href = useApiRecent
-                    ? `/tin-tuc/${toSlug(rPost.title)}?id=${rPost.id}`
-                    : `/tin-tuc/${rPost.slug}`;
-                  return (
+                {recent.length === 0 ? (
+                  <p className="text-white/60 text-sm">Chưa có bài viết khác.</p>
+                ) : (
+                  recent.map((rPost, index) => (
                     <motion.div
                       key={rPost.id}
                       initial={{ opacity: 0, y: 10 }}
@@ -248,7 +178,7 @@ export default function BlogDetail() {
                       viewport={{ once: true }}
                     >
                       <Link
-                        href={href}
+                        href={`/tin-tuc/${toSlug(rPost.title)}?id=${rPost.id}`}
                         className={`flex gap-3 items-start p-3 rounded-2xl transition-colors ${
                           index === 0 ? "bg-[#111111]" : "bg-[#3A3A3A] hover:bg-[#111111]"
                         }`}
@@ -277,8 +207,8 @@ export default function BlogDetail() {
                         </div>
                       </Link>
                     </motion.div>
-                  );
-                })}
+                  ))
+                )}
               </div>
             </motion.div>
           </aside>

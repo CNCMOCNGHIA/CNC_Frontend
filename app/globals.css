@@ -2,3 +2,93 @@
 .font-body {
     font-family: var(--font-montserrat), sans-serif;
   }
+
+/* Style cho HTML rich-text từ Quill (blog description, product description) */
+.blog-content,
+.product-content {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.125rem;
+  line-height: 1.8;
+}
+
+.blog-content h1,
+.product-content h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 1.5rem 0 1rem;
+}
+
+.blog-content h2,
+.product-content h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 1.25rem 0 0.75rem;
+}
+
+.blog-content h3,
+.product-content h3 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 1rem 0 0.5rem;
+}
+
+.blog-content p,
+.product-content p {
+  margin: 0.75rem 0;
+}
+
+.blog-content a,
+.product-content a {
+  color: #D4A017;
+  text-decoration: underline;
+}
+
+.blog-content ul,
+.product-content ul,
+.blog-content ol,
+.product-content ol {
+  margin: 0.75rem 0;
+  padding-left: 1.5rem;
+}
+
+.blog-content ul { list-style: disc; }
+.product-content ul { list-style: disc; }
+.blog-content ol,
+.product-content ol { list-style: decimal; }
+
+.blog-content li,
+.product-content li {
+  margin: 0.25rem 0;
+}
+
+.blog-content img,
+.product-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  margin: 1rem 0;
+}
+
+.blog-content iframe,
+.product-content iframe,
+.blog-content iframe.ql-video,
+.product-content iframe.ql-video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border: 0;
+  border-radius: 6px;
+  margin: 1rem 0;
+  display: block;
+}
+
+.blog-content blockquote,
+.product-content blockquote {
+  border-left: 4px solid #D4A017;
+  padding-left: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 1rem 0;
+}

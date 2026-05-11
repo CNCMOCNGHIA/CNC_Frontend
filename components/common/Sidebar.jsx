@@ -41,6 +41,12 @@ const SIDEBAR_ITEMS = [
     href: "/management/post",
   },
   {
+    name: "Danh mục bài đăng",
+    icon: Tags,
+    color: "#0EA5E9",
+    href: "/management/blog-categories",
+  },
+  {
     name: "Chỉnh sửa UI",
     icon: FileText,
     color: "#10B981",

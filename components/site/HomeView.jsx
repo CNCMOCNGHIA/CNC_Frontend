@@ -1,13 +1,28 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 import { motion } from "motion/react";
 import { theme } from "@/constants/theme";
 import { toSlug } from "@/lib/slug";
+import { resolveImageUrl } from "@/lib/format";
+import { getFavouriteProducts } from "@/services/product";
 
-function ImageGridSection({ section, bgClass }) {
+const productToGridItem = (p) => {
+  const slug = toSlug(p?.title ?? "");
+  const image = p?.thumbnail ?? p?.images?.[0] ?? "";
+  return {
+    name: p?.title ?? "",
+    image,
+    href: p?.id ? `/san-pham/${slug}?id=${p.id}` : `/san-pham/${slug}`,
+  };
+};
+
+function ImageGridSection({ section, items, bgClass }) {
   if (!section) return null;
+  const list = items ?? section.items ?? [];
+  if (list.length === 0) return null;
   return (
     <section className={`py-20 ${bgClass}`}>
       <div className="max-w-7xl mx-auto px-4">
@@ -21,7 +36,7 @@ function ImageGridSection({ section, bgClass }) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {(section.items ?? []).map((item, index) => (
+          {list.map((item, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 30 }}
@@ -35,7 +50,7 @@ function ImageGridSection({ section, bgClass }) {
                 className="block relative h-72 overflow-hidden"
               >
                 <img
-                  src={item.image}
+                  src={resolveImageUrl(item.image)}
                   alt={item.name}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
@@ -66,13 +81,31 @@ export default function HomeView({ content }) {
     cta,
   } = content ?? {};
 
+  const [hotItems, setHotItems] = useState([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const list = await getFavouriteProducts();
+        if (cancelled) return;
+        setHotItems((Array.isArray(list) ? list : []).map(productToGridItem));
+      } catch (error) {
+        console.error("Error loading favourite products:", error);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <div className={`${theme.fonts.body} ${theme.colors.lightText}`}>
       {hero && (
         <section className="relative h-screen">
           <div
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url('${hero.backgroundImage}')` }}
+            style={{ backgroundImage: `url('${resolveImageUrl(hero.backgroundImage)}')` }}
           >
             <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/70 to-transparent" />
           </div>
@@ -113,7 +146,11 @@ export default function HomeView({ content }) {
       )}
 
       {hotProducts && (
-        <ImageGridSection section={hotProducts} bgClass={theme.colors.bgPrimary} />
+        <ImageGridSection
+          section={hotProducts}
+          items={hotItems}
+          bgClass={theme.colors.bgPrimary}
+        />
       )}
 
       {stats?.length > 0 && (
@@ -160,7 +197,7 @@ export default function HomeView({ content }) {
                 >
                   <div
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                    style={{ backgroundImage: `url('${service.image}')` }}
+                    style={{ backgroundImage: `url('${resolveImageUrl(service.image)}')` }}
                   >
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
                   </div>
@@ -221,7 +258,7 @@ export default function HomeView({ content }) {
                 className="relative h-[500px]"
               >
                 <img
-                  src={whyChooseUs.image}
+                  src={resolveImageUrl(whyChooseUs.image)}
                   alt={whyChooseUs.imageAlt ?? ""}
                   className="w-full h-full object-cover"
                 />

@@ -5,6 +5,7 @@ import { CheckCircle, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { theme } from "@/constants/theme";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { resolveImageUrl } from "@/lib/format";
 
 export default function ServicesView({ content }) {
   const { hero, services, additionalServices, cta, requestQuoteLabel } = content ?? {};
@@ -15,7 +16,7 @@ export default function ServicesView({ content }) {
         <section className="relative h-[60vh] min-h-[500px]">
           <div
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url('${hero.backgroundImage}')` }}
+            style={{ backgroundImage: `url('${resolveImageUrl(hero.backgroundImage)}')` }}
           >
             <div className="absolute inset-0 bg-[#111111]/70" />
           </div>
@@ -102,7 +103,7 @@ export default function ServicesView({ content }) {
                 className={`relative h-[500px] ${index % 2 === 1 ? "lg:order-1" : ""}`}
               >
                 <img
-                  src={service.image}
+                  src={resolveImageUrl(service.image)}
                   alt={service.title}
                   className={`w-full h-full object-cover ${
                     index % 2 === 0 ? theme.colors.borderDark : ""

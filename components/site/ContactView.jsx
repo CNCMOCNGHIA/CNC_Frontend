@@ -7,6 +7,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { theme } from "@/constants/theme";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { resolveImageUrl } from "@/lib/format";
 
 const ICON_MAP = { MapPin, Phone, Mail, Clock };
 
@@ -37,7 +38,7 @@ export default function ContactView({ content }) {
         <section className="relative h-[50vh] min-h-[400px]">
           <div
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url('${hero.backgroundImage}')` }}
+            style={{ backgroundImage: `url('${resolveImageUrl(hero.backgroundImage)}')` }}
           >
             <div className="absolute inset-0 bg-[#111111]/70" />
           </div>

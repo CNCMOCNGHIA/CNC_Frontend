@@ -148,7 +148,7 @@ const CreateForm = ({ parent, onCancel, onSubmit, submitting }) => {
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Tên danh mục"
-          className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 placeholder:text-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
         <button
           type="submit"
@@ -162,7 +162,11 @@ const CreateForm = ({ parent, onCancel, onSubmit, submitting }) => {
   );
 };
 
-const CategoryManager = ({ type = "Product", title = "Danh mục sản phẩm" }) => {
+const CategoryManager = ({
+  type = "Product",
+  title = "Danh mục sản phẩm",
+  description = "Quản lý cây danh mục. Có thể tạo nhiều cấp.",
+}) => {
   const [tree, setTree] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(new Set());
@@ -277,9 +281,7 @@ const CategoryManager = ({ type = "Product", title = "Danh mục sản phẩm" }
       <div className="flex justify-between items-center mb-4">
         <div>
           <h2 className="text-xl font-semibold text-black">{title}</h2>
-          <p className="text-sm text-gray-500 mt-0.5">
-            Quản lý cây danh mục dùng cho sản phẩm. Có thể tạo nhiều cấp.
-          </p>
+          <p className="text-sm text-gray-500 mt-0.5">{description}</p>
         </div>
         <button
           type="button"
