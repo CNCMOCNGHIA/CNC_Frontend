@@ -1,10 +1,9 @@
 /* Đổi màu nền của khu vực nội dung thành trắng */
 .ql-container {
-  max-height: 300px; /* Chiều cao tối đa (tuỳ chỉnh) */
-  overflow-y: auto; /* Thêm thanh cuộn dọc khi nội dung tràn */
   background-color: #ffffff; /* Nền trắng */
   color: #000000; /* Màu chữ đen */
   border: 1px solid #cccccc; /* Viền xám nhạt */
+  height: auto;
 }
 
 /* Tùy chỉnh màu viền (nếu cần) */
@@ -27,7 +26,24 @@
   overflow-wrap: break-word; /* Tự động xuống dòng khi từ quá dài */
   padding: 10px; /* Khoảng cách giữa nội dung và viền */
   line-height: 1.6;
-  height: 100px; /* Tăng chiều cao của ô text box */
-  max-height: 400px; /* Đặt chiều cao tối đa nếu muốn */
-  overflow-y: auto; 
+  min-height: 300px; /* Chiều cao tối thiểu */
+  max-height: 60vh; /* Chiều cao tối đa, cuộn khi vượt quá */
+  height: auto; /* Tự co giãn theo nội dung */
+  overflow-y: auto;
+}
+
+/* Responsive YouTube / video embed */
+.ql-editor iframe.ql-video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  display: block;
+  margin: 1em 0;
+  border-radius: 4px;
+}
+
+/* Ảnh trong editor tự co theo bề ngang */
+.ql-editor img {
+  max-width: 100%;
+  height: auto;
 }

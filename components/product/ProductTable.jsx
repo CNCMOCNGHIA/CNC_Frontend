@@ -13,8 +13,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-import CreateProject from "./createProject/CreateProject";
-import ProjectDetail from "./projectDetail/ProjectDetail";
+import CreateProduct from "./createProduct/CreateProduct";
+import ProductDetail from "./productDetail/ProductDetail";
 import { getProducts, deleteProduct } from "@/services/product";
 import { formatVND, formatDateVN, resolveImageUrl } from "@/lib/format";
 
@@ -32,9 +32,9 @@ const ProductTable = () => {
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
-  const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
-  const [isProjectDetailOpen, setIsProjectDetailOpen] = useState(false);
-  const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [isCreateProductOpen, setIsCreateProductOpen] = useState(false);
+  const [isProductDetailOpen, setIsProductDetailOpen] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState(null);
 
   const loadPage = async (pageNumber, search) => {
     setLoading(true);
@@ -91,18 +91,18 @@ const ProductTable = () => {
     }
   };
 
-  const openCreateProject = () => setIsCreateProjectOpen(true);
-  const closeCreateProject = () => {
-    setIsCreateProjectOpen(false);
+  const openCreateProduct = () => setIsCreateProductOpen(true);
+  const closeCreateProduct = () => {
+    setIsCreateProductOpen(false);
     loadPage(page.pageNumber, searchTerm);
   };
-  const openProjectDetail = (projectId) => {
-    setSelectedProjectId(projectId);
-    setIsProjectDetailOpen(true);
+  const openProductDetail = (productId) => {
+    setSelectedProductId(productId);
+    setIsProductDetailOpen(true);
   };
-  const closeProjectDetail = () => {
-    setSelectedProjectId(null);
-    setIsProjectDetailOpen(false);
+  const closeProductDetail = () => {
+    setSelectedProductId(null);
+    setIsProductDetailOpen(false);
     loadPage(page.pageNumber, searchTerm);
   };
 
@@ -127,7 +127,7 @@ const ProductTable = () => {
             <Search className="absolute left-3 top-2.5 text-white" size={18} />
           </form>
           <button
-            onClick={openCreateProject}
+            onClick={openCreateProduct}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
           >
             + Thêm sản phẩm
@@ -243,7 +243,7 @@ const ProductTable = () => {
                     <td className="px-4 py-3 text-right text-sm whitespace-nowrap">
                       <button
                         className="text-indigo-600 hover:text-indigo-800 mr-3"
-                        onClick={() => openProjectDetail(product.id)}
+                        onClick={() => openProductDetail(product.id)}
                         aria-label="Sửa"
                       >
                         <Edit size={18} />
@@ -293,11 +293,11 @@ const ProductTable = () => {
         )}
       </div>
 
-      {isCreateProjectOpen && <CreateProject onClose={closeCreateProject} />}
-      {isProjectDetailOpen && (
-        <ProjectDetail
-          projectId={selectedProjectId}
-          onClose={closeProjectDetail}
+      {isCreateProductOpen && <CreateProduct onClose={closeCreateProduct} />}
+      {isProductDetailOpen && (
+        <ProductDetail
+          productId={selectedProductId}
+          onClose={closeProductDetail}
         />
       )}
     </motion.div>

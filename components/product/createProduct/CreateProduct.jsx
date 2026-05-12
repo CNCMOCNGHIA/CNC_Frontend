@@ -1,21 +1,23 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import { Star } from "lucide-react";
 
 import "react-quill-new/dist/quill.snow.css";
-import "./CreateProject.css";
+import "./CreateProduct.css";
 import { uploadImage } from "@/services/upload";
 import { validateImage } from "@/lib/uploadValidate";
 import { getCategories } from "@/services/category";
 import { buildCategoryTree } from "@/lib/categoryTree";
 import { createProduct } from "@/services/product";
+import { resolveImageUrl } from "@/lib/format";
+import { toYouTubeEmbedUrl } from "@/lib/youtube";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
-const CreateProject = ({ onClose }) => {
+const CreateProduct = ({ onClose }) => {
   const [images, setImages] = useState([]);
   const [thumbnailIndex, setThumbnailIndex] = useState(0);
   const [editorHtml, setEditorHtml] = useState("");
@@ -31,6 +33,7 @@ const CreateProject = ({ onClose }) => {
     level3: null,
     level4: null,
   });
+  const quillRef = useRef(null);
 
   useEffect(() => {
     (async () => {
@@ -121,14 +124,71 @@ const CreateProject = ({ onClose }) => {
     </div>
   );
 
-  const modules = {
-    toolbar: [
-      [{ header: [1, 2, false] }],
-      ["bold", "italic", "underline", "link"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      [{ align: [] }],
-    ],
+  const imageHandler = () => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files[0];
+      if (!quillRef.current || !file) return;
+
+      const validationError = validateImage(file);
+      if (validationError) {
+        toast.error(validationError);
+        return;
+      }
+
+      const quill = quillRef.current.getEditor();
+      const range = quill.getSelection(true);
+
+      try {
+        setIsUploading(true);
+        const url = await uploadImage(file);
+        quill.insertEmbed(range.index, "image", resolveImageUrl(url));
+        quill.setSelection(range.index + 1);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        toast.error("Tải ảnh lên thất bại");
+      } finally {
+        setIsUploading(false);
+      }
+    };
   };
+
+  const videoHandler = () => {
+    const raw = window.prompt(
+      "Dán link YouTube (vd: https://www.youtube.com/watch?v=..., https://youtu.be/...):"
+    );
+    if (!raw) return;
+    const embedUrl = toYouTubeEmbedUrl(raw);
+    if (!embedUrl) {
+      toast.error("Link YouTube không hợp lệ");
+      return;
+    }
+    const quill = quillRef.current?.getEditor();
+    if (!quill) return;
+    const range = quill.getSelection(true);
+    quill.insertEmbed(range.index, "video", embedUrl);
+    quill.setSelection(range.index + 1);
+  };
+
+  const modules = useMemo(
+    () => ({
+      toolbar: {
+        container: [
+          [{ header: [1, 2, false] }],
+          ["bold", "italic", "underline", "link"],
+          [{ list: "ordered" }, { list: "bullet" }],
+          [{ align: [] }],
+          ["image", "video"],
+        ],
+        handlers: { image: imageHandler, video: videoHandler },
+      },
+    }),
+    []
+  );
 
   const handleImageUpload = (event) => {
     const files = Array.from(event.target.files);
@@ -275,6 +335,7 @@ const CreateProject = ({ onClose }) => {
           <h3 className="text-black text-sm font-medium mb-2">Nội dung</h3>
           <div>
             <ReactQuill
+              ref={quillRef}
               value={editorHtml}
               onChange={setEditorHtml}
               className="quill-editor"
@@ -428,4 +489,4 @@ const CreateProject = ({ onClose }) => {
   );
 };
 
-export default CreateProject;
+export default CreateProduct;

@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { theme } from "@/constants/theme";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { toSlug } from "@/lib/slug";
-import { formatVND, resolveImageUrl } from "@/lib/format";
+import { formatVND, resolveImageUrl, stripHtml } from "@/lib/format";
 import { getProducts } from "@/services/product";
 import { getCategories } from "@/services/category";
 import { buildCategoryTree } from "@/lib/categoryTree";
@@ -48,7 +48,7 @@ const normalizeApiProduct = (p) => {
     title: p.title,
     name: p.title,
     subtitle: p.subtitle,
-    description: p.subtitle ?? p.description ?? "",
+    description: stripHtml(p.subtitle ?? p.description ?? ""),
     thumbnail,
     image: thumbnail,
     price,

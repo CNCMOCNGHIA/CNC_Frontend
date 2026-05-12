@@ -6,7 +6,7 @@ import { Calendar, User, ArrowRight } from "lucide-react";
 import { theme } from "@/constants/theme";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { toSlug } from "@/lib/slug";
-import { formatDateVN, resolveImageUrl } from "@/lib/format";
+import { formatDateVN, resolveImageUrl, stripHtml } from "@/lib/format";
 import { getBlogs } from "@/services/post";
 import { getCategories } from "@/services/category";
 import Link from "next/link";
@@ -15,7 +15,7 @@ const normalizeApiBlog = (b) => ({
   id: b.id,
   isApi: true,
   title: b.title,
-  excerpt: b.description ?? "",
+  excerpt: stripHtml(b.description ?? ""),
   image: b.thumbnail ? resolveImageUrl(b.thumbnail) : null,
   category: b.categoryName ?? null,
   categoryId: b.categoryId ?? null,

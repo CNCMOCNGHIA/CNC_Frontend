@@ -1,18 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import { Star } from "lucide-react";
 
 import "react-quill-new/dist/quill.snow.css";
-import "./ProjectDetail.css";
+import "./ProductDetail.css";
 import { uploadImage } from "@/services/upload";
 import { validateImage } from "@/lib/uploadValidate";
 import { getCategories } from "@/services/category";
 import { buildCategoryTree } from "@/lib/categoryTree";
 import { getProduct, updateProduct } from "@/services/product";
 import { resolveImageUrl } from "@/lib/format";
+import { toYouTubeEmbedUrl } from "@/lib/youtube";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
@@ -43,8 +44,8 @@ const findCategoryHierarchy = (categoryList, targetCategoryId) => {
   return hierarchy;
 };
 
-const ProjectDetail = ({ projectId, onClose }) => {
-  const [projectData, setProjectData] = useState({
+const ProductDetail = ({ productId, onClose }) => {
+  const [productData, setProductData] = useState({
     id: "",
     title: "",
     subtitle: "",
@@ -68,16 +69,17 @@ const ProjectDetail = ({ projectId, onClose }) => {
   const [categories, setCategories] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [error, setError] = useState(null);
+  const quillRef = useRef(null);
 
   useEffect(() => {
-    if (!projectId) return;
+    if (!productId) return;
 
     const initialize = async () => {
       setIsLoading(true);
       try {
-        const data = await getProduct(projectId);
+        const data = await getProduct(productId);
         const categoryId = data.category?.id ?? "";
-        setProjectData({
+        setProductData({
           id: data.id,
           title: data.title ?? "",
           subtitle: data.subtitle ?? "",
@@ -110,7 +112,7 @@ const ProjectDetail = ({ projectId, onClose }) => {
     };
 
     initialize();
-  }, [projectId]);
+  }, [productId]);
 
   const handleCategoryChange = (level, category) => {
     const next = { ...selectedCategories };
@@ -190,14 +192,71 @@ const ProjectDetail = ({ projectId, onClose }) => {
     </div>
   );
 
-  const modules = {
-    toolbar: [
-      [{ header: [1, 2, false] }],
-      ["bold", "italic", "underline", "link"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      [{ align: [] }],
-    ],
+  const imageHandler = () => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files[0];
+      if (!quillRef.current || !file) return;
+
+      const validationError = validateImage(file);
+      if (validationError) {
+        toast.error(validationError);
+        return;
+      }
+
+      const quill = quillRef.current.getEditor();
+      const range = quill.getSelection(true);
+
+      try {
+        setIsUploading(true);
+        const url = await uploadImage(file);
+        quill.insertEmbed(range.index, "image", resolveImageUrl(url));
+        quill.setSelection(range.index + 1);
+      } catch (err) {
+        console.error("Error uploading image:", err);
+        toast.error("Tải ảnh lên thất bại");
+      } finally {
+        setIsUploading(false);
+      }
+    };
   };
+
+  const videoHandler = () => {
+    const raw = window.prompt(
+      "Dán link YouTube (vd: https://www.youtube.com/watch?v=..., https://youtu.be/...):"
+    );
+    if (!raw) return;
+    const embedUrl = toYouTubeEmbedUrl(raw);
+    if (!embedUrl) {
+      toast.error("Link YouTube không hợp lệ");
+      return;
+    }
+    const quill = quillRef.current?.getEditor();
+    if (!quill) return;
+    const range = quill.getSelection(true);
+    quill.insertEmbed(range.index, "video", embedUrl);
+    quill.setSelection(range.index + 1);
+  };
+
+  const modules = useMemo(
+    () => ({
+      toolbar: {
+        container: [
+          [{ header: [1, 2, false] }],
+          ["bold", "italic", "underline", "link"],
+          [{ list: "ordered" }, { list: "bullet" }],
+          [{ align: [] }],
+          ["image", "video"],
+        ],
+        handlers: { image: imageHandler, video: videoHandler },
+      },
+    }),
+    []
+  );
 
   const handleImageUpload = (event) => {
     const files = Array.from(event.target.files);
@@ -236,7 +295,7 @@ const ProjectDetail = ({ projectId, onClose }) => {
     thumbnailRef?.type === "newIndex" && thumbnailRef.index === index;
 
   const handleSave = async () => {
-    if (!projectData.title.trim()) {
+    if (!productData.title.trim()) {
       toast.error("Vui lòng nhập tiêu đề");
       return;
     }
@@ -245,14 +304,14 @@ const ProjectDetail = ({ projectId, onClose }) => {
       selectedCategories.level4?.categoryId ||
       selectedCategories.level3?.categoryId ||
       selectedCategories.level2?.categoryId ||
-      projectData.categoryId;
+      productData.categoryId;
     if (!finalCategoryId) {
       toast.error("Vui lòng chọn danh mục");
       return;
     }
 
-    const priceNum = Number(projectData.price);
-    const stockNum = Number(projectData.stock);
+    const priceNum = Number(productData.price);
+    const stockNum = Number(productData.stock);
     if (!Number.isFinite(priceNum) || priceNum < 0) {
       toast.error("Giá không hợp lệ");
       return;
@@ -290,10 +349,10 @@ const ProjectDetail = ({ projectId, onClose }) => {
         thumbnail = finalImages[0];
       }
 
-      await updateProduct(projectData.id, {
+      await updateProduct(productData.id, {
         thumbnail,
-        title: projectData.title,
-        subtitle: projectData.subtitle || null,
+        title: productData.title,
+        subtitle: productData.subtitle || null,
         price: priceNum,
         stock: stockNum,
         description: editorHtml,
@@ -346,9 +405,9 @@ const ProjectDetail = ({ projectId, onClose }) => {
             <input
               type="text"
               className="w-full p-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={projectData.title}
+              value={productData.title}
               onChange={(e) =>
-                setProjectData({ ...projectData, title: e.target.value })
+                setProductData({ ...productData, title: e.target.value })
               }
             />
           </div>
@@ -360,9 +419,9 @@ const ProjectDetail = ({ projectId, onClose }) => {
             <input
               type="text"
               className="w-full p-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={projectData.subtitle}
+              value={productData.subtitle}
               onChange={(e) =>
-                setProjectData({ ...projectData, subtitle: e.target.value })
+                setProductData({ ...productData, subtitle: e.target.value })
               }
             />
           </div>
@@ -375,9 +434,9 @@ const ProjectDetail = ({ projectId, onClose }) => {
                 min="0"
                 step="1000"
                 className="w-full p-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={projectData.price}
+                value={productData.price}
                 onChange={(e) =>
-                  setProjectData({ ...projectData, price: e.target.value })
+                  setProductData({ ...productData, price: e.target.value })
                 }
                 placeholder="0"
               />
@@ -389,9 +448,9 @@ const ProjectDetail = ({ projectId, onClose }) => {
                 min="0"
                 step="1"
                 className="w-full p-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={projectData.stock}
+                value={productData.stock}
                 onChange={(e) =>
-                  setProjectData({ ...projectData, stock: e.target.value })
+                  setProductData({ ...productData, stock: e.target.value })
                 }
                 placeholder="0"
               />
@@ -406,6 +465,7 @@ const ProjectDetail = ({ projectId, onClose }) => {
           <h3 className="text-black text-sm font-medium mb-2">Nội dung</h3>
           <div>
             <ReactQuill
+              ref={quillRef}
               value={editorHtml}
               onChange={setEditorHtml}
               className="quill-editor"
@@ -639,4 +699,4 @@ const ProjectDetail = ({ projectId, onClose }) => {
   );
 };
 
-export default ProjectDetail;
+export default ProductDetail;

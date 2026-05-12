@@ -9,6 +9,21 @@
   color: rgba(255, 255, 255, 0.85);
   font-size: 1.125rem;
   line-height: 1.8;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Quill lưu inline style "color: rgb(0,0,0)" / "background-color: rgb(255,255,255)"
+   khi admin paste từ Word/web. Trên nền tối, các style đó khiến chữ đen trên nền
+   xám và xuất hiện các block trắng. Ép override để giữ readability. */
+.blog-content [style*="color"],
+.product-content [style*="color"] {
+  color: inherit !important;
+}
+
+.blog-content [style*="background-color"],
+.product-content [style*="background-color"] {
+  background-color: transparent !important;
 }
 
 .blog-content h1,

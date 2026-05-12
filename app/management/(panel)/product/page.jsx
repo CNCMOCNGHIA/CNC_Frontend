@@ -1,7 +1,7 @@
 "use client";
 
 import Header from "@/components/common/Header";
-import ProductTable from "@/components/project/ProductTable";
+import ProductTable from "@/components/product/ProductTable";
 
 export default function ProductPage() {
   return (
