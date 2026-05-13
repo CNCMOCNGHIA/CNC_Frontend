@@ -24,7 +24,7 @@ const normalizeApiBlog = (b) => ({
 });
 
 export default function BlogView({ content }) {
-  const { hero, featuredLabel, readMoreLabel, posts } = content ?? {};
+  const { hero, featuredLabel, readMoreLabel } = content ?? {};
 
   const [apiPosts, setApiPosts] = useState(null);
   const [apiCategories, setApiCategories] = useState([]);
@@ -56,7 +56,7 @@ export default function BlogView({ content }) {
     };
   }, []);
 
-  const allPosts = apiPosts && apiPosts.length > 0 ? apiPosts : (posts ?? []);
+  const allPosts = apiPosts ?? [];
   const blogPosts = useMemo(() => {
     if (!selectedCategoryId) return allPosts;
     return allPosts.filter((p) => p.categoryId === selectedCategoryId);

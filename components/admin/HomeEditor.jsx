@@ -19,7 +19,7 @@ import {
 const SLUG = "trang-chu";
 
 const emptyImageItem = () => ({ name: "", image: "", href: "" });
-const emptyServiceItem = () => ({ title: "", description: "", image: "" });
+const emptyServiceItem = () => ({ title: "", details: [] });
 const emptyStatItem = () => ({ number: "", label: "" });
 
 export default function HomeEditor() {
@@ -209,18 +209,16 @@ export default function HomeEditor() {
               value={servicesSection?.description}
               onChange={(v) => setSection("servicesSection", { ...servicesSection, description: v })}
             />
-            <div className="grid grid-cols-2 gap-2">
-              <TextField
-                label="Nhãn 'Tìm hiểu thêm'"
-                value={servicesSection?.learnMoreLabel}
-                onChange={(v) => setSection("servicesSection", { ...servicesSection, learnMoreLabel: v })}
-              />
-              <TextField
-                label="Liên kết 'Tìm hiểu thêm'"
-                value={servicesSection?.learnMoreHref}
-                onChange={(v) => setSection("servicesSection", { ...servicesSection, learnMoreHref: v })}
-              />
-            </div>
+            <ImageField
+              label="Ảnh minh hoạ (cột trái)"
+              value={servicesSection?.image}
+              onChange={(v) => setSection("servicesSection", { ...servicesSection, image: v })}
+            />
+            <TextField
+              label="Mô tả ảnh (alt)"
+              value={servicesSection?.imageAlt}
+              onChange={(v) => setSection("servicesSection", { ...servicesSection, imageAlt: v })}
+            />
             <ListField
               label="Danh sách dịch vụ"
               items={servicesSection?.items}
@@ -234,16 +232,12 @@ export default function HomeEditor() {
                     value={item.title}
                     onChange={(v) => set({ ...item, title: v })}
                   />
-                  <TextAreaField
-                    label="Mô tả"
-                    value={item.description}
-                    onChange={(v) => set({ ...item, description: v })}
-                    rows={2}
-                  />
-                  <ImageField
-                    label="Ảnh"
-                    value={item.image}
-                    onChange={(v) => set({ ...item, image: v })}
+                  <StringListField
+                    label="Danh sách ý chính"
+                    items={item.details}
+                    onChange={(details) => set({ ...item, details })}
+                    placeholder="VD: Từ bếp, tủ áo, giường, bàn ghế"
+                    addLabel="Thêm ý"
                   />
                 </div>
               )}
@@ -296,28 +290,12 @@ export default function HomeEditor() {
               value={customerProducts?.description}
               onChange={(v) => setSection("customerProducts", { ...customerProducts, description: v })}
             />
-            <ListField
-              label="Danh sách sản phẩm"
-              items={customerProducts?.items}
-              onChange={(items) => setSection("customerProducts", { ...customerProducts, items })}
-              emptyItem={emptyImageItem}
-              addLabel="Thêm sản phẩm"
-              renderItem={(item, set) => (
-                <div className="space-y-2">
-                  <TextField label="Tên" value={item.name} onChange={(v) => set({ ...item, name: v })} />
-                  <ImageField
-                    label="Ảnh"
-                    value={item.image}
-                    onChange={(v) => set({ ...item, image: v })}
-                  />
-                  <TextField
-                    label="Liên kết (tuỳ chọn)"
-                    value={item.href}
-                    onChange={(v) => set({ ...item, href: v })}
-                  />
-                </div>
-              )}
-            />
+            <div className="text-xs text-gray-600 bg-blue-50 border border-blue-200 rounded p-3">
+              Danh sách hiển thị tự động lấy từ các bài viết thuộc danh mục
+              <span className="font-semibold"> “Dự án gia công” </span>
+              trong mục
+              <span className="font-mono"> /management/post</span>.
+            </div>
           </SectionCard>
 
           <SectionCard title="Lý do chọn chúng tôi" defaultOpen={false}>

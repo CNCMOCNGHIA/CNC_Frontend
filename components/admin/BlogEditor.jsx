@@ -11,7 +11,6 @@ import {
   TextField,
   TextAreaField,
   ImageField,
-  StringListField,
 } from "./fields";
 
 const SLUG = "tin-tuc";
@@ -72,7 +71,7 @@ export default function BlogEditor() {
   }
 
   const dirty = JSON.stringify(content) !== JSON.stringify(initial);
-  const { hero, categories, featuredLabel, readMoreLabel } = content;
+  const { hero, featuredLabel, readMoreLabel } = content;
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -117,8 +116,8 @@ export default function BlogEditor() {
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 overflow-hidden">
         <div className="overflow-y-auto p-4 bg-gray-50 border-r border-gray-200">
           <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md text-xs text-blue-800">
-            Lưu ý: Danh sách bài viết được quản lý qua menu "Bài Đăng". Trang này chỉ
-            chỉnh phần Hero, danh mục và nhãn UI.
+            Lưu ý: Danh sách bài viết được quản lý qua menu "Bài Đăng", danh mục
+            qua "Danh Mục Bài Đăng". Trang này chỉ chỉnh phần Hero và nhãn UI.
           </div>
 
           <SectionCard title="Hero">
@@ -136,16 +135,6 @@ export default function BlogEditor() {
               label="Ảnh nền"
               value={hero?.backgroundImage}
               onChange={(v) => setField("hero", { ...hero, backgroundImage: v })}
-            />
-          </SectionCard>
-
-          <SectionCard title="Danh mục" defaultOpen={false}>
-            <StringListField
-              label="Danh sách danh mục"
-              items={categories}
-              onChange={(items) => setField("categories", items)}
-              placeholder="VD: Manufacturing"
-              addLabel="Thêm danh mục"
             />
           </SectionCard>
 

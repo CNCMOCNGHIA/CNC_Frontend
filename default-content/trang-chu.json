@@ -83,21 +83,7 @@
   },
   "customerProducts": {
     "title": "SẢN PHẨM KHÁCH HÀNG GIA CÔNG",
-    "description": "Một số sản phẩm thực tế chúng tôi đã đồng hành cùng khách hàng",
-    "items": [
-      {
-        "name": "Tủ bếp gỗ công nghiệp",
-        "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080&q=80"
-      },
-      {
-        "name": "Tủ bếp chữ L hiện đại",
-        "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080&q=80"
-      },
-      {
-        "name": "Tủ bếp căn hộ chung cư",
-        "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080&q=80"
-      }
-    ]
+    "description": "Một số sản phẩm thực tế chúng tôi đã đồng hành cùng khách hàng"
   },
   "whyChooseUs": {
     "title": "WHY CHOOSE US",
