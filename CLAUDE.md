@@ -52,7 +52,7 @@ A flat object of Tailwind class-string tokens (e.g. `theme.colors.brand` → `"b
 The same palette is also defined as CSS variables in `app/styles/theme.css` for the shadcn components — keep the two in sync if you change brand colors.
 
 ### Fonts
-`Montserrat` is loaded via `next/font/google` in `app/layout.jsx` and exposed as `--font-montserrat` (used by the `.font-body` utility). `Bebas Neue` is pulled from a Google Fonts `@import` in `app/styles/fonts.css` and applied to `h1`/`h2` in the base layer.
+`Montserrat` is loaded via `next/font/google` in `app/layout.jsx` and exposed as `--font-montserrat` (used by the `.font-body` utility). It is also pulled from Google Fonts (with weights 400/700/900) via `@import` in `app/styles/fonts.css` and applied to `h1`/`h2` in the base layer at `font-weight: 900` (replaced Bebas Neue, which lacked Vietnamese diacritics).
 
 ## When making changes
 

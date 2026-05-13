@@ -101,13 +101,15 @@
   }
 
   h1 {
-    font-family: "Bebas Neue", sans-serif;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 900;
     letter-spacing: 0.02em;
     line-height: 1.1;
   }
 
   h2 {
-    font-family: "Bebas Neue", sans-serif;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 900;
     letter-spacing: 0.02em;
     line-height: 1.2;
   }

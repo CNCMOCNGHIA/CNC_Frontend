@@ -343,6 +343,12 @@ export default function HomeEditor() {
               value={whyChooseUs?.imageAlt}
               onChange={(v) => setSection("whyChooseUs", { ...whyChooseUs, imageAlt: v })}
             />
+            <TextField
+              label="Link YouTube (ưu tiên hiển thị thay ảnh)"
+              value={whyChooseUs?.youtubeUrl}
+              onChange={(v) => setSection("whyChooseUs", { ...whyChooseUs, youtubeUrl: v })}
+              placeholder="https://www.youtube.com/watch?v=..."
+            />
           </SectionCard>
 
           <SectionCard title="CTA cuối trang" defaultOpen={false}>

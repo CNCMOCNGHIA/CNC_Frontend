@@ -265,7 +265,7 @@ export default function HomeView({ content }) {
                 initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                className="relative h-[500px]"
+                className="relative h-[500px] w-[700px]"
               >
                 {whyChooseUs.youtubeUrl ? (
                   <iframe
