@@ -9,6 +9,18 @@ import { toSlug } from "@/lib/slug";
 import { resolveImageUrl } from "@/lib/format";
 import { toYouTubeEmbedUrl } from "@/lib/youtube";
 import { getFavouriteProducts } from "@/services/product";
+import { getBlogs } from "@/services/post";
+
+const CUSTOMER_PROJECTS_CATEGORY = "Dự án gia công";
+
+const blogToGridItem = (b) => {
+  const slug = toSlug(b?.title ?? "");
+  return {
+    name: b?.title ?? "",
+    image: b?.thumbnail ?? "",
+    href: b?.id ? `/tin-tuc/${slug}?id=${b.id}` : `/tin-tuc/${slug}`,
+  };
+};
 
 const productToGridItem = (p) => {
   const slug = toSlug(p?.title ?? "");
@@ -83,6 +95,7 @@ export default function HomeView({ content }) {
   } = content ?? {};
 
   const [hotItems, setHotItems] = useState([]);
+  const [customerItems, setCustomerItems] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -93,6 +106,25 @@ export default function HomeView({ content }) {
         setHotItems((Array.isArray(list) ? list : []).map(productToGridItem));
       } catch (error) {
         console.error("Error loading favourite products:", error);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const page = await getBlogs({ pageNumber: 1, pageSize: 50 });
+        if (cancelled) return;
+        const items = (page?.items ?? [])
+          .filter((b) => b?.categoryName === CUSTOMER_PROJECTS_CATEGORY)
+          .map(blogToGridItem);
+        setCustomerItems(items.length > 0 ? items : null);
+      } catch (error) {
+        console.error("Error loading customer projects:", error);
       }
     })();
     return () => {
@@ -236,7 +268,11 @@ export default function HomeView({ content }) {
       )}
 
       {customerProducts && (
-        <ImageGridSection section={customerProducts} bgClass={theme.colors.bgPrimary} />
+        <ImageGridSection
+          section={customerProducts}
+          items={customerItems}
+          bgClass={theme.colors.bgPrimary}
+        />
       )}
 
       {whyChooseUs && (

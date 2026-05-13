@@ -159,8 +159,8 @@ export default function BlogView({ content }) {
                     {featured.category}
                   </div>
                 )}
-                <h2 className="text-4xl md:text-5xl text-white mb-4">{featured.title}</h2>
-                <p className="text-xl text-white/70 mb-6">{featured.excerpt}</p>
+                <h2 className="text-4xl md:text-5xl text-white mb-4 line-clamp-2">{featured.title}</h2>
+                <p className="text-xl text-white/70 mb-6 line-clamp-4">{featured.excerpt}</p>
 
                 <div className="flex items-center gap-6 mb-8 text-white/60">
                   {featured.date && (
@@ -221,10 +221,10 @@ export default function BlogView({ content }) {
                       </div>
 
                       <div className="p-6 min-h-88">
-                        <h3 className="text-2xl text-white mb-3 group-hover:text-[#D4A017] transition-colors">
+                        <h3 className="text-2xl text-white mb-3 group-hover:text-[#D4A017] transition-colors line-clamp-2">
                           {post.title}
                         </h3>
-                        <p className="text-white/70 mb-4">{post.excerpt}</p>
+                        <p className="text-white/70 mb-4 line-clamp-3">{post.excerpt}</p>
 
                         <div className="flex items-center gap-4 text-sm text-white/60 mb-4">
                           {post.date && (
