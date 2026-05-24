@@ -9,7 +9,9 @@ import api from "./api.js";
 //
 // FileResponse (list & detail dùng chung shape):
 //   { id, fileName, extension, url }   // url ví dụ "/uploads/quotas/8f3e2a....dwg"
-// Hiển thị/download: <a href={`${API_BASE_URL}${file.url}`} download={file.fileName}>
+// Download (anonymous, trả file với tên gốc + Content-Disposition: attachment):
+//   GET /api/quotas/files/{file.id}/download
+// Dùng resolveQuotaFileUrl(file) để build link.
 //
 // QuotaResponse:
 //   { id, fullName, phoneNumber, email, materialType, quantity,
@@ -119,13 +121,13 @@ export const deleteQuota = async (id) => {
   }
 };
 
-// Lấy URL tải file CAD từ FileResponse (BE static-serve, anonymous).
+// Lấy URL tải file CAD từ FileResponse.
+// BE endpoint: GET /api/quotas/files/{fileId}/download (anonymous, không cần JWT)
+// → trả file với tên gốc (vd ban_ve.skp) thay vì GUID, Content-Disposition: attachment.
 export const resolveQuotaFileUrl = (file) => {
-  if (!file?.url) return "";
-  const base = process.env.NEXT_PUBLIC_API_URL ?? "";
-  if (/^https?:/i.test(file.url)) return file.url;
-  const path = file.url.startsWith("/") ? file.url : `/${file.url}`;
-  return `${base.replace(/\/$/, "")}${path}`;
+  if (!file?.id) return "";
+  const base = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
+  return `${base}/api/quotas/files/${file.id}/download`;
 };
 
 // Parse ASP.NET ProblemDetails (HTTP 400) → { FieldName: "message", ... }
