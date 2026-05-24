@@ -12,6 +12,7 @@ import {
   Tags,
   LogOut,
   ShoppingBag,
+  FileSpreadsheet,
 } from "lucide-react";
 import Cookies from "js-cookie";
 
@@ -33,6 +34,12 @@ const SIDEBAR_ITEMS = [
     icon: ShoppingBag,
     color: "#EC4899",
     href: "/management/orders",
+  },
+  {
+    name: "Yêu cầu báo giá",
+    icon: FileSpreadsheet,
+    color: "#14B8A6",
+    href: "/management/quotas",
   },
   {
     name: "Bài Đăng",

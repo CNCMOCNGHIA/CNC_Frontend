@@ -5,6 +5,11 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const api = axios.create({
   baseURL: API_URL,
+  headers: {
+    // ngrok free tier serves an HTML warning page to browser requests unless
+    // this header is present. Without it, axios receives HTML instead of JSON.
+    "ngrok-skip-browser-warning": "true",
+  },
 });
 
 api.interceptors.request.use(

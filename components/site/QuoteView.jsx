@@ -8,12 +8,39 @@ import { toast } from "sonner";
 import { theme } from "@/constants/theme";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { resolveImageUrl } from "@/lib/format";
+import {
+  createQuota,
+  parseQuotaValidationErrors,
+  QUOTA_ALLOWED_EXTENSIONS,
+  VN_PHONE_REGEX,
+} from "@/services/quota";
+
+const FORM_TO_API_FIELD = {
+  name: "FullName",
+  phone: "PhoneNumber",
+  email: "Email",
+  material: "MaterialType",
+  quantity: "Quantity",
+  deliveryTime: "DeliveryTime",
+  notes: "Note",
+};
+
+const API_TO_FORM_FIELD = Object.fromEntries(
+  Object.entries(FORM_TO_API_FIELD).map(([k, v]) => [v, k])
+);
+
+const getExtension = (name) => {
+  if (!name) return "";
+  const idx = name.lastIndexOf(".");
+  return idx >= 0 ? name.slice(idx).toLowerCase() : "";
+};
 
 export default function QuoteView({ content }) {
   const {
     register,
     handleSubmit,
     reset,
+    setError,
     formState: { errors },
   } = useForm();
   const [files, setFiles] = useState([]);
@@ -29,9 +56,24 @@ export default function QuoteView({ content }) {
   } = content ?? {};
 
   const handleFileChange = (e) => {
-    if (e.target.files) {
-      setFiles((prev) => [...prev, ...Array.from(e.target.files)]);
+    if (!e.target.files) return;
+    const incoming = Array.from(e.target.files);
+    const rejected = incoming.filter(
+      (f) => !QUOTA_ALLOWED_EXTENSIONS.includes(getExtension(f.name))
+    );
+    if (rejected.length) {
+      toast.error(
+        `Định dạng không hỗ trợ: ${rejected.map((f) => f.name).join(", ")}`
+      );
     }
+    const accepted = incoming.filter(
+      (f) => QUOTA_ALLOWED_EXTENSIONS.includes(getExtension(f.name))
+    );
+    if (accepted.length) {
+      setFiles((prev) => [...prev, ...accepted]);
+    }
+    // Cho phép chọn lại cùng file sau khi xoá
+    e.target.value = "";
   };
 
   const removeFile = (index) => {
@@ -40,12 +82,41 @@ export default function QuoteView({ content }) {
 
   const onSubmit = async (formData) => {
     setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    console.log("Quote Request:", { ...formData, files });
-    toast.success(submitSection?.successMessage ?? "Đã gửi yêu cầu");
-    reset();
-    setFiles([]);
-    setIsSubmitting(false);
+    try {
+      await createQuota({
+        fullName: formData.name,
+        phoneNumber: formData.phone,
+        email: formData.email,
+        materialType: formData.material,
+        quantity: Number(formData.quantity),
+        deliveryTime: formData.deliveryTime,
+        note: formData.notes,
+        files,
+      });
+      toast.success(submitSection?.successMessage ?? "Đã gửi yêu cầu");
+      reset();
+      setFiles([]);
+    } catch (error) {
+      const fieldErrors = parseQuotaValidationErrors(error);
+      if (fieldErrors) {
+        for (const [apiField, message] of Object.entries(fieldErrors)) {
+          const formField = API_TO_FORM_FIELD[apiField];
+          if (formField) {
+            setError(formField, { type: "server", message });
+          }
+        }
+        toast.error("Vui lòng kiểm tra lại các trường được đánh dấu");
+      } else {
+        const msg =
+          error?.messages?.[0] ??
+          error?.response?.data?.messages?.[0] ??
+          error?.message ??
+          "Gửi yêu cầu thất bại";
+        toast.error(msg);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -94,7 +165,10 @@ export default function QuoteView({ content }) {
                     <input
                       id="name"
                       type="text"
-                      {...register("name", { required: "Required" })}
+                      {...register("name", {
+                        required: "Vui lòng nhập họ tên",
+                        maxLength: { value: 100, message: "Tối đa 100 ký tự" },
+                      })}
                       className="w-full bg-[#111111] border border-white/10 text-white px-4 py-3 focus:border-[#D4A017] focus:outline-none transition-colors"
                       placeholder={contactSection.fields?.name?.placeholder}
                     />
@@ -110,7 +184,14 @@ export default function QuoteView({ content }) {
                     <input
                       id="phone"
                       type="tel"
-                      {...register("phone", { required: "Required" })}
+                      {...register("phone", {
+                        required: "Vui lòng nhập số điện thoại",
+                        pattern: {
+                          value: VN_PHONE_REGEX,
+                          message:
+                            "SĐT không hợp lệ (VD: 0901234567 hoặc +84901234567)",
+                        },
+                      })}
                       className="w-full bg-[#111111] border border-white/10 text-white px-4 py-3 focus:border-[#D4A017] focus:outline-none transition-colors"
                       placeholder={contactSection.fields?.phone?.placeholder}
                     />
@@ -127,10 +208,10 @@ export default function QuoteView({ content }) {
                       id="email"
                       type="email"
                       {...register("email", {
-                        required: "Required",
+                        required: "Vui lòng nhập email",
                         pattern: {
                           value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                          message: "Invalid email",
+                          message: "Email không hợp lệ",
                         },
                       })}
                       className="w-full bg-[#111111] border border-white/10 text-white px-4 py-3 focus:border-[#D4A017] focus:outline-none transition-colors"
@@ -160,15 +241,19 @@ export default function QuoteView({ content }) {
                     </label>
                     <select
                       id="material"
-                      {...register("material", { required: "Required" })}
+                      {...register("material", { required: "Vui lòng chọn vật liệu" })}
                       className="w-full bg-[#111111] border border-white/10 text-white px-4 py-3 focus:border-[#D4A017] focus:outline-none transition-colors"
                     >
+                      <option value="">-- Chọn vật liệu --</option>
                       {(projectSection.fields?.material?.options ?? []).map((opt) => (
                         <option key={opt.value} value={opt.value}>
                           {opt.label}
                         </option>
                       ))}
                     </select>
+                    {errors.material && (
+                      <p className="text-red-500 mt-1">{String(errors.material.message)}</p>
+                    )}
                   </div>
 
                   <div>
@@ -177,22 +262,34 @@ export default function QuoteView({ content }) {
                     </label>
                     <input
                       id="quantity"
-                      type="text"
-                      {...register("quantity", { required: "Required" })}
+                      type="number"
+                      min={1}
+                      step={1}
+                      {...register("quantity", {
+                        required: "Vui lòng nhập số lượng",
+                        valueAsNumber: true,
+                        validate: (v) =>
+                          (Number.isInteger(v) && v >= 1) ||
+                          "Số lượng phải là số nguyên ≥ 1",
+                      })}
                       className="w-full bg-[#111111] border border-white/10 text-white px-4 py-3 focus:border-[#D4A017] focus:outline-none transition-colors"
                       placeholder={projectSection.fields?.quantity?.placeholder}
                     />
+                    {errors.quantity && (
+                      <p className="text-red-500 mt-1">{String(errors.quantity.message)}</p>
+                    )}
                   </div>
 
                   <div>
                     <label htmlFor="deliveryTime" className="block text-white mb-2">
-                      {projectSection.fields?.deliveryTime?.label} *
+                      {projectSection.fields?.deliveryTime?.label}
                     </label>
                     <select
                       id="deliveryTime"
-                      {...register("deliveryTime", { required: "Required" })}
+                      {...register("deliveryTime")}
                       className="w-full bg-[#111111] border border-white/10 text-white px-4 py-3 focus:border-[#D4A017] focus:outline-none transition-colors"
                     >
+                      <option value="">-- Chọn thời gian --</option>
                       {(projectSection.fields?.deliveryTime?.options ?? []).map((opt) => (
                         <option key={opt.value} value={opt.value}>
                           {opt.label}
@@ -235,7 +332,7 @@ export default function QuoteView({ content }) {
                     type="file"
                     onChange={handleFileChange}
                     multiple
-                    accept=".dwg,.dxf,.pdf,.skp,.stl,.3dm"
+                    accept={QUOTA_ALLOWED_EXTENSIONS.join(",")}
                     className="hidden"
                     id="file-upload"
                   />

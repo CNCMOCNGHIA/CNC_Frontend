@@ -8,23 +8,18 @@ import {
   Search,
   ChevronLeft,
   ChevronRight,
-  Filter,
   X,
+  Paperclip,
 } from "lucide-react";
 import { toast } from "sonner";
 
-import { getOrders } from "@/services/order";
-import { formatVND, formatDateVN } from "@/lib/format";
-import {
-  orderStatusLabel,
-  orderStatusColor,
-  orderStatusOptions,
-} from "@/constants/orderStatus";
+import { getQuotas } from "@/services/quota";
+import { formatDateVN } from "@/lib/format";
 
 const PAGE_SIZE = 10;
 
-export default function OrdersTable() {
-  const [orders, setOrders] = useState([]);
+export default function QuotasTable() {
+  const [quotas, setQuotas] = useState([]);
   const [page, setPage] = useState({
     pageNumber: 1,
     pageSize: PAGE_SIZE,
@@ -33,24 +28,23 @@ export default function OrdersTable() {
     hasNext: false,
     hasPrevious: false,
   });
-  const [statusFilter, setStatusFilter] = useState(""); // "" = all
-  const [phoneFilter, setPhoneFilter] = useState("");
-  const [phoneInput, setPhoneInput] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
   const load = async (pageNumber = 1) => {
     setLoading(true);
     try {
-      const result = await getOrders({
-        pageNumber,
+      const result = await getQuotas({
+        page: pageNumber,
         pageSize: PAGE_SIZE,
-        status: statusFilter === "" ? undefined : statusFilter,
-        customerPhone: phoneFilter || undefined,
+        search: search || undefined,
       });
       const items = result?.data?.items ?? result?.data ?? [];
-      setOrders(items);
+      setQuotas(items);
       setPage({
-        pageNumber: result?.data?.pageNumber ?? pageNumber,
+        pageNumber:
+          result?.data?.page ?? result?.data?.pageNumber ?? pageNumber,
         pageSize: result?.data?.pageSize ?? PAGE_SIZE,
         totalCount: result?.data?.totalCount ?? items.length,
         totalPages: result?.data?.totalPages ?? 1,
@@ -58,8 +52,8 @@ export default function OrdersTable() {
         hasPrevious: result?.data?.hasPrevious ?? false,
       });
     } catch (error) {
-      console.error("Error fetching orders:", error);
-      toast.error("Không thể tải danh sách đơn hàng");
+      console.error("Error fetching quotas:", error);
+      toast.error("Không thể tải danh sách báo giá");
     } finally {
       setLoading(false);
     }
@@ -68,17 +62,16 @@ export default function OrdersTable() {
   useEffect(() => {
     load(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [statusFilter, phoneFilter]);
+  }, [search]);
 
-  const handlePhoneSearch = (e) => {
+  const handleSearch = (e) => {
     e.preventDefault();
-    setPhoneFilter(phoneInput.trim());
+    setSearch(searchInput.trim());
   };
 
-  const handleClearFilters = () => {
-    setStatusFilter("");
-    setPhoneInput("");
-    setPhoneFilter("");
+  const handleClear = () => {
+    setSearchInput("");
+    setSearch("");
   };
 
   return (
@@ -89,39 +82,23 @@ export default function OrdersTable() {
       transition={{ delay: 0.2 }}
     >
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-        <h2 className="text-xl font-semibold text-black">Quản lý đơn hàng</h2>
+        <h2 className="text-xl font-semibold text-black">Yêu cầu báo giá</h2>
 
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-gray-500" />
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-black text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Tất cả trạng thái</option>
-              {orderStatusOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <form onSubmit={handlePhoneSearch} className="relative">
+          <form onSubmit={handleSearch} className="relative">
             <input
               type="text"
-              value={phoneInput}
-              onChange={(e) => setPhoneInput(e.target.value)}
-              placeholder="Tìm theo SĐT..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Tìm theo tên/SĐT/email..."
               className="bg-black text-white placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <Search className="absolute left-3 top-2.5 text-white" size={18} />
           </form>
 
-          {(statusFilter !== "" || phoneFilter) && (
+          {search && (
             <button
-              onClick={handleClearFilters}
+              onClick={handleClear}
               className="text-sm text-gray-600 hover:text-black flex items-center gap-1"
             >
               <X className="w-4 h-4" />
@@ -136,22 +113,25 @@ export default function OrdersTable() {
           <thead>
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
-                Mã đơn
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                 Khách hàng
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                 SĐT
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
-                Tổng
+                Email
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
-                Trạng thái
+                Vật liệu
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
-                Ngày đặt
+                SL
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
+                File
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
+                Ngày gửi
               </th>
               <th className="px-6 py-3" />
             </tr>
@@ -160,52 +140,55 @@ export default function OrdersTable() {
           <tbody className="divide-y divide-gray-200">
             {loading ? (
               <tr>
-                <td colSpan="7" className="px-6 py-12 text-center text-gray-500">
+                <td colSpan="8" className="px-6 py-12 text-center text-gray-500">
                   Đang tải...
                 </td>
               </tr>
-            ) : orders.length === 0 ? (
+            ) : quotas.length === 0 ? (
               <tr>
-                <td colSpan="7" className="px-6 py-12 text-center text-gray-500">
-                  Chưa có đơn hàng nào.
+                <td colSpan="8" className="px-6 py-12 text-center text-gray-500">
+                  Chưa có yêu cầu báo giá nào.
                 </td>
               </tr>
             ) : (
-              orders.map((order) => (
+              quotas.map((quota) => (
                 <motion.tr
-                  key={order.id}
+                  key={quota.id}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-black">
-                    {order.id?.slice?.(0, 8) ?? order.id}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                    {quota.fullName}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                    {order.customerName}
+                    {quota.phoneNumber}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
-                    {order.customerPhone}
+                    {quota.email}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-black font-medium">
-                    {formatVND(order.totalAmount)}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                    {quota.materialType}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-xs">
-                    <span
-                      className={`inline-block px-2 py-1 border ${
-                        orderStatusColor[order.status] ??
-                        "bg-gray-100 text-gray-800 border-gray-300"
-                      }`}
-                    >
-                      {orderStatusLabel[order.status] ?? "—"}
-                    </span>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                    {quota.quantity}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
+                    {quota.files?.length ? (
+                      <span className="inline-flex items-center gap-1 text-gray-700">
+                        <Paperclip className="w-4 h-4" />
+                        {quota.files.length}
+                      </span>
+                    ) : (
+                      <span className="text-gray-400">—</span>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {formatDateVN(order.createdAt ?? order.createDate)}
+                    {formatDateVN(quota.createDate)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                     <Link
-                      href={`/management/orders/${order.id}`}
+                      href={`/management/quotas/${quota.id}`}
                       className="text-indigo-600 hover:text-indigo-800 inline-flex items-center gap-1"
                     >
                       <Eye className="w-4 h-4" />
@@ -218,12 +201,12 @@ export default function OrdersTable() {
           </tbody>
         </table>
 
-        {orders.length > 0 && (
+        {quotas.length > 0 && (
           <div className="flex justify-between items-center mt-4 px-2">
             <div className="text-sm text-gray-600">
               {(page.pageNumber - 1) * page.pageSize + 1}–
               {Math.min(page.pageNumber * page.pageSize, page.totalCount)} /{" "}
-              {page.totalCount} đơn
+              {page.totalCount} yêu cầu
             </div>
             <div className="flex gap-2 items-center">
               <button

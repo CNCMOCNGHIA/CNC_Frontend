@@ -1,0 +1,118 @@
+
+# Cập nhật FE — Quota API (BE đã đổi)
+
+  ## Endpoints không đổi
+  - `GET  /api/quotas?Page=&PageSize=&Search=`
+  - `GET  /api/quotas/{id}`
+  - `POST /api/quotas` (multipart/form-data, anonymous)
+  - `PUT  /api/quotas/{id}` (multipart/form-data, [Authorize])
+  - `DELETE /api/quotas/{id}` ([Authorize])
+
+  ## 1) Response shape — `FileResponse` đã thống nhất
+
+  Trước đây list và detail trả `FileResponse` khác namespace nhưng giống nhau (Id, FileName, Extension). Giờ **dùng chung một type** và **thêm field `Url`**:
+
+  ```ts
+  type FileResponse = {
+    id: string;
+    fileName: string;
+    extension: string;   // ".dwg", ".pdf", ...
+    url: string;         // VD: "/uploads/quotas/8f3e2a....dwg"
+  };
+
+  Cả GET /api/quotas (list) và GET /api/quotas/{id} (detail) đều trả đúng shape này.
+
+  2) Quota response — có thêm createDate
+
+  type QuotaResponse = {
+    id: string;
+    fullName: string;
+    phoneNumber: string;
+    email: string;
+    materialType: string;
+    quantity: number;
+    deliveryTime?: string | null;
+    note?: string | null;
+    createDate: string;  // ISO UTC, mới
+    files: FileResponse[];
+  };
+
+  List GET /api/quotas giờ sắp xếp giảm dần theo createDate (mới nhất lên đầu) — FE không cần tự sort.
+
+  3) File CAD giờ phục vụ tĩnh — dùng url để hiển thị/download
+
+  Trước: file lưu binary trong DB, không có endpoint serve content.
+  Giờ: file ghi xuống uploads/quotas/..., BE static-serve qua /uploads/quotas/<filename>.
+
+  FE hiển thị/download chỉ cần:
+  <a href={`${API_BASE_URL}${file.url}`} download={file.fileName}>
+    {file.fileName}
+  </a>
+  Không cần Authorization header (static files anonymous).
+
+  4) Validate input mới — sẽ trả 400 nếu sai
+
+  Trước: BE không validate, FE submit gì cũng vào DB.
+  Giờ POST/PUT validate phía server:
+
+  ┌────────────────────┬────────────────────────────────────────────────────────────────────────┐
+  │       Field        │                                  Rule                                  │
+  ├────────────────────┼────────────────────────────────────────────────────────────────────────┤
+  │ FullName           │ required, 1–100 ký tự                                                  │
+  ├────────────────────┼────────────────────────────────────────────────────────────────────────┤
+  │ PhoneNumber        │ required, regex ^(0|\+84)(\d{9,10})$ — VD 0901234567 hoặc +84901234567 │
+  ├────────────────────┼────────────────────────────────────────────────────────────────────────┤
+  │ Email              │ required, định dạng email hợp lệ                                       │
+  ├────────────────────┼────────────────────────────────────────────────────────────────────────┤
+  │ MaterialType       │ required                                                               │
+  ├────────────────────┼────────────────────────────────────────────────────────────────────────┤
+  │ Quantity           │ integer ≥ 1                                                            │
+  ├────────────────────┼────────────────────────────────────────────────────────────────────────┤
+  │ DeliveryTime, Note │ optional                                                               │
+  └────────────────────┴────────────────────────────────────────────────────────────────────────┘
+
+  Nếu sai → BE trả 400 Bad Request với shape ASP.NET ProblemDetails:
+  {
+    "type": "...",
+    "title": "One or more validation errors occurred.",
+    "status": 400,
+    "errors": {
+      "PhoneNumber": ["PhoneNumber must be a valid Vietnamese phone number (e.g. 0901234567 or +84901234567)"],
+      "Quantity": ["Quantity must be greater than 0"]
+    } 
+  }
+  
+  → FE nên validate đồng bộ ở form (zod/yup/react-hook-form) với cùng quy tắc trên để UX tốt, và đồng thời parse errors dict từ 400 response để hiển thị inline khi
+  server reject.
+
+  5) DELETE response type đã đổi
+
+  Trước:
+  type DeleteResult = { data: string; resultStatus: 0; messages: string[] };
+  // data = "Quota deleted successfully"
+  Giờ:
+  type DeleteResult = {
+    data: string[];        // mảng URL các file vừa xoá
+    resultStatus: 0;
+    messages: string[];    // ["Quota deleted successfully"]
+  };
+  → Đọc message từ messages[0] chứ không phải data.
+  
+  6) Sai extension file → 400 với shape khác ProblemDetails
+
+  Khi upload file có đuôi ngoài whitelist .dwg, .dxf, .pdf, .skp, .3dm, .3dmbak, .3mf, .3ds, .stl:
+  {
+    "resultStatus": 3,
+    "messages": ["Invalid file extension. Allowed: .dwg, .dxf, .pdf, ..."]
+  }
+  (resultStatus: 3 = Error)
+
+  Checklist FE
+
+  - [ ] Cập nhật type FileResponse — thêm url, gộp 1 type chung
+  - [ ] Cập nhật type QuotaResponse — thêm createDate
+  - [ ] Bỏ logic tự sort list quotas (BE đã sort theo createDate desc)
+  - [ ] Đổi UI tải file CAD: dùng <a href={baseUrl + file.url} download> thay vì gọi API tải binary
+  - [ ] Thêm form validation (FullName, PhoneNumber VN regex, Email, MaterialType, Quantity ≥ 1) trước khi submit
+  - [ ] Parse errors dict từ 400 ProblemDetails để hiển thị lỗi inline
+  - [ ] Sửa chỗ đọc kết quả DELETE: lấy message từ messages[0], không từ data

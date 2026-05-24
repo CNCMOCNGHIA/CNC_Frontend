@@ -1,17 +1,20 @@
 import api from "./api.js";
 
 // Backend: Orders
-//   POST   /api/orders                                     Public  guest checkout
-//   GET    /api/orders/{orderId}                           Public  detail (no auth)
+//   POST   /api/orders                                     Public  guest checkout (auto-creates VietQR via SePay)
+//   GET    /api/orders/{orderId}                           Public  full detail (no auth)
+//   GET    /api/orders/{orderId}/status                    Public  lightweight polling (auto-marks Expired + restocks)
 //   GET    /api/orders?pageNumber=&pageSize=&status=&customerPhone=
 //                                                          Admin   list + filter
-//   PATCH  /api/orders/{orderId}/status                    Admin   { status: 0|1|2 }
+//   PATCH  /api/orders/{orderId}/status                    Admin   { status, paymentRef? }
 //
-// Status enum: 0 = Unpaid, 1 = Paid, 2 = Cancelled (see constants/orderStatus.js)
+// Status enum: "Unpaid" | "Paid" | "Cancelled" | "Expired" (see constants/orderStatus.js)
 //
 // Create body:
 //   { customerName, customerPhone, customerEmail?, shippingAddress, note?,
 //     items: [{ productId, quantity }] }
+// Create response (data): includes code, qrUrl, bankAccount, bankCode,
+// accountHolder, expiresAt — render these on the payment screen.
 
 export const createOrder = async (payload) => {
   try {
@@ -29,6 +32,16 @@ export const getOrder = async (id) => {
     return response.data;
   } catch (error) {
     console.error("Error fetching order:", error);
+    throw error;
+  }
+};
+
+export const getOrderStatus = async (id) => {
+  try {
+    const response = await api.get(`/api/orders/${id}/status`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching order status:", error);
     throw error;
   }
 };
